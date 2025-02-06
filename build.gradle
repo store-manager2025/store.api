@@ -1,16 +1,23 @@
-plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.4.2'
-    id 'io.spring.dependency-management' version '1.1.7'
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
 }
 
-group = 'com.project'
-version = '0.0.1-SNAPSHOT'
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.12'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+}
+
+group = 'com.study'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+jar {
+    // 불필요한 plain jar 생성 설정 비활성화
+    enabled = false
 }
 
 configurations {
@@ -24,14 +31,47 @@ repositories {
 }
 
 dependencies {
+    // 스프링 종합 선물 세트
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // 롬복
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // JUNIT (@Test)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 마리아디비 커넥터
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+
+    //     Spring JDBC 모듈
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    //     마이바티스 모듈
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+
+    // 입력값 검증 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //스프링 시큐리티 모듈
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // json web token 라이브러리
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+    // s3 라이브러리
+    implementation 'software.amazon.awssdk:s3:2.17.52'
+
+    // 쿼리파라미터 추가 외부로그 남기기
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
+
+    // 이메일 전송 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+//    exclude '**/*'  // 빌드 시 테스트 생략
 }
