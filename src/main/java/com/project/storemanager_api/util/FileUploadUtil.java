@@ -2,7 +2,6 @@ package com.project.storemanager_api.util;
 
 
 import com.project.storemanager_api.config.FileUploadConfig;
-import com.project.storemanager_api.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -48,6 +47,7 @@ public class FileUploadUtil {
             log.error("Failed to save file: {}", newFilename, e);
 
         }
+        return null;
     }
 
     private void validateImages(MultipartFile file) {
