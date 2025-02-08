@@ -34,8 +34,8 @@ public class JwtTokenProvider {
 
     // 토큰 발급 로직
     // 엑세스 토큰 생성 (사용자가 들고다닐 신분증) : 유효기간이 짧다.
-    public String createAccessToken(String username) {
-        return createToken(username, jwtProperties.getAccessTokenValidityTime());
+    public String createAccessToken(String email) {
+        return createToken(email, jwtProperties.getAccessTokenValidityTime());
     }
     // 리프레시 토큰 생성 (서버가 보관할 신분증을 재발급하기 위한 정보) : 유효기간이 비교적 길다.
     public String createRefreshToken(String username) {
