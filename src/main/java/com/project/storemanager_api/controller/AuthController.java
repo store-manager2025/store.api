@@ -1,15 +1,14 @@
 package com.project.storemanager_api.controller;
 
 import com.project.storemanager_api.domain.dto.request.LoginRequestDto;
+import com.project.storemanager_api.domain.dto.request.ModifyUserDto;
 import com.project.storemanager_api.domain.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -19,12 +18,12 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping
 public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpRequestDto signUpRequest) {
         log.info("request for signup: {}", signUpRequest.getName());
         userService.signUp(signUpRequest);
@@ -36,8 +35,8 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequest, HttpServletResponse response) {
+    @PostMapping("/auth/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDto loginRequest, HttpServletResponse response) {
 
         log.info("request for login: {}", loginRequest.getUsername());
         Map<String, Object> responseMap = userService.authenticate(loginRequest);
@@ -59,9 +58,30 @@ public class AuthController {
         return ResponseEntity.ok().body(responseMap);
     }
 
+    @PatchMapping("/api/user")
+    public ResponseEntity<Map<String, Object>> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto, @AuthenticationPrincipal String email) {
+
+        log.info("인증된 사용자의 email : {} ", email);
+        userService.modifyUserInfo(modifyUserDto, email);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "회원정보 수정이 완료되었습니다."
+        ));
+    }
+
+    @DeleteMapping("/api/user")
+    public ResponseEntity<Map<String, Object>> deleteUserInfo(@AuthenticationPrincipal String email) {
+        userService.deleteUser(email);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "성공적으로 탈퇴 되었습니다."
+        ));
+    }
+
+
 
     // 로그아웃 처리 API
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
 
         log.info("요청 들어옴 - {} ", response);

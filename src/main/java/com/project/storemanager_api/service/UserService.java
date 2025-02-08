@@ -1,6 +1,7 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.dto.request.LoginRequestDto;
+import com.project.storemanager_api.domain.dto.request.ModifyUserDto;
 import com.project.storemanager_api.domain.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
@@ -76,5 +77,35 @@ public class UserService {
                 "name", foundUser.getName(),
                 "accessToken", jwtTokenProvider.createAccessToken(foundUser.getEmail())
         );
+    }
+
+
+    /**
+     * 회원 정보 수정
+     * @param dto - 바뀔 정보(name, password, userId)를 담은 객체
+     */
+    public void modifyUserInfo(ModifyUserDto dto, String email) {
+        dto.setEmail(email);
+        log.info("Modify User: {}", dto);
+        if (dto.getPassword().isEmpty() && dto.getName().isEmpty()) {
+            throw new UserException(ErrorCode.EMPTY_DATA, ErrorCode.EMPTY_DATA.getMessage());
+        }
+
+        if (dto.getName().isEmpty()) { // password만 보내온 경우
+            // 비밀번호 인코딩
+            String encodedPassword = passwordEncoder.encode(dto.getPassword());
+            userRepository.updatePassword(encodedPassword, email);
+        } else {
+            userRepository.updateName(dto.getName(), email);
+        }
+    }
+
+    public void deleteUser(String email) {
+        userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new UserException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 회원입니다.")
+                );// 조회가 실패했다면 예외 발생
+        userRepository.deleteUser(email);
+
     }
 }

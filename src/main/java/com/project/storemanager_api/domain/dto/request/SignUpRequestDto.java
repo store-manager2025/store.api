@@ -15,12 +15,12 @@ public class SignUpRequestDto {
 
     private String email;
 
-//    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",
-//            message = "비밀번호는 8자 이상, 영문과 숫자 조합이어야 합니다.")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",
+            message = "비밀번호는 8자 이상, 영문과 숫자 조합이어야 합니다.")
     private String password;
 
-    @Pattern(regexp = "^[a-zA-Z0-9._가-힣]{4,20}$",
-            message = "사용자 이름은 4-20자의 영문, 한글, 숫자, 밑줄, 마침표만 사용 가능합니다.")
+    @Pattern(regexp = "^[a-zA-Z0-9._가-힣]{3,20}$",
+            message = "사용자 이름은 3-20자의 영문, 한글, 숫자, 밑줄, 마침표만 사용 가능합니다.")
     private String name;
 
 
