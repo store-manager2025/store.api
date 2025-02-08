@@ -31,12 +31,12 @@ public class SecurityConfig {
                 .sessionManagement(session ->  // 세션 인증을 비활성화
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authorizeHttpRequests(auth ->  // 인가 설정
+                .authorizeRequests(auth ->  // 인가 설정
                         auth
                                 // 허용설정 - '/auth'로 시작하는 요청은 인증을 필요로 하지 않음
-                                .requestMatchers("/auth/**").permitAll()
+                                .antMatchers("/auth/**").permitAll()
                                 // 차단설정 - '/api'로 시작하는 요청은 모두 인증을 필수로 적용
-                                .requestMatchers("/api/**").authenticated()
+                                .antMatchers("/api/**").authenticated()
                                 // 기타 등등 나머지 (jsp, css, js, image ....)는 모두 허용. RouteController
                                 .anyRequest().permitAll()
                 )
