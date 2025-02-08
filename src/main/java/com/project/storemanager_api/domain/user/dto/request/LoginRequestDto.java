@@ -1,4 +1,4 @@
-package com.project.storemanager_api.domain.dto.request;
+package com.project.storemanager_api.domain.user.dto.request;
 
 import lombok.*;
 

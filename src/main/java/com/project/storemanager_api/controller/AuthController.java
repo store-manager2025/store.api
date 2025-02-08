@@ -1,8 +1,8 @@
 package com.project.storemanager_api.controller;
 
-import com.project.storemanager_api.domain.dto.request.LoginRequestDto;
-import com.project.storemanager_api.domain.dto.request.ModifyUserDto;
-import com.project.storemanager_api.domain.dto.request.SignUpRequestDto;
+import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
+import com.project.storemanager_api.domain.user.dto.request.ModifyUserDto;
+import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
