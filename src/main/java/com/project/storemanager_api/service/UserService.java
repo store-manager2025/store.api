@@ -75,7 +75,7 @@ public class UserService {
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "name", foundUser.getName(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getEmail())
+                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), foundUser.getEmail())
         );
     }
 
@@ -84,8 +84,8 @@ public class UserService {
      * 회원 정보 수정
      * @param dto - 바뀔 정보(name, password, userId)를 담은 객체
      */
-    public void modifyUserInfo(ModifyUserDto dto, String email) {
-        dto.setEmail(email);
+    public void modifyUserInfo(ModifyUserDto dto, Long userId) {
+
         log.info("Modify User: {}", dto);
         if (dto.getPassword().isEmpty() && dto.getName().isEmpty()) {
             throw new UserException(ErrorCode.EMPTY_DATA, ErrorCode.EMPTY_DATA.getMessage());
@@ -94,18 +94,18 @@ public class UserService {
         if (dto.getName().isEmpty()) { // password만 보내온 경우
             // 비밀번호 인코딩
             String encodedPassword = passwordEncoder.encode(dto.getPassword());
-            userRepository.updatePassword(encodedPassword, email);
+            userRepository.updatePassword(encodedPassword, userId);
         } else {
-            userRepository.updateName(dto.getName(), email);
+            userRepository.updateName(dto.getName(), userId);
         }
     }
 
-    public void deleteUser(String email) {
-        userRepository.findByEmail(email)
+    public void deleteUser(Long userId) {
+        userRepository.findById(userId)
                 .orElseThrow(
                         () -> new UserException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 회원입니다.")
                 );// 조회가 실패했다면 예외 발생
-        userRepository.deleteUser(email);
+        userRepository.deleteUser(userId);
 
     }
 }
