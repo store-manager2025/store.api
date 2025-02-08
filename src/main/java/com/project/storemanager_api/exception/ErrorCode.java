@@ -34,6 +34,9 @@ public enum ErrorCode {
     // 인증 관련
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 
+    // store관련 에러
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),
+
 
     ;
 
