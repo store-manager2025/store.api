@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.storemanager_api.repository.UserRepository">
+
+    <insert id="saveUser">
+        INSERT INTO users
+        (password, email, name)
+        VALUES
+        (#{password}, #{email}, #{name})
+    </insert>
+
+    <select id="findByEmail" resultType="com.project.storemanager_api.domain.user.entity.User">
+        SELECT
+        *
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+</mapper>
