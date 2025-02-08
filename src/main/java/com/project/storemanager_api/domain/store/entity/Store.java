@@ -17,6 +17,7 @@ public class Store {
     private Long userId;
     private String storeName;
     private String storePlace;
+    private String password;
     private LocalDateTime createdAt;
 
 }

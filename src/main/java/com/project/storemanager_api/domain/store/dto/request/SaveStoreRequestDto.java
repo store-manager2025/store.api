@@ -12,6 +12,9 @@ public class SaveStoreRequestDto {
 
     @Setter
     private Long userId;
+    @Setter
+    private String password;
+
     private String storeName;
     private String storePlace;
 }
