@@ -23,7 +23,7 @@ public class StoreController {
 
     // 새 매장 생성
     @PostMapping
-    public ResponseEntity<?> createStore(@AuthenticationPrincipal Long userId, @RequestBody SaveStoreRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> createStore(@AuthenticationPrincipal Long userId, @RequestBody SaveStoreRequestDto dto) {
         log.info("인증된 사용자의 post요청  id : {} ", userId);
         log.info("Creating a new store: {}", dto);
         storeService.saveStore(dto, userId);

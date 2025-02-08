@@ -6,9 +6,9 @@
 
     <insert id="saveStore">
         INSERT INTO stores
-            (user_id, store_name, store_place)
+            (user_id, store_name, store_place, password)
         VALUES
-            (#{userId}, #{storeName}, #{storePlace})
+            (#{userId}, #{storeName}, #{storePlace}, #{password})
     </insert>
 
 </mapper>
