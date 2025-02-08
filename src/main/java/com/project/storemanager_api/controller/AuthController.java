@@ -7,6 +7,7 @@ import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -17,12 +18,12 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping
 public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpRequestDto signUpRequest) {
         log.info("request for signup: {}", signUpRequest.getName());
         userService.signUp(signUpRequest);
@@ -34,7 +35,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDto loginRequest, HttpServletResponse response) {
 
         log.info("request for login: {}", loginRequest.getUsername());
@@ -57,10 +58,12 @@ public class AuthController {
         return ResponseEntity.ok().body(responseMap);
     }
 
-    @PatchMapping
-    public ResponseEntity<?> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto) {
+    @PatchMapping("/api/user")
+    public ResponseEntity<?> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto, @AuthenticationPrincipal String email) {
+
+        log.info("인증된 사용자의 email : {} ", email);
         log.info("request for modify: {}, {}", modifyUserDto.getName(), modifyUserDto.getPassword());
-        userService.modifyUserInfo(modifyUserDto);
+        userService.modifyUserInfo(modifyUserDto, email);
 
         return ResponseEntity.ok().body(Map.of(
                 "message", "회원정보 수정이 완료되었습니다."
@@ -70,7 +73,7 @@ public class AuthController {
 
 
     // 로그아웃 처리 API
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
 
         log.info("요청 들어옴 - {} ", response);

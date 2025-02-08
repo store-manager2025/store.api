@@ -10,7 +10,8 @@ import lombok.*;
 @Builder
 public class ModifyUserDto {
 
-    private Long userId;
+    @Setter
+    private String email;
 
     private String name;
 

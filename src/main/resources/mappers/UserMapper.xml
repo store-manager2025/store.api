@@ -21,13 +21,13 @@
     <update id="updateName">
         UPDATE users
         SET name = #{name}
-        WHERE user_id = #{userId}
+        WHERE email = #{email}
     </update>
 
     <update id="updatePassword">
         UPDATE users
         SET password = #{password}
-        WHERE user_id = #{userId}
+        WHERE email = #{email}
     </update>
 
 </mapper>

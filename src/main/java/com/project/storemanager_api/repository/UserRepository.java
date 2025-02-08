@@ -16,8 +16,8 @@ public interface UserRepository {
     // 중복 체크용 조회 메서드
     Optional<User> findByEmail(String email);
 
-    void updateName(String name, Long userId);
+    void updateName(String name, String email);
 
-    void updatePassword(String password, Long userId);
+    void updatePassword(String password, String email);
 
 }
