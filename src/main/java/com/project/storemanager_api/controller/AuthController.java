@@ -61,7 +61,7 @@ public class AuthController {
     @PatchMapping("/api/user")
     public ResponseEntity<Map<String, Object>> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto, @AuthenticationPrincipal Long userId) {
 
-        log.info("인증된 사용자의 id : {} ", userId);
+        log.info("인증된 사용자의 patch요청 id : {} ", userId);
         userService.modifyUserInfo(modifyUserDto, userId);
 
         return ResponseEntity.ok().body(Map.of(
@@ -71,6 +71,7 @@ public class AuthController {
 
     @DeleteMapping("/api/user")
     public ResponseEntity<Map<String, Object>> deleteUserInfo(@AuthenticationPrincipal Long userId) {
+        log.info("인증된 사용자의 delete요청  id : {} ", userId);
         userService.deleteUser(userId);
 
         return ResponseEntity.ok().body(Map.of(
