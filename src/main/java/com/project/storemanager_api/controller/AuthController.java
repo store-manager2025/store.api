@@ -60,6 +60,26 @@ public class AuthController {
     }
 
 
+    // 로그아웃 처리 API
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+
+        log.info("요청 들어옴 - {} ", response);
+        // 쿠키 무효화
+        Cookie cookie = new Cookie("accessToken", null);
+        // 쿠키 생성과 반대로
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        // 쿠키를 클라이언트에 전송
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "로그아웃이 처리되었습니다."
+        ));
+    }
+
 
 
 }
