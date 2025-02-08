@@ -1,6 +1,7 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.dto.request.LoginRequestDto;
+import com.project.storemanager_api.domain.dto.request.ModifyUserDto;
 import com.project.storemanager_api.domain.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
@@ -76,5 +77,29 @@ public class UserService {
                 "name", foundUser.getName(),
                 "accessToken", jwtTokenProvider.createAccessToken(foundUser.getEmail())
         );
+    }
+
+
+    /**
+     * 회원 정보 수정
+     * @param dto - 바뀔 정보(name, password, userId)를 담은 객체
+     */
+    public void modifyUserInfo(ModifyUserDto dto) {
+        log.info("Modify User: {}", dto);
+        if (dto.getPassword().isEmpty() && dto.getName().isEmpty()) {
+            log.info(" 둘다 null임! ");
+            throw new UserException(ErrorCode.EMPTY_DATA, ErrorCode.EMPTY_DATA.getMessage());
+        }
+        if (dto.getUserId() == null) {
+            throw new UserException(ErrorCode.EMPTY_ID, ErrorCode.EMPTY_ID.getMessage());
+        }
+
+        if (dto.getName() == null) { // password만 보내온 경우
+            // 비밀번호 인코딩
+            String encodedPassword = passwordEncoder.encode(dto.getPassword());
+            userRepository.updatePassword(encodedPassword, dto.getUserId());
+        } else {
+            userRepository.updateName(dto.getName(), dto.getUserId());
+        }
     }
 }

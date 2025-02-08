@@ -1,15 +1,13 @@
 package com.project.storemanager_api.controller;
 
 import com.project.storemanager_api.domain.dto.request.LoginRequestDto;
+import com.project.storemanager_api.domain.dto.request.ModifyUserDto;
 import com.project.storemanager_api.domain.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +35,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDto loginRequest, HttpServletResponse response) {
 
         log.info("request for login: {}", loginRequest.getUsername());
         Map<String, Object> responseMap = userService.authenticate(loginRequest);
@@ -58,6 +56,17 @@ public class AuthController {
 
         return ResponseEntity.ok().body(responseMap);
     }
+
+    @PatchMapping
+    public ResponseEntity<?> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto) {
+        log.info("request for modify: {}, {}", modifyUserDto.getName(), modifyUserDto.getPassword());
+        userService.modifyUserInfo(modifyUserDto);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "회원정보 수정이 완료되었습니다."
+        ));
+    }
+
 
 
     // 로그아웃 처리 API
