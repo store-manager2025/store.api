@@ -59,14 +59,22 @@ public class AuthController {
     }
 
     @PatchMapping("/api/user")
-    public ResponseEntity<?> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto, @AuthenticationPrincipal String email) {
+    public ResponseEntity<Map<String, Object>> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto, @AuthenticationPrincipal String email) {
 
         log.info("인증된 사용자의 email : {} ", email);
-        log.info("request for modify: {}, {}", modifyUserDto.getName(), modifyUserDto.getPassword());
         userService.modifyUserInfo(modifyUserDto, email);
 
         return ResponseEntity.ok().body(Map.of(
                 "message", "회원정보 수정이 완료되었습니다."
+        ));
+    }
+
+    @DeleteMapping("/api/user")
+    public ResponseEntity<Map<String, Object>> deleteUserInfo(@AuthenticationPrincipal String email) {
+        userService.deleteUser(email);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "성공적으로 탈퇴 되었습니다."
         ));
     }
 

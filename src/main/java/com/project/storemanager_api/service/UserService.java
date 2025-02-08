@@ -99,4 +99,13 @@ public class UserService {
             userRepository.updateName(dto.getName(), email);
         }
     }
+
+    public void deleteUser(String email) {
+        userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new UserException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 회원입니다.")
+                );// 조회가 실패했다면 예외 발생
+        userRepository.deleteUser(email);
+
+    }
 }

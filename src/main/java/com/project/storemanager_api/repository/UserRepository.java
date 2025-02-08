@@ -20,4 +20,6 @@ public interface UserRepository {
 
     void updatePassword(String password, String email);
 
+    void deleteUser(String email);
+
 }
