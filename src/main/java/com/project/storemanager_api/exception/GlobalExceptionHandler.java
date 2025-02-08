@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     // store관련
     @ExceptionHandler(StoreException.class)
     public ResponseEntity<ErrorResponse> handleStoreException(
-            UserException e, HttpServletRequest request) {
+            StoreException e, HttpServletRequest request) {
 
         log.error("StoreException occurred: {}", e.getMessage(), e);
 
@@ -68,6 +68,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
 
+        log.info("ErrorResponse response = {}", response);
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
                 .body(response);

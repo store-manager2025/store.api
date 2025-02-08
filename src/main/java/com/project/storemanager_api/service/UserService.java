@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -107,5 +108,13 @@ public class UserService {
                 );// 조회가 실패했다면 예외 발생
         userRepository.deleteUser(userId);
 
+    }
+
+    public boolean findById(Long userId) {
+        Optional<User> foundUser = userRepository.findById(userId);
+        if (!foundUser.isPresent()) {
+            throw new UserException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage());
+        }
+        return true;
     }
 }

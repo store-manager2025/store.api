@@ -4,4 +4,11 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.StoreRepository">
 
+    <insert id="saveStore">
+        INSERT INTO stores
+            (user_id, store_name, store_place)
+        VALUES
+            (#{userId}, #{storeName}, #{storePlace})
+    </insert>
+
 </mapper>
