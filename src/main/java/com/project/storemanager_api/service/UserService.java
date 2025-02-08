@@ -2,6 +2,8 @@ package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.domain.user.entity.User;
+import com.project.storemanager_api.exception.ErrorCode;
+import com.project.storemanager_api.exception.UserException;
 import com.project.storemanager_api.jwt.JwtTokenProvider;
 import com.project.storemanager_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,10 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public void signUp(SignUpRequestDto signUpRequest) {
+
+
+        userRepository.findByEmail(signUpRequest.getEmail())
+                .ifPresent(m -> {throw new UserException(ErrorCode.DUPLICATE_EMAIL, ErrorCode.DUPLICATE_EMAIL.getMessage());});
 
         // 순수 비밀번호
         String rawPassword = signUpRequest.getPassword();
