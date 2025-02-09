@@ -1,7 +1,7 @@
 package com.project.storemanager_api.controller;
 
 import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
-import com.project.storemanager_api.domain.user.dto.request.ModifyUserDto;
+import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -59,10 +59,10 @@ public class AuthController {
     }
 
     @PatchMapping("/api/user")
-    public ResponseEntity<Map<String, Object>> patchUserInfo(@RequestBody ModifyUserDto modifyUserDto, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<Map<String, Object>> patchUserInfo(@RequestBody ModifyUserRequestDto modifyUserRequestDto, @AuthenticationPrincipal Long userId) {
 
         log.info("인증된 사용자의 patch요청 id : {} ", userId);
-        userService.modifyUserInfo(modifyUserDto, userId);
+        userService.modifyUserInfo(modifyUserRequestDto, userId);
 
         return ResponseEntity.ok().body(Map.of(
                 "message", "회원정보 수정이 완료되었습니다."

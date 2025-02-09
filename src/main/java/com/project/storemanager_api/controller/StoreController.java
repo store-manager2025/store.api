@@ -1,5 +1,6 @@
 package com.project.storemanager_api.controller;
 
+import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
@@ -43,10 +44,22 @@ public class StoreController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginInStore(@RequestBody StoreLoginRequestDto dto) {
+    public ResponseEntity<StoreDetailResponseDto> loginInStore(@RequestBody StoreLoginRequestDto dto) {
         log.info("StoreLoginRequestDto : {}", dto.toString());
         StoreDetailResponseDto storeDetailResponseDto = storeService.loginInStore(dto);
         return ResponseEntity.ok().body(storeDetailResponseDto);
+    }
+
+    /**
+     * 매장 정보 수정 API
+     * @param dto - storePlace, storeName, password를 수정할 수 있는 DTO
+     * @return updatedStoreDto - 수정된 store 객체
+     */
+    @PatchMapping
+    public ResponseEntity<StoreDetailResponseDto> modifyStore(@RequestBody ModifyStoreRequestDto dto) {
+        log.info("ModifyStoreRequestDto : {}", dto.toString());
+        StoreDetailResponseDto updatedStoreDto = storeService.modifyStoreInfo(dto);
+        return ResponseEntity.ok().body(updatedStoreDto);
     }
 
 }

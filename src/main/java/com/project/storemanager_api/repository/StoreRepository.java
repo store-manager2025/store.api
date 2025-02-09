@@ -1,5 +1,6 @@
 package com.project.storemanager_api.repository;
 
+import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
@@ -24,5 +25,7 @@ public interface StoreRepository {
 
     // 매장 단일 상세 조회
     StoreDetailResponseDto findStoreDetailByStoreId(Long storeId);
+
+    void updateStore(ModifyStoreRequestDto dto);
 
 }

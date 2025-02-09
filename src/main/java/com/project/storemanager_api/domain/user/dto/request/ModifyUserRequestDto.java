@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ModifyUserDto {
+public class ModifyUserRequestDto {
 
     private String name;
 
