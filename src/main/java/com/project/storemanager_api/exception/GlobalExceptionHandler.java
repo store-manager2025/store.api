@@ -68,7 +68,46 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
 
-        log.info("ErrorResponse response = {}", response);
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(response);
+    }
+
+    // menu관련
+    @ExceptionHandler(MenuException.class)
+    public ResponseEntity<ErrorResponse> handleMenuException(
+            MenuException e, HttpServletRequest request) {
+
+        log.error("MenuException occurred: {}", e.getMessage(), e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(e.getErrorCode().getStatus().value())
+                .error(e.getErrorCode().name())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(response);
+    }
+
+    // menu관련
+    @ExceptionHandler(UiException.class)
+    public ResponseEntity<ErrorResponse> handleUiException(
+            UiException e, HttpServletRequest request) {
+
+        log.error("UiException occurred: {}", e.getMessage(), e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(e.getErrorCode().getStatus().value())
+                .error(e.getErrorCode().name())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
                 .body(response);
