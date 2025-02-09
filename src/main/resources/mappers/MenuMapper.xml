@@ -4,4 +4,11 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.MenuRepository">
 
+    <insert id="saveMenu">
+        INSERT INTO menus
+            (store_id, ui_id, menu_name, price)
+        VALUES
+            (#{storeId}, #{uiId}, #{menuName}, #{price})
+    </insert>
+
 </mapper>

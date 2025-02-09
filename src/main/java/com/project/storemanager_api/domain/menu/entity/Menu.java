@@ -19,7 +19,6 @@ public class Menu {
     private String menuName;
     private int discountRate; // 할인률
     private int price;
-    private int stockQuantity; // 재고 수량
     private LocalDateTime createdAt;
 
 }
