@@ -1,4 +1,4 @@
-package com.project.storemanager_api.domain.user.dto.request;
+package com.project.storemanager_api.domain.store.dto.request;
 
 import lombok.*;
 
@@ -8,10 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ModifyUserDto {
+public class DeleteStoreRequestDto {
 
-    private String name;
-
+    private Long storeId;
     private String password;
 
 }

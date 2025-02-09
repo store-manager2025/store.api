@@ -33,8 +33,9 @@ public enum ErrorCode {
     // 인증 관련
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 
-    // 입력값 누락
+    // 입력값 검증
     EMPTY_DATA(HttpStatus.BAD_REQUEST, "이름, 비밀번호 중 한개의 값이라도 존재해야 합니다."),
+    SAME_DATA(HttpStatus.BAD_REQUEST, "이전과 동일한 입력값입니다."),
 
     // store관련 에러
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),

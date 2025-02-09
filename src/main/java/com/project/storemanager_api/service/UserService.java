@@ -1,7 +1,7 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
-import com.project.storemanager_api.domain.user.dto.request.ModifyUserDto;
+import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
@@ -85,7 +85,7 @@ public class UserService {
      * 회원 정보 수정
      * @param dto - 바뀔 정보(name, password, userId)를 담은 객체
      */
-    public void modifyUserInfo(ModifyUserDto dto, Long userId) {
+    public void modifyUserInfo(ModifyUserRequestDto dto, Long userId) {
 
         log.info("Modify User: {}", dto);
         if (dto.getPassword().isEmpty() && dto.getName().isEmpty()) {
