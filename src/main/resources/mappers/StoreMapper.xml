@@ -11,4 +11,16 @@
             (#{userId}, #{storeName}, #{storePlace}, #{password})
     </insert>
 
+
+    <select id="findStoreList" resultType="com.project.storemanager_api.domain.store.dto.response.StoreResponseDto">
+        SELECT
+            S.store_id,
+            S.store_name,
+            S.store_place,
+            S.password,
+            S.created_at
+        FROM stores S
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
