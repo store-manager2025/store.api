@@ -4,7 +4,6 @@ import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
-import com.project.storemanager_api.domain.ui.response.UiResponseDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.MenuException;
 import com.project.storemanager_api.exception.StoreException;
@@ -29,13 +28,9 @@ public class MenuService {
     public MenuResponseDto saveMenu(SaveMenuRequestDto dto) {
 
         StoreDetailResponseDto exist = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
-        if (exist == null) {
-            throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장 정보를 찾을 수 없습니다.");
-        }
 
-        if (dto.getMenuName().isEmpty() || dto.getPrice() == null) {
-            throw new MenuException(ErrorCode.EMPTY_DATA, "값을 모두 입력해주세요.");
-        }
+        // 입력값 검증
+        extracted(dto, exist);
 
         // storeId가 있어야 ui에 insert를 하고 생성된 uiId를 받을 수 있다.
         UiLayout newUi = UiLayout.builder()
@@ -43,27 +38,32 @@ public class MenuService {
                 .colorCode("#FAFAFA") // 기본값
                 .build();
 
+        // 1. ui 객체를 저장 후 생성된 id를 받아온다
         uiRepository.saveUi(newUi);
         Long generatedUiId = newUi.getUiId();
         log.info("방금 save된 ui id - {} ", generatedUiId);
+
+        // 2. 받아온 id를 dto에 저장
         dto.setUiId(generatedUiId);
         menuRepository.saveMenu(dto);
+
+        // 3. menu 객체를 저장 후 생성된 id를 받아온다
         Long generatedMenuId = dto.getMenuId();
         log.info("방금 save된 menu_id = {}", generatedMenuId);
 
-        return MenuResponseDto.builder()
-                .menuId(generatedMenuId)
-                .storeId(dto.getStoreId())
-                .menuName(dto.getMenuName())
-                .price(dto.getPrice())
-                .discountRate(0)
-                .menuStyle(UiResponseDto.builder()
-                        .uiId(generatedUiId)
-                        .colorCode(newUi.getColorCode())
-                        .positionX(0)
-                        .positionY(0)
-                        .build())
-                .build();
+        return MenuResponseDto.toResponseDto(generatedMenuId, generatedUiId, dto, newUi);
+
+    }
+
+
+    private void extracted(SaveMenuRequestDto dto, StoreDetailResponseDto exist) {
+        if (exist == null) {
+            throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장 정보를 찾을 수 없습니다.");
+        }
+
+        if (dto.getMenuName().isEmpty() || dto.getPrice() == null) {
+            throw new MenuException(ErrorCode.EMPTY_DATA, "값을 모두 입력해주세요.");
+        }
     }
 
 
