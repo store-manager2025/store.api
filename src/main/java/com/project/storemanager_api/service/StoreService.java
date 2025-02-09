@@ -1,5 +1,6 @@
 package com.project.storemanager_api.service;
 
+import com.project.storemanager_api.domain.store.dto.request.DeleteStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
@@ -129,11 +130,18 @@ public class StoreService {
     }
 
 
-    public void deleteStore(Long storeId) {
-        StoreDetailResponseDto currentStore = storeRepository.findStoreDetailByStoreId(storeId);
-        if (currentStore == null) {
-            throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다.");
+    public void deleteStore(DeleteStoreRequestDto dto) {
+
+        // 매장이 존재하면
+        String originPassword = storeRepository.findPasswordById(dto.getStoreId())
+                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage()));
+
+        // 만약 비밀번호가 일치하지 않다면
+        if (!passwordEncoder.matches(dto.getPassword(), originPassword)) {
+            throw new StoreException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASSWORD.getMessage());
         }
-        storeRepository.deleteStore(storeId);
+
+        storeRepository.deleteStore(dto.getStoreId());
+
     }
 }

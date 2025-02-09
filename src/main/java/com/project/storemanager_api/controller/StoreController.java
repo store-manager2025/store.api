@@ -1,5 +1,6 @@
 package com.project.storemanager_api.controller;
 
+import com.project.storemanager_api.domain.store.dto.request.DeleteStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
@@ -62,10 +63,11 @@ public class StoreController {
         return ResponseEntity.ok().body(updatedStoreDto);
     }
 
-    @DeleteMapping("/{storeId}")
-    public ResponseEntity<?> deleteStore(@PathVariable Long storeId) {
-        log.info("delete storeId : {}", storeId);
-        storeService.deleteStore(storeId);
+    // 매장 삭제 API
+    @DeleteMapping
+    public ResponseEntity<?> deleteStore(@RequestBody DeleteStoreRequestDto dto) {
+        log.info("DeleteStoreRequestDto : {}", dto);
+        storeService.deleteStore(dto);
         return ResponseEntity.ok().body(Map.of(
                 "message", "매장이 성공적으로 삭제 되었습니다."
         ));
