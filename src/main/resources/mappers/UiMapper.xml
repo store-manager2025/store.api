@@ -14,5 +14,21 @@
         (#{storeId})
     </insert>
 
+    <select id="findById" resultType="com.project.storemanager_api.domain.ui.entity.UiLayout">
+        SELECT
+            *
+        FROM ui_layout
+        WHERE ui_id = #{uiId}
+    </select>
+
+    <update id="updateUi">
+        UPDATE ui_layout
+        SET
+            color_code = #{colorCode},
+            size_type = #{sizeType},
+            position_x = #{positionX},
+            position_y = #{positionY}
+        WHERE ui_id = #{uiId}
+    </update>
 
 </mapper>

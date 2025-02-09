@@ -2,7 +2,7 @@ package com.project.storemanager_api.domain.menu.dto.response;
 
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
-import com.project.storemanager_api.domain.ui.response.UiResponseDto;
+import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import lombok.*;
 
 @Getter
