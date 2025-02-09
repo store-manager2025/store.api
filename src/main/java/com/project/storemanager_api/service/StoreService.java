@@ -86,6 +86,12 @@ public class StoreService {
         if (currentStore == null) {
             throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다.");
         }
+        if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty() &&
+            dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty() &&
+            dto.getPassword() == null || dto.getPassword().trim().isEmpty()
+        ) {
+            throw new StoreException(ErrorCode.EMPTY_DATA, "매장 이름, 매장 위치, 비밀번호 중 한 값이라도 포함해야 합니다.");
+        }
 
         // 2. storeName 업데이트 처리
         if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty()) {
