@@ -62,4 +62,13 @@ public class StoreController {
         return ResponseEntity.ok().body(updatedStoreDto);
     }
 
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity<?> deleteStore(@PathVariable Long storeId) {
+        log.info("delete storeId : {}", storeId);
+        storeService.deleteStore(storeId);
+        return ResponseEntity.ok().body(Map.of(
+                "message", "매장이 성공적으로 삭제 되었습니다."
+        ));
+    }
+
 }

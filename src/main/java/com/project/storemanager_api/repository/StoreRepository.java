@@ -28,4 +28,6 @@ public interface StoreRepository {
 
     void updateStore(ModifyStoreRequestDto dto);
 
+    void deleteStore(Long storeId);
+
 }

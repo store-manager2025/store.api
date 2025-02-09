@@ -129,5 +129,11 @@ public class StoreService {
     }
 
 
-
+    public void deleteStore(Long storeId) {
+        StoreDetailResponseDto currentStore = storeRepository.findStoreDetailByStoreId(storeId);
+        if (currentStore == null) {
+            throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다.");
+        }
+        storeRepository.deleteStore(storeId);
+    }
 }
