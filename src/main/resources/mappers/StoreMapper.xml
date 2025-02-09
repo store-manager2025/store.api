@@ -23,4 +23,21 @@
         WHERE user_id = #{userId}
     </select>
 
+    <select id="findPasswordById" resultType="java.lang.String">
+        SELECT
+            password
+        FROM stores
+        WHERE store_id = #{storeId}
+    </select>
+
+    <select id="findStoreDetailByStoreId" resultType="com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto">
+        SELECT
+            S.store_id,
+            S.store_name,
+            S.store_place,
+            S.created_at
+        FROM stores S
+        WHERE store_id = #{storeId}
+    </select>
+
 </mapper>

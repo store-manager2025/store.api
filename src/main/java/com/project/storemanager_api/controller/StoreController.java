@@ -1,6 +1,8 @@
 package com.project.storemanager_api.controller;
 
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
+import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
+import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import com.project.storemanager_api.service.StoreService;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +38,15 @@ public class StoreController {
      */
     @GetMapping
     public ResponseEntity<List<StoreResponseDto>> getStores(@AuthenticationPrincipal Long userId) {
-        log.info("인증된 사용자의 Get요청  id : {} ", userId);
         List<StoreResponseDto> storeList = storeService.getStoreList(userId);
         return ResponseEntity.ok().body(storeList);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginInStore(@RequestBody StoreLoginRequestDto dto) {
+        log.info("StoreLoginRequestDto : {}", dto.toString());
+        StoreDetailResponseDto storeDetailResponseDto = storeService.loginInStore(dto);
+        return ResponseEntity.ok().body(storeDetailResponseDto);
     }
 
 }
