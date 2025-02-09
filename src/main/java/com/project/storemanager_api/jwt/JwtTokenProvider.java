@@ -34,18 +34,18 @@ public class JwtTokenProvider {
 
     // 토큰 발급 로직
     // 엑세스 토큰 생성 (사용자가 들고다닐 신분증) : 유효기간이 짧다.
-    public String createAccessToken(String email) {
-        return createToken(email, jwtProperties.getAccessTokenValidityTime());
+    public String createAccessToken(Long userId, String email) {
+        return createToken(userId, jwtProperties.getAccessTokenValidityTime());
     }
     // 리프레시 토큰 생성 (서버가 보관할 신분증을 재발급하기 위한 정보) : 유효기간이 비교적 길다.
-    public String createRefreshToken(String username) {
+    public String createRefreshToken(Long userId, String email) {
 
-        return createToken(username, jwtProperties.getRefreshTokenValidityTime());
+        return createToken(userId, jwtProperties.getRefreshTokenValidityTime());
     }
 
     // 공통 토큰 생성 로직
     // 엑세스,리프레시 생성 로직은 똑같고, 시간만 다르다
-    private String createToken(String email, long validityTime) {
+    private String createToken(Long userId, long validityTime) {
 
         // 현재 시간
         Date now = new Date();
@@ -57,7 +57,7 @@ public class JwtTokenProvider {
                 .setIssuer("store") // 발급자 정보
                 .setIssuedAt(now) // 발급 시간
                 .setExpiration(validity) // 만료 시간
-                .setSubject(email) // 토큰 식별자 (유일한 값)
+                .setSubject(String.valueOf(userId)) // 토큰 식별자 (유일한 값)
                 .signWith(key) // 서명 포함
                 .compact();
     }
@@ -85,6 +85,15 @@ public class JwtTokenProvider {
      */
     public String getCurrentLoginUsername(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    /**
+     * 검증된 토큰에서 사용자 id를 추출하는 메서드
+     * @param token - 인증 토큰
+     * @return 토큰에서 추출한 사용자 id
+     */
+    public Long getCurrentLoginUserId(String token) {
+        return Long.valueOf(parseClaims(token).getSubject());
     }
 
     /**

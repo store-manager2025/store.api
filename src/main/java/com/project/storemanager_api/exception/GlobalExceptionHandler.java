@@ -53,5 +53,26 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    // store관련
+    @ExceptionHandler(StoreException.class)
+    public ResponseEntity<ErrorResponse> handleStoreException(
+            StoreException e, HttpServletRequest request) {
+
+        log.error("StoreException occurred: {}", e.getMessage(), e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(e.getErrorCode().getStatus().value())
+                .error(e.getErrorCode().name())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        log.info("ErrorResponse response = {}", response);
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(response);
+    }
+
 }
 
