@@ -9,6 +9,7 @@ import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.repository.StoreRepository;
+import com.project.storemanager_api.validator.StoreValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,123 +26,86 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final StoreValidator storeValidator;
 
     /**
      * 매장 생성
-     * @param dto -  storeName, storePlace, password가 들어있는 객체
-     * @param userId - Jwt에서 파싱한 userId
-     * 입력값 검증 후 이상없으면 password인코딩 후 db 저장
+     * 입력값 검증 후, 비밀번호 인코딩 및 DB 저장
      */
     public void saveStore(SaveStoreRequestDto dto, Long userId) {
-        log.info("매장 생성 요청 : {}", userId);
-        if (dto.getStoreName().isEmpty() || dto.getStorePlace().isEmpty() || dto.getPassword().isEmpty()) {
-            log.info("입력값 비어있음!");
-            throw new StoreException(ErrorCode.EMPTY_DATA, "가게 이름, 가게 장소는 필수 입력값입니다.");
-        }
-
-        if (dto.getPassword().length() != 4) {
-            throw new StoreException(ErrorCode.NOT_VALID_PASSWORD, ErrorCode.NOT_VALID_PASSWORD.getMessage());
-        }
-
+        log.info("매장 생성 요청 : userId={}", userId);
+        // 입력값 검증
+        storeValidator.validateSaveStoreInput(dto);
+        // 비밀번호 인코딩
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         dto.setPassword(encodedPassword);
-
+        // JWT 등에서 추출한 userId 설정
         dto.setUserId(userId);
+        // 매장 생성
         storeRepository.saveStore(dto);
     }
 
-    // 한 유저가 생성한 매장목록 전체 조회
+    /**
+     * 한 유저가 생성한 매장 목록 조회
+     */
     @Transactional(readOnly = true)
     public List<StoreResponseDto> getStoreList(Long userId) {
-        log.info("매장 조회 요청 : {}", userId);
+        log.info("매장 목록 조회 요청 : userId={}", userId);
         return storeRepository.findStoreList(userId);
     }
 
     /**
-     * 매장 정보 상세 조회
-     * @param dto - password, storeId가 들어있는 객체
-     * @return - 상세 정보가 들어있는 StoredetailResponseDto
+     * 매장 로그인
+     * 입력된 비밀번호와 DB에 저장된 인코딩된 비밀번호를 비교하여 매장 상세 정보 반환
      */
     @Transactional(readOnly = true)
     public StoreDetailResponseDto loginInStore(StoreLoginRequestDto dto) {
-
-        // 1. dto의 store_id로 매장 정보 조회
+        // 로그인 입력 검증
+        storeValidator.validateStoreLoginInput(dto);
+        // DB에서 인코딩된 비밀번호 조회 (없으면 예외 발생)
         String originPassword = storeRepository.findPasswordById(dto.getStoreId())
-                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage()));
-        log.info("originPassword : {}", originPassword);
-
-        // 2. 비밀번호 대조 검사
-        if (!passwordEncoder.matches(dto.getPassword(), originPassword)) {
-            throw new StoreException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASSWORD.getMessage());
-        }
-
-        // 3. 일치 하면 정보 넘겨줌
+                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다."));
+        log.info("originPassword: {}", originPassword);
+        // 비밀번호 비교 검증
+        storeValidator.validatePassword(dto.getPassword(), originPassword);
+        // 비밀번호 일치 시, 매장 상세 정보 반환
         return storeRepository.findStoreDetailByStoreId(dto.getStoreId());
     }
 
-
+    /**
+     * 매장 정보 수정
+     * 입력된 값이 비어있는 경우, 기존 값을 그대로 사용하고 비밀번호는 인코딩 후 업데이트 처리
+     */
     public StoreDetailResponseDto modifyStoreInfo(ModifyStoreRequestDto dto) {
-        // 1. 기존 매장 상세 조회 (없으면 예외 발생)
+        // 기존 매장 상세 정보 조회
         StoreDetailResponseDto currentStore = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
         if (currentStore == null) {
             throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다.");
         }
-        if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty() &&
-            dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty() &&
-            dto.getPassword() == null || dto.getPassword().trim().isEmpty()
-        ) {
-            throw new StoreException(ErrorCode.EMPTY_DATA, "매장 이름, 매장 위치, 비밀번호 중 한 값이라도 포함해야 합니다.");
-        }
-
-        // 2. storeName 업데이트 처리
-        if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty()) {
-            // 클라이언트가 비어있는 값을 보냈으면 기존 값을 그대로 사용
-            dto.setStoreName(currentStore.getStoreName());
-        }
-        // 3. storePlace 업데이트 처리
-        if (dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty()) {
-            dto.setStorePlace(currentStore.getStorePlace());
-        }
-        // 4. password 업데이트 처리
-        // 먼저 DB에서 현재 인코딩된 비밀번호를 조회 (매장 상세 조회 결과에 password가 없을 경우 사용)
+        // DB에서 현재 인코딩된 비밀번호 조회
         String currentEncodedPassword = storeRepository.findPasswordById(dto.getStoreId())
                 .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, "매장 비밀번호를 찾을 수 없습니다."));
-
-        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
-            // 클라이언트가 비어있는 값을 보냈으면 기존 인코딩된 비밀번호를 그대로 사용
-            dto.setPassword(currentEncodedPassword);
-        } else {
-            // 새 비밀번호가 들어왔을 경우
-            if (passwordEncoder.matches(dto.getPassword(), currentEncodedPassword)) {
-                // 동일하면 기존 인코딩된 비밀번호를 그대로 사용
-                dto.setPassword(currentEncodedPassword);
-            } else {
-                // 새 비밀번호가 다르면 인코딩 후 설정
-                dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-            }
-        }
-
-        // 5. 업데이트 실행
+        // 수정 입력값 준비 (비어있으면 기존 값 적용, 비밀번호는 인코딩 처리)
+        storeValidator.prepareModifyStoreInput(dto, currentStore, currentEncodedPassword);
+        // 업데이트 실행
         storeRepository.updateStore(dto);
-
-        // 6. 변경 후 최신 매장 상세 정보 반환
+        // 업데이트 후 최신 매장 상세 정보 반환
         return storeRepository.findStoreDetailByStoreId(dto.getStoreId());
     }
 
-
+    /**
+     * 매장 삭제
+     * 입력된 비밀번호와 DB에 저장된 비밀번호가 일치하는지 확인 후 삭제
+     */
     public void deleteStore(DeleteStoreRequestDto dto) {
-
-        // 매장이 존재하면
+        // DB에서 인코딩된 비밀번호 조회 (없으면 예외 발생)
         String originPassword = storeRepository.findPasswordById(dto.getStoreId())
-                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage()));
-
-        // 만약 비밀번호가 일치하지 않다면
+                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다."));
+        // 비밀번호 비교
         if (!passwordEncoder.matches(dto.getPassword(), originPassword)) {
             throw new StoreException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASSWORD.getMessage());
         }
-
+        // 삭제 실행
         storeRepository.deleteStore(dto.getStoreId());
-
     }
 }
