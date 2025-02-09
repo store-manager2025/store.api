@@ -1,8 +1,10 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
+import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
+import com.project.storemanager_api.domain.ui.response.UiResponseDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.MenuException;
 import com.project.storemanager_api.exception.StoreException;
@@ -24,7 +26,7 @@ public class MenuService {
     private final StoreRepository storeRepository;
     private final UiRepository uiRepository;
 
-    public void saveMenu(SaveMenuRequestDto dto) {
+    public MenuResponseDto saveMenu(SaveMenuRequestDto dto) {
 
         StoreDetailResponseDto exist = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
         if (exist == null) {
@@ -38,6 +40,7 @@ public class MenuService {
         // storeId가 있어야 ui에 insert를 하고 생성된 uiId를 받을 수 있다.
         UiLayout newUi = UiLayout.builder()
                 .storeId(dto.getStoreId())
+                .colorCode("#FAFAFA") // 기본값
                 .build();
 
         uiRepository.saveUi(newUi);
@@ -45,6 +48,23 @@ public class MenuService {
         log.info("방금 save된 ui id - {} ", generatedUiId);
         dto.setUiId(generatedUiId);
         menuRepository.saveMenu(dto);
+        Long generatedMenuId = dto.getMenuId();
+        log.info("방금 save된 menu_id = {}", generatedMenuId);
 
+        return MenuResponseDto.builder()
+                .menuId(generatedMenuId)
+                .storeId(dto.getStoreId())
+                .menuName(dto.getMenuName())
+                .price(dto.getPrice())
+                .discountRate(0)
+                .menuStyle(UiResponseDto.builder()
+                        .uiId(generatedUiId)
+                        .colorCode(newUi.getColorCode())
+                        .positionX(0)
+                        .positionY(0)
+                        .build())
+                .build();
     }
+
+
 }

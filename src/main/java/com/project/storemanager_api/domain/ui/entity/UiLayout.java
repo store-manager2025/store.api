@@ -15,8 +15,8 @@ public class UiLayout {
 
     private Long uiId;
     private Long storeId;
-    private int positionX;
-    private int positionY;
+    private Integer positionX;
+    private Integer positionY;
     private String colorCode;
     private String sizeType;
     private LocalDateTime createdAt;

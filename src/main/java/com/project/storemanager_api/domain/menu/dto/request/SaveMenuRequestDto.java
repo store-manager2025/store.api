@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 public class SaveMenuRequestDto {
 
+    private Long menuId;
     private Long storeId;
 
     @Setter
