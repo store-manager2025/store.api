@@ -16,6 +16,7 @@ public class Menu {
     private Long menuId;
     private Long storeId;
     private Long uiId;
+    private Long categoryId;
     private String menuName;
     private int discountRate; // 할인률
     private int price;

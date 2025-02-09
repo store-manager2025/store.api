@@ -7,10 +7,9 @@ import com.project.storemanager_api.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -25,6 +24,12 @@ public class MenuController {
         log.info("Creating menu dto: {}", dto);
         MenuResponseDto menuResponseDto = menuService.saveMenu(dto);
         return ResponseEntity.ok().body(menuResponseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MenuResponseDto>> getAllMenus(@RequestParam Long storeId) {
+        log.info("Getting all menus for {}", storeId);
+        return null;
     }
 
 
