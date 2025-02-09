@@ -4,4 +4,15 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.UiRepository">
 
+    <insert id="saveUi"
+            parameterType="com.project.storemanager_api.domain.ui.entity.UiLayout"
+            keyProperty="uiId"
+            useGeneratedKeys="true">
+        INSERT INTO ui_layout
+        (store_id)
+        VALUES
+        (#{storeId})
+    </insert>
+
+
 </mapper>
