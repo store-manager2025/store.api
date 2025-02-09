@@ -38,8 +38,8 @@ public enum ErrorCode {
 
     // store관련 에러
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),
-    PASSWORD_TOO_SHORT(HttpStatus.BAD_REQUEST, "비밀번호는 4자리의 숫자여야 합니다.")
-
+    NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 4자리의 숫자여야 합니다."),
+    NOT_CORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다.")
 
     ;
 
