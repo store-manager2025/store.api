@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.storemanager_api.repository.CategoryRepository">
+
+    <insert id="saveCategory"
+            parameterType="com.project.storemanager_api.domain.category.dto.request.SaveCategoryDto"
+            useGeneratedKeys="true"
+            keyProperty="categoryId">
+        INSERT INTO categories
+            (store_id, ui_id, category_name)
+        VALUES
+            (#{storeId}, #{uiId}, #{categoryName})
+    </insert>
+
+    <select id="findListByStoreId" resultType="com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto">
+        SELECT
+            category_id,
+            store_id,
+            category_name,
+            ui_id
+        FROM categories
+        WHERE store_id = #{storeId}
+    </select>
+
+    <select id="findById" resultType="com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto">
+        SELECT
+            category_id,
+            store_id,
+            category_name,
+            ui_id
+        FROM categories
+        WHERE category_id = #{categoryId}
+    </select>
+
+</mapper>
