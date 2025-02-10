@@ -24,4 +24,14 @@
         WHERE store_id = #{storeId}
     </select>
 
+    <select id="findById" resultType="com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto">
+        SELECT
+            category_id,
+            store_id,
+            category_name,
+            ui_id
+        FROM categories
+        WHERE category_id = #{categoryId}
+    </select>
+
 </mapper>

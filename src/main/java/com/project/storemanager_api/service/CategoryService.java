@@ -59,6 +59,7 @@ public class CategoryService {
     }
 
 
+    @Transactional
     public List<CategoryResponseDto> getAllCategories(Long storeId) {
         // storeId가 유효한지 검사
         extracted(storeId);
@@ -77,6 +78,20 @@ public class CategoryService {
         return  categoryResponseDtos;
     }
 
+    // 카테고리 단일조회
+    @Transactional
+    public CategoryResponseDto getCategory(Long categoryId) {
+        CategoryResponseDto foundCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryException(ErrorCode.INVALID_ID, "카테고리를 찾을 수 없습니다."));
+
+        // ui 담는 과정
+        UiLayout foundUi = uiRepository.findById(foundCategory.getUiId())
+                .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
+
+        foundCategory.setCategoryStyle(UiResponseDto.toResponseDto(foundCategory.getUiId(), foundUi));
+
+        return foundCategory;
+    }
 
     // 매장 정보가 조회되는지 안되는지 검사
     private StoreDetailResponseDto extracted(Long storeId) {

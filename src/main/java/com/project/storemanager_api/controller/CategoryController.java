@@ -25,10 +25,19 @@ public class CategoryController {
         return ResponseEntity.ok().body(result);
     }
 
-    @GetMapping("/{storeId}")
+    // 한 매장에 등록된 category 전체 조회
+    @GetMapping("/all/{storeId}")
     public ResponseEntity<List<CategoryResponseDto>> getAllCategories(@PathVariable Long storeId) {
         log.info("Getting all categories: {}", storeId);
         List<CategoryResponseDto> result = categoryService.getAllCategories(storeId);
+        return ResponseEntity.ok().body(result);
+    }
+
+    // category 단일 조회
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponseDto> getCategory(@PathVariable Long categoryId) {
+        log.info("Getting category: {}", categoryId);
+        CategoryResponseDto result = categoryService.getCategory(categoryId);
         return ResponseEntity.ok().body(result);
     }
 }
