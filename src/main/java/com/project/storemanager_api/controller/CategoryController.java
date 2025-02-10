@@ -6,10 +6,9 @@ import com.project.storemanager_api.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -23,6 +22,13 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> saveCategory(@RequestBody SaveCategoryDto dto) {
         log.info("Saving category: {}", dto);
         CategoryResponseDto result = categoryService.saveCategory(dto);
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/{storeId}")
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(@PathVariable Long storeId) {
+        log.info("Getting all categories: {}", storeId);
+        List<CategoryResponseDto> result = categoryService.getAllCategories(storeId);
         return ResponseEntity.ok().body(result);
     }
 }

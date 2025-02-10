@@ -14,4 +14,14 @@
             (#{storeId}, #{uiId}, #{categoryName})
     </insert>
 
+    <select id="findListByStoreId" resultType="com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto">
+        SELECT
+            category_id,
+            store_id,
+            category_name,
+            ui_id
+        FROM categories
+        WHERE store_id = #{storeId}
+    </select>
+
 </mapper>

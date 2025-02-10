@@ -26,7 +26,6 @@ public class JwtTokenProvider {
     @PostConstruct
     public void init() {
         // Base64로 인코딩된 key를 디코딩 후, HMAC-SHA 알고리즘으로 다시 암호화
-        log.info("jwtProperties.getSecretKey(): {}", jwtProperties.getSecretKey());
         this.key = Keys.hmacShaKeyFor(
                 Decoders.BASE64.decode(jwtProperties.getSecretKey())
         );
