@@ -29,12 +29,7 @@ public class CategoryResponseDto {
                 .categoryId(generatedCategoryId)
                 .storeId(dto.getStoreId())
                 .categoryName(dto.getCategoryName())
-                .categoryStyle(UiResponseDto.builder()
-                        .uiId(generatedUiId)
-                        .colorCode(newUi.getColorCode())
-                        .positionX(0)
-                        .positionY(0)
-                        .build())
+                .categoryStyle(UiResponseDto.toResponseDto(generatedUiId, newUi))
                 .build();
 
     }
