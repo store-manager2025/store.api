@@ -72,11 +72,15 @@ public class UserService {
             throw new UserException(ErrorCode.INVALID_PASSWORD);
         }
 
-        // 로그인이 성공했을 때 액세스 토큰을 전송
+        // 로그인이 성공했을 때 액세스/리프레시 토큰을 전송
+        String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), foundUser.getEmail());
+        userRepository.updateRefreshToken(refreshToken, foundUser.getUserId());
+
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "name", foundUser.getName(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), foundUser.getEmail())
+                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), foundUser.getEmail()),
+                "refreshToken", refreshToken
         );
     }
 
@@ -117,7 +121,6 @@ public class UserService {
      * @param refreshToken 클라이언트가 보유한 refresh token
      * @return 새로운 access token과 refresh token을 포함한 Map
      */
-    @Transactional(readOnly = true)
     public Map<String, Object> refreshToken(String refreshToken) {
         // 1. 클라이언트가 보낸 refresh token의 유효성 검사
         if (!jwtTokenProvider.validateToken(refreshToken)) {
