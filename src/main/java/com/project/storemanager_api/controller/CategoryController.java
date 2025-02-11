@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -18,11 +19,14 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    // 생성
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> saveCategory(@RequestBody SaveCategoryDto dto) {
+    public ResponseEntity<Map<String, Object>> saveCategory(@RequestBody SaveCategoryDto dto) {
         log.info("Saving category: {}", dto);
-        CategoryResponseDto result = categoryService.saveCategory(dto);
-        return ResponseEntity.ok().body(result);
+        categoryService.saveCategory(dto);
+        return ResponseEntity.ok().body(Map.of(
+                "message", "카테고리가 생성되었습니다."
+        ));
     }
 
     // 한 매장에 등록된 category 전체 조회
@@ -40,4 +44,10 @@ public class CategoryController {
         CategoryResponseDto result = categoryService.getCategory(categoryId);
         return ResponseEntity.ok().body(result);
     }
+
+    // 카테고리 수정
+//    @PatchMapping
+//    public ResponseEntity<?> modifyCategory() {
+//
+//    }
 }

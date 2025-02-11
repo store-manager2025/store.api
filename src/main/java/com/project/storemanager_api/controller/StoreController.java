@@ -53,19 +53,22 @@ public class StoreController {
 
     /**
      * 매장 정보 수정 API
+     *
      * @param dto - storePlace, storeName, password를 수정할 수 있는 DTO
      * @return updatedStoreDto - 수정된 store 객체
      */
     @PatchMapping
-    public ResponseEntity<StoreDetailResponseDto> modifyStore(@RequestBody ModifyStoreRequestDto dto) {
+    public ResponseEntity<Map<String, String>> modifyStore(@RequestBody ModifyStoreRequestDto dto) {
         log.info("ModifyStoreRequestDto : {}", dto.toString());
-        StoreDetailResponseDto updatedStoreDto = storeService.modifyStoreInfo(dto);
-        return ResponseEntity.ok().body(updatedStoreDto);
+         storeService.modifyStoreInfo(dto);
+        return ResponseEntity.ok().body(Map.of(
+                "message", "매장이 성공적으로 수정 되었습니다."
+        ));
     }
 
     // 매장 삭제 API
     @DeleteMapping
-    public ResponseEntity<?> deleteStore(@RequestBody DeleteStoreRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> deleteStore(@RequestBody DeleteStoreRequestDto dto) {
         log.info("DeleteStoreRequestDto : {}", dto);
         storeService.deleteStore(dto);
         return ResponseEntity.ok().body(Map.of(

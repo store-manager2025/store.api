@@ -26,7 +26,7 @@ public class CategoryService {
     private final UiRepository uiRepository;
     private final StoreRepository storeRepository;
 
-    public CategoryResponseDto saveCategory(SaveCategoryDto dto) {
+    public void saveCategory(SaveCategoryDto dto) {
 
         // storeId가 유효한지 검사
         extracted(dto.getStoreId());
@@ -54,8 +54,7 @@ public class CategoryService {
         // 3. menu 객체를 저장 후 생성된 id를 받아온다
         Long generatedCategoryId = dto.getCategoryId();
         log.info("방금 save된 menu_id = {}", generatedCategoryId);
-
-        return CategoryResponseDto.toResponseDto(generatedCategoryId, generatedUiId, dto, newUi);
+        CategoryResponseDto.toResponseDto(generatedCategoryId, generatedUiId, dto, newUi);
     }
 
 

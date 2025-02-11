@@ -33,6 +33,7 @@ public enum ErrorCode {
     // 인증 관련
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
     INVALID_ID(HttpStatus.NOT_FOUND, "유효하지 않은 ID입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 유효하지 않습니다." ),
 
     // 입력값 검증
     EMPTY_DATA(HttpStatus.BAD_REQUEST, "이름, 비밀번호 중 한개의 값이라도 존재해야 합니다."),
