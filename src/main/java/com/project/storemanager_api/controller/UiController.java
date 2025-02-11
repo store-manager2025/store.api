@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -20,10 +22,12 @@ public class UiController {
 
     // ui의 스타일을 변경하는 요청
     @PatchMapping
-    public ResponseEntity<?> changeStyle(@RequestBody ChangeStyleRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> changeStyle(@RequestBody ChangeStyleRequestDto dto) {
         log.info("Change style request: {}", dto);
-        ChangeStyleRequestDto result = uiService.changeStyle(dto);
-        return ResponseEntity.ok().body(result);
+        uiService.changeStyle(dto);
+        return ResponseEntity.ok().body(Map.of(
+                "message", "스타일이 성공적으로 변경되었습니다."
+        ));
     }
 
 }
