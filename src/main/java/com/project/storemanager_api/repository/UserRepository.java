@@ -25,4 +25,7 @@ public interface UserRepository {
 
     void deleteUser(Long userId);
 
+    // refresh token 업데이트 (새로운 refresh token 저장)
+    void updateRefreshToken(String refreshToken, Long userId);
+
 }

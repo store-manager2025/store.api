@@ -110,6 +110,50 @@ public class UserService {
 
     }
 
+
+    /**
+     * 리프레시 토큰을 받아 새로운 토큰들을 발급한다.
+     *
+     * @param refreshToken 클라이언트가 보유한 refresh token
+     * @return 새로운 access token과 refresh token을 포함한 Map
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> refreshToken(String refreshToken) {
+        // 1. 클라이언트가 보낸 refresh token의 유효성 검사
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new UserException(ErrorCode.INVALID_TOKEN, "리프레시 토큰이 유효하지 않습니다.");
+        }
+        // 2. 토큰에서 사용자 id 추출
+        Long userId = jwtTokenProvider.getCurrentLoginUserId(refreshToken);
+
+        // 3. DB에서 해당 사용자를 조회 (없으면 예외 발생)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 회원입니다."));
+
+        // 4. 사용자에 저장된 refresh token과 클라이언트가 보낸 token 일치 여부 검사
+        if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) {
+            throw new UserException(ErrorCode.INVALID_TOKEN, "리프레시 토큰이 일치하지 않습니다.");
+        }
+
+        // 5. 새로운 access token 생성
+        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getEmail());
+        // 6. 새로운 refresh token 생성 (리프레시 토큰 회전)
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), user.getEmail());
+
+        // 7. DB에 새로운 refresh token 저장
+        user.setRefreshToken(newRefreshToken);
+        userRepository.updateRefreshToken(newRefreshToken, user.getUserId());
+
+        log.info("리프레시 토큰 재발급 완료: userId={}, newAccessToken={}, newRefreshToken={}",
+                user.getUserId(), newAccessToken, newRefreshToken);
+
+        return Map.of(
+                "message", "토큰 재발급에 성공했습니다.",
+                "accessToken", newAccessToken,
+                "refreshToken", newRefreshToken
+        );
+    }
+
     public boolean findById(Long userId) {
         Optional<User> foundUser = userRepository.findById(userId);
         if (!foundUser.isPresent()) {

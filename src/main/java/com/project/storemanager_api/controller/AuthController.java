@@ -102,5 +102,18 @@ public class AuthController {
     }
 
 
+    /**
+     * 리프레시 토큰을 이용해 새로운 토큰을 발급하는 엔드포인트
+     * 클라이언트는 refreshToken을 JSON 바디로 전달해야 함.
+     */
+    @PostMapping("/api/refresh")
+    public ResponseEntity<Map<String, Object>> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        log.info("리프레시 토큰 요청: {}", refreshToken);
+        Map<String, Object> responseMap = userService.refreshToken(refreshToken);
+        return ResponseEntity.ok(responseMap);
+    }
+
+
 
 }
