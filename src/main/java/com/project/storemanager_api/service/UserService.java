@@ -74,6 +74,8 @@ public class UserService {
 
         // 로그인이 성공했을 때 액세스/리프레시 토큰을 전송
         String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), foundUser.getEmail());
+        log.info("new refresh token: {}", refreshToken);
+
         userRepository.updateRefreshToken(refreshToken, foundUser.getUserId());
 
         return Map.of(
