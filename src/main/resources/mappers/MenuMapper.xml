@@ -9,9 +9,9 @@
             useGeneratedKeys="true"
             keyProperty="menuId">
         INSERT INTO menus
-            (store_id, ui_id, menu_name, price)
+            (store_id, ui_id, menu_name, price, category_id)
         VALUES
-            (#{storeId}, #{uiId}, #{menuName}, #{price})
+            (#{storeId}, #{uiId}, #{menuName}, #{price}, #{categoryId})
     </insert>
 
 </mapper>

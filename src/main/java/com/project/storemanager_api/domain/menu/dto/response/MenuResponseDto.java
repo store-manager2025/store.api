@@ -14,10 +14,13 @@ import lombok.*;
 public class MenuResponseDto {
 
     private Long menuId;
+    private Long categoryId;
     private Long storeId;
     private String menuName;
     private int discountRate; // 할인률
     private int price;
+
+
     private UiResponseDto menuStyle;
 
 
@@ -29,6 +32,7 @@ public class MenuResponseDto {
 
         return MenuResponseDto.builder()
                 .menuId(generatedMenuId)
+                .categoryId(dto.getCategoryId())
                 .storeId(dto.getStoreId())
                 .menuName(dto.getMenuName())
                 .price(dto.getPrice())
