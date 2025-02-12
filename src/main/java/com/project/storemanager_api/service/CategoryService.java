@@ -1,5 +1,6 @@
 package com.project.storemanager_api.service;
 
+import com.project.storemanager_api.domain.category.dto.request.ModifyCategoryRequestDto;
 import com.project.storemanager_api.domain.category.dto.request.SaveCategoryDto;
 import com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
@@ -9,6 +10,7 @@ import com.project.storemanager_api.exception.*;
 import com.project.storemanager_api.repository.CategoryRepository;
 import com.project.storemanager_api.repository.StoreRepository;
 import com.project.storemanager_api.repository.UiRepository;
+import com.project.storemanager_api.validator.CategoryValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UiRepository uiRepository;
     private final StoreRepository storeRepository;
+    private final CategoryValidator categoryValidator;
 
     public void saveCategory(SaveCategoryDto dto) {
 
@@ -63,6 +66,7 @@ public class CategoryService {
         // storeId가 유효한지 검사
         extracted(storeId);
         List<CategoryResponseDto> categoryResponseDtos = categoryRepository.findListByStoreId(storeId);
+
         if (categoryResponseDtos.isEmpty()) {
             throw new CategoryException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage());
         }
@@ -104,4 +108,23 @@ public class CategoryService {
     }
 
 
+    /**
+     * @param dto - categoryId, categoryName, colorCode, positionX, positionY, sizeType이 들어있는 dto
+     */
+    public void modifyCategory(ModifyCategoryRequestDto dto) {
+
+        log.info("requestDTO : {} ", dto.toString());
+        // id값으로 원래 데이터를 뽑아옴
+         ModifyCategoryRequestDto originalData = categoryRepository.findModifyDtoById(dto.getCategoryId())
+                .orElseThrow(() -> new CategoryException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
+        log.info("original Data = {}", originalData);
+
+        // validator로 바뀐값들 검사, 바뀐값이 없으면 originalData 사용
+        categoryValidator.prepareModifyCategory(originalData, dto);
+        log.info("값이 채워진 dto : {}", dto);
+    }
+
+    public void deleteCategory(Long categoryId) {
+        categoryRepository.deleteCategoryById(categoryId);
+    }
 }

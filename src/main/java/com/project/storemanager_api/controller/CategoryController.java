@@ -1,5 +1,6 @@
 package com.project.storemanager_api.controller;
 
+import com.project.storemanager_api.domain.category.dto.request.ModifyCategoryRequestDto;
 import com.project.storemanager_api.domain.category.dto.request.SaveCategoryDto;
 import com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto;
 import com.project.storemanager_api.service.CategoryService;
@@ -46,8 +47,23 @@ public class CategoryController {
     }
 
     // 카테고리 수정
-//    @PatchMapping
-//    public ResponseEntity<?> modifyCategory() {
-//
-//    }
+    @PatchMapping
+    public ResponseEntity<Map<String, Object>> modifyCategory(@RequestBody ModifyCategoryRequestDto dto) {
+        log.info("Modifying category: {}", dto);
+        categoryService.modifyCategory(dto);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "수정이 완료되었습니다."
+        ));
+    }
+
+    // 카테고리 삭제
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Map<String, Object>> deleteCategory(@PathVariable Long categoryId) {
+        log.info("Deleting category: {}", categoryId);
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok().body(Map.of(
+           "message", "성공적으로 삭제되었습니다."
+        ));
+    }
 }

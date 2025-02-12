@@ -15,8 +15,12 @@ import lombok.*;
 public class CategoryResponseDto {
 
     private Long categoryId;
+
+    @JsonIgnore // 내보낼때 storeId는 제거
     private Long storeId;
+
     private String categoryName;
+
     @Setter
     private UiResponseDto categoryStyle;
 

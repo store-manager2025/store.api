@@ -30,4 +30,5 @@ public interface StoreRepository {
 
     void deleteStore(Long storeId);
 
+
 }
