@@ -45,5 +45,12 @@
         WHERE category_id = #{categoryId}
     </select>
 
+    <delete id="deleteCategoryById">
+        DELETE c, u
+        FROM categories c
+        JOIN ui_layout u ON c.ui_id = u.ui_id
+        WHERE c.category_id = #{categoryId}
+    </delete>
+
 
 </mapper>

@@ -56,4 +56,14 @@ public class CategoryController {
                 "message", "수정이 완료되었습니다."
         ));
     }
+
+    // 카테고리 삭제
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Map<String, Object>> deleteCategory(@PathVariable Long categoryId) {
+        log.info("Deleting category: {}", categoryId);
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok().body(Map.of(
+           "message", "성공적으로 삭제되었습니다."
+        ));
+    }
 }

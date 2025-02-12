@@ -123,4 +123,8 @@ public class CategoryService {
         categoryValidator.prepareModifyCategory(originalData, dto);
         log.info("값이 채워진 dto : {}", dto);
     }
+
+    public void deleteCategory(Long categoryId) {
+        categoryRepository.deleteCategoryById(categoryId);
+    }
 }

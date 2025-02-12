@@ -22,4 +22,6 @@ public interface CategoryRepository {
 
     // UI와 JOIN하여 수정용 dto와 대조할 데이터를 뽑아옴
     Optional<ModifyCategoryRequestDto> findModifyDtoById(Long categoryId);
+
+    void deleteCategoryById(Long categoryId);
 }
