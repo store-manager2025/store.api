@@ -53,7 +53,7 @@ public class UserService {
      */
     @Transactional(readOnly = true) // select만 하고있기에 transactional을 걸어줌
     public Map<String, Object> authenticate(LoginRequestDto dto) {
-        String username = dto.getUsername();
+        String username = dto.getEmail();
 
         // 1
         User foundUser = userRepository.findByEmail(username)
