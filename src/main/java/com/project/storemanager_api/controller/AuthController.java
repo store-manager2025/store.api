@@ -39,7 +39,7 @@ public class AuthController {
     @PostMapping("/auth/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequestDto loginRequest, HttpServletResponse response) {
 
-        log.info("request for login: {}", loginRequest.getUsername());
+        log.info("request for login: {}", loginRequest.getEmail());
         Map<String, Object> responseMap = userService.authenticate(loginRequest);
 
         /*

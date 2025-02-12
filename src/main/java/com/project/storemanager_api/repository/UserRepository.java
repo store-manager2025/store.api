@@ -2,6 +2,7 @@ package com.project.storemanager_api.repository;
 
 import com.project.storemanager_api.domain.user.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -26,6 +27,6 @@ public interface UserRepository {
     void deleteUser(Long userId);
 
     // refresh token 업데이트 (새로운 refresh token 저장)
-    void updateRefreshToken(String refreshToken, Long userId);
+    void updateRefreshToken(@Param("refreshToken") String refreshToken, @Param("userId") Long userId);
 
 }
