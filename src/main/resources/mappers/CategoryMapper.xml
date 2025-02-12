@@ -27,11 +27,23 @@
     <select id="findById" resultType="com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto">
         SELECT
             category_id,
-            store_id,
             category_name,
             ui_id
         FROM categories
         WHERE category_id = #{categoryId}
     </select>
+
+    <select id="findModifyDtoById" resultType="com.project.storemanager_api.domain.category.dto.request.ModifyCategoryRequestDto">
+        SELECT
+            C.category_name,
+            U.color_code,
+            U.position_x,
+            U.position_y,
+            U.size_type
+        FROM categories C
+        JOIN ui_layout U ON C.ui_id = U.ui_id
+        WHERE category_id = #{categoryId}
+    </select>
+
 
 </mapper>
