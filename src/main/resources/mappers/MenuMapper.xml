@@ -40,4 +40,36 @@
         WHERE menu_id = #{menuId}
     </select>
 
+    <select id="findModifyDtoById" resultType="com.project.storemanager_api.domain.menu.dto.request.ModifyMenuRequestDto">
+        SELECT
+            M.menu_id,
+            M.menu_name,
+            M.discount_rate,
+            M.price,
+            U.ui_id,
+            U.color_code,
+            U.position_x,
+            U.position_y,
+            U.size_type
+        FROM menus M
+        INNER JOIN ui_layout U
+        ON M.ui_id = U.ui_id
+        WHERE menu_id = #{menuId}
+    </select>
+
+    <delete id="deleteMenuById">
+        DELETE FROM
+        menus
+        WHERE menu_id = #{menuId}
+    </delete>
+
+    <update id="updateMenu">
+        UPDATE menus
+        SET
+            menu_name = #{menuName},
+            discount_rate = #{discountRate},
+            price = #{price}
+        WHERE menu_id = #{menuId}
+    </update>
+
 </mapper>

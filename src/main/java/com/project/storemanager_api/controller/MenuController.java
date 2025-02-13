@@ -1,6 +1,7 @@
 package com.project.storemanager_api.controller;
 
 
+import com.project.storemanager_api.domain.menu.dto.request.ModifyMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.service.MenuService;
@@ -42,6 +43,15 @@ public class MenuController {
         log.info("Getting menu for {}", menuId);
         MenuResponseDto result = menuService.getMenu(menuId);
         return ResponseEntity.ok().body(result);
+    }
+
+    @PatchMapping
+    public ResponseEntity<Map<String, Object>> updateMenu(@RequestBody ModifyMenuRequestDto dto) {
+        log.info("Updating menu for {}", dto);
+        menuService.modifyMenu(dto);
+        return ResponseEntity.ok().body(Map.of(
+                "message", "성공적으로 수정되었습니다."
+        ));
     }
 
 

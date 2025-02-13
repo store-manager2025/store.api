@@ -1,7 +1,9 @@
 package com.project.storemanager_api.service;
 
+import com.project.storemanager_api.domain.menu.dto.request.ModifyMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
+import com.project.storemanager_api.domain.ui.dto.request.ChangeStyleRequestDto;
 import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
 import com.project.storemanager_api.exception.CategoryException;
@@ -11,6 +13,7 @@ import com.project.storemanager_api.exception.UiException;
 import com.project.storemanager_api.repository.CategoryRepository;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.UiRepository;
+import com.project.storemanager_api.validator.MenuValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ public class MenuService {
     private final CategoryRepository categoryRepository;
     private final UiRepository uiRepository;
     private final CategoryService categoryService;
+    private final MenuValidator menuValidator;
 
     public void saveMenu(SaveMenuRequestDto dto) {
 
@@ -77,5 +81,27 @@ public class MenuService {
         foundMenu.setMenuStyle(UiResponseDto.toResponseDto(foundMenu.getUiId(), foundUi));
 
         return foundMenu;
+    }
+
+    public void modifyMenu(ModifyMenuRequestDto dto) {
+        log.info("requestDTO : {} ", dto.toString());
+        ModifyMenuRequestDto originalData = menuRepository.findModifyDtoById(dto.getMenuId()).orElseThrow(
+                () -> new MenuException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage())
+        );
+        log.info("original Data = {}", originalData);
+
+        menuValidator.prepareModifyMenu(originalData, dto);
+
+        menuRepository.updateMenu(dto);
+
+        // ui 업데이트
+        uiRepository.updateUi(ChangeStyleRequestDto.builder()
+                .uiId(originalData.getUiId())
+                .colorCode(dto.getColorCode())
+                .positionX(dto.getPositionX())
+                .positionY(dto.getPositionY())
+                .sizeType(dto.getSizeType())
+                .build());
+
     }
 }
