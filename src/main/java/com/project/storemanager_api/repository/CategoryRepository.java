@@ -23,4 +23,7 @@ public interface CategoryRepository {
     Optional<ModifyCategoryRequestDto> findModifyDtoById(Long categoryId);
 
     void deleteCategoryById(Long categoryId);
+
+    // 수정
+    void modifyCategory(String categoryName, Long categoryId);
 }

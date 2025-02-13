@@ -4,6 +4,7 @@ import com.project.storemanager_api.domain.category.dto.request.ModifyCategoryRe
 import com.project.storemanager_api.domain.category.dto.request.SaveCategoryDto;
 import com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
+import com.project.storemanager_api.domain.ui.dto.request.ChangeStyleRequestDto;
 import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
 import com.project.storemanager_api.exception.*;
@@ -117,6 +118,18 @@ public class CategoryService {
         // validator로 바뀐값들 검사, 바뀐값이 없으면 originalData 사용
         categoryValidator.prepareModifyCategory(originalData, dto);
         log.info("값이 채워진 dto : {}", dto);
+
+        // category 업데이트
+        categoryRepository.modifyCategory(dto.getCategoryName(), dto.getCategoryId());
+
+        // ui 업데이트
+        uiRepository.updateUi(ChangeStyleRequestDto.builder()
+                        .uiId(dto.getUiId())
+                        .colorCode(dto.getColorCode())
+                        .positionX(dto.getPositionX())
+                        .positionY(dto.getPositionY())
+                        .sizeType(dto.getSizeType())
+                .build());
     }
 
     public void deleteCategory(Long categoryId) {
