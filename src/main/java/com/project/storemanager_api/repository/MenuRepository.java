@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 @Repository
@@ -15,4 +16,6 @@ public interface MenuRepository {
 
     // 생성해야 함
     List<MenuResponseDto> findListByCategoryId(Long categoryId);
+
+    Optional<MenuResponseDto> findById(Long menuId);
 }

@@ -21,9 +21,23 @@
             menu_name,
             ui_id,
             discount_rate,
-            price
+            price,
+            created_at
         FROM menus
         WHERE category_id = #{categoryId}
+    </select>
+
+    <select id="findById" resultType="com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto">
+        SELECT
+            menu_id,
+            category_id,
+            menu_name,
+            ui_id,
+            discount_rate,
+            price,
+            created_at
+        FROM menus
+        WHERE menu_id = #{menuId}
     </select>
 
 </mapper>

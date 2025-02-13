@@ -2,10 +2,12 @@ package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
-import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
 import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
-import com.project.storemanager_api.exception.*;
+import com.project.storemanager_api.exception.CategoryException;
+import com.project.storemanager_api.exception.ErrorCode;
+import com.project.storemanager_api.exception.MenuException;
+import com.project.storemanager_api.exception.UiException;
 import com.project.storemanager_api.repository.CategoryRepository;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.UiRepository;
@@ -25,6 +27,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final CategoryRepository categoryRepository;
     private final UiRepository uiRepository;
+    private final CategoryService categoryService;
 
     public void saveMenu(SaveMenuRequestDto dto) {
 
@@ -64,13 +67,15 @@ public class MenuService {
     }
 
 
-    private void extracted(SaveMenuRequestDto dto, StoreDetailResponseDto exist) {
-        if (exist == null) {
-            throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장 정보를 찾을 수 없습니다.");
-        }
 
-        if (dto.getMenuName().isEmpty() || dto.getPrice() == null) {
-            throw new MenuException(ErrorCode.EMPTY_DATA, "값을 모두 입력해주세요.");
-        }
+    public MenuResponseDto getMenu(Long menuId) {
+        MenuResponseDto foundMenu = menuRepository.findById(menuId).orElseThrow(
+                () -> new MenuException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage())
+        );
+        UiLayout foundUi = uiRepository.findById(foundMenu.getUiId())
+                .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
+        foundMenu.setMenuStyle(UiResponseDto.toResponseDto(foundMenu.getUiId(), foundUi));
+
+        return foundMenu;
     }
 }
