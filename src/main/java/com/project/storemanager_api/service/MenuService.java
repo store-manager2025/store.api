@@ -71,7 +71,6 @@ public class MenuService {
     }
 
 
-
     public MenuResponseDto getMenu(Long menuId) {
         MenuResponseDto foundMenu = menuRepository.findById(menuId).orElseThrow(
                 () -> new MenuException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage())
@@ -103,5 +102,14 @@ public class MenuService {
                 .sizeType(dto.getSizeType())
                 .build());
 
+    }
+
+    public void deleteMenu(Long menuId) {
+        MenuResponseDto exist = menuRepository.findById(menuId).orElseThrow(
+                () -> new MenuException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage())
+        );
+        if (exist != null) {
+            menuRepository.deleteMenuById(menuId);
+        }
     }
 }

@@ -74,7 +74,7 @@ public class CategoryService {
             dto.setCategoryStyle(UiResponseDto.toResponseDto(dto.getUiId(), foundUi));
         }
 
-        return  categoryResponseDtos;
+        return categoryResponseDtos;
     }
 
     // 카테고리 단일조회
@@ -111,7 +111,7 @@ public class CategoryService {
 
         log.info("requestDTO : {} ", dto.toString());
         // id값으로 원래 데이터를 뽑아옴
-         ModifyCategoryRequestDto originalData = categoryRepository.findModifyDtoById(dto.getCategoryId())
+        ModifyCategoryRequestDto originalData = categoryRepository.findModifyDtoById(dto.getCategoryId())
                 .orElseThrow(() -> new CategoryException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
         log.info("original Data = {}", originalData);
 
@@ -124,15 +124,20 @@ public class CategoryService {
 
         // ui 업데이트
         uiRepository.updateUi(ChangeStyleRequestDto.builder()
-                        .uiId(dto.getUiId())
-                        .colorCode(dto.getColorCode())
-                        .positionX(dto.getPositionX())
-                        .positionY(dto.getPositionY())
-                        .sizeType(dto.getSizeType())
+                .uiId(dto.getUiId())
+                .colorCode(dto.getColorCode())
+                .positionX(dto.getPositionX())
+                .positionY(dto.getPositionY())
+                .sizeType(dto.getSizeType())
                 .build());
     }
 
     public void deleteCategory(Long categoryId) {
-        categoryRepository.deleteCategoryById(categoryId);
+        CategoryResponseDto exist = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new CategoryException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage())
+        );
+        if (exist != null) {
+            categoryRepository.deleteCategoryById(categoryId);
+        }
     }
 }
