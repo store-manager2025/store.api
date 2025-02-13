@@ -3,16 +3,18 @@ package com.project.storemanager_api.service;
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
+import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
-import com.project.storemanager_api.exception.ErrorCode;
-import com.project.storemanager_api.exception.MenuException;
-import com.project.storemanager_api.exception.StoreException;
+import com.project.storemanager_api.exception.*;
+import com.project.storemanager_api.repository.CategoryRepository;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.UiRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -21,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class MenuService {
 
     private final MenuRepository menuRepository;
-
+    private final CategoryRepository categoryRepository;
     private final UiRepository uiRepository;
 
-    public MenuResponseDto saveMenu(SaveMenuRequestDto dto) {
+    public void saveMenu(SaveMenuRequestDto dto) {
 
         // storeId가 있어야 ui에 insert를 하고 생성된 uiId를 받을 수 있다.
         UiLayout newUi = UiLayout.builder()
@@ -40,13 +42,25 @@ public class MenuService {
         // 2. 받아온 id를 dto에 저장
         dto.setUiId(generatedUiId);
         menuRepository.saveMenu(dto);
+    }
 
-        // 3. menu 객체를 저장 후 생성된 id를 받아온다
-        Long generatedMenuId = dto.getMenuId();
-        log.info("방금 save된 menu_id = {}", generatedMenuId);
 
-        return MenuResponseDto.toResponseDto(generatedMenuId, generatedUiId, dto, newUi);
+    public List<MenuResponseDto> getAllMenus(Long categoryId) {
+        // 파라미터값 유효한지 검증부터
+        categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryException(ErrorCode.INVALID_ID, "카테고리 정보를 찾을 수 없습니다."));
 
+        // 리턴값 생성
+        List<MenuResponseDto> result = menuRepository.findListByCategoryId(categoryId);
+
+        for (MenuResponseDto dto : result) {
+            UiLayout foundUi = uiRepository.findById(dto.getUiId())
+                    .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
+
+            dto.setMenuStyle(UiResponseDto.toResponseDto(dto.getUiId(), foundUi));
+        }
+
+        return result;
     }
 
 
@@ -59,6 +73,4 @@ public class MenuService {
             throw new MenuException(ErrorCode.EMPTY_DATA, "값을 모두 입력해주세요.");
         }
     }
-
-
 }

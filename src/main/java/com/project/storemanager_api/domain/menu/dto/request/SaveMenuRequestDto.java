@@ -11,12 +11,12 @@ import lombok.*;
 public class SaveMenuRequestDto {
 
     private Long menuId;
-    private Long categoryId;
-    private Long storeId;
 
     @Setter
     private Long uiId;
 
+    private Long categoryId;
+    private Long storeId;
     private String menuName;
     private Integer price;
 

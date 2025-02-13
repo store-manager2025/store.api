@@ -2,15 +2,14 @@ package com.project.storemanager_api.controller;
 
 
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
+import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,11 +29,13 @@ public class MenuController {
         ));
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<MenuResponseDto>> getAllMenus(@RequestParam Long storeId) {
-//        log.info("Getting all menus for {}", storeId);
-//        return null;
-//    }
+    // categoryId로 메뉴목록을 가져오는 API
+    @GetMapping("/all/{categoryId}")
+    public ResponseEntity<List<MenuResponseDto>> getAllMenus(@PathVariable Long categoryId) {
+        log.info("Getting all menus for {}", categoryId);
+        List<MenuResponseDto> result = menuService.getAllMenus(categoryId);
+        return ResponseEntity.ok().body(result);
+    }
 
 
 }

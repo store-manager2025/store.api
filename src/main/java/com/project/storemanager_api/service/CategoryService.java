@@ -53,11 +53,6 @@ public class CategoryService {
         // 2. 받아온 id를 dto에 저장
         dto.setUiId(generatedUiId);
         categoryRepository.saveCategory(dto);
-
-        // 3. menu 객체를 저장 후 생성된 id를 받아온다
-        Long generatedCategoryId = dto.getCategoryId();
-        log.info("방금 save된 menu_id = {}", generatedCategoryId);
-        CategoryResponseDto.toResponseDto(generatedCategoryId, generatedUiId, dto, newUi);
     }
 
 
