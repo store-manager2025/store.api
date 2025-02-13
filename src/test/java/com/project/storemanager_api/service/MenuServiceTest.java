@@ -1,12 +1,15 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
+import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @SpringBootTest
 @Transactional
@@ -32,6 +35,19 @@ class MenuServiceTest {
 
         //then
     }
+
+
+    @Test
+    @DisplayName("getAllMenusTest")
+    void getAllMenus() {
+        //given
+        Long categoryId = 6L;
+        //when
+        List<MenuResponseDto> allMenus = menuService.getAllMenus(categoryId);
+        //then
+        allMenus.forEach(System.out::println);
+    }
+
 
 
 }

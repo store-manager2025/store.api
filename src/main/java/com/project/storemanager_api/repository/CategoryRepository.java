@@ -17,11 +17,13 @@ public interface CategoryRepository {
 
     List<CategoryResponseDto> findListByStoreId(Long storeId);
 
-    // categoryResponseDto에서 join의 결과를 다 가져오도록 다시 설계
     Optional<CategoryResponseDto> findById(Long categoryId);
 
     // UI와 JOIN하여 수정용 dto와 대조할 데이터를 뽑아옴
     Optional<ModifyCategoryRequestDto> findModifyDtoById(Long categoryId);
 
     void deleteCategoryById(Long categoryId);
+
+    // 수정
+    void modifyCategory(String categoryName, Long categoryId);
 }

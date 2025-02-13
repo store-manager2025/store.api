@@ -4,6 +4,7 @@ import com.project.storemanager_api.domain.category.dto.request.ModifyCategoryRe
 import com.project.storemanager_api.domain.category.dto.request.SaveCategoryDto;
 import com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
+import com.project.storemanager_api.domain.ui.dto.request.ChangeStyleRequestDto;
 import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
 import com.project.storemanager_api.exception.*;
@@ -53,11 +54,6 @@ public class CategoryService {
         // 2. 받아온 id를 dto에 저장
         dto.setUiId(generatedUiId);
         categoryRepository.saveCategory(dto);
-
-        // 3. menu 객체를 저장 후 생성된 id를 받아온다
-        Long generatedCategoryId = dto.getCategoryId();
-        log.info("방금 save된 menu_id = {}", generatedCategoryId);
-        CategoryResponseDto.toResponseDto(generatedCategoryId, generatedUiId, dto, newUi);
     }
 
 
@@ -78,7 +74,7 @@ public class CategoryService {
             dto.setCategoryStyle(UiResponseDto.toResponseDto(dto.getUiId(), foundUi));
         }
 
-        return  categoryResponseDtos;
+        return categoryResponseDtos;
     }
 
     // 카테고리 단일조회
@@ -115,16 +111,33 @@ public class CategoryService {
 
         log.info("requestDTO : {} ", dto.toString());
         // id값으로 원래 데이터를 뽑아옴
-         ModifyCategoryRequestDto originalData = categoryRepository.findModifyDtoById(dto.getCategoryId())
+        ModifyCategoryRequestDto originalData = categoryRepository.findModifyDtoById(dto.getCategoryId())
                 .orElseThrow(() -> new CategoryException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
         log.info("original Data = {}", originalData);
 
         // validator로 바뀐값들 검사, 바뀐값이 없으면 originalData 사용
         categoryValidator.prepareModifyCategory(originalData, dto);
         log.info("값이 채워진 dto : {}", dto);
+
+        // category 업데이트
+        categoryRepository.modifyCategory(dto.getCategoryName(), dto.getCategoryId());
+
+        // ui 업데이트
+        uiRepository.updateUi(ChangeStyleRequestDto.builder()
+                .uiId(dto.getUiId())
+                .colorCode(dto.getColorCode())
+                .positionX(dto.getPositionX())
+                .positionY(dto.getPositionY())
+                .sizeType(dto.getSizeType())
+                .build());
     }
 
     public void deleteCategory(Long categoryId) {
-        categoryRepository.deleteCategoryById(categoryId);
+        CategoryResponseDto exist = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new CategoryException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage())
+        );
+        if (exist != null) {
+            categoryRepository.deleteCategoryById(categoryId);
+        }
     }
 }

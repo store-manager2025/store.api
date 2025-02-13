@@ -52,5 +52,11 @@
         WHERE c.category_id = #{categoryId}
     </delete>
 
+    <update id="modifyCategory">
+        UPDATE categories
+        SET
+            category_name = #{categoryName}
+        WHERE category_id = #{categoryId}
+    </update>
 
 </mapper>

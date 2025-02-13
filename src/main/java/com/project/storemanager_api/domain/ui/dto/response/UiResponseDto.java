@@ -15,13 +15,15 @@ public class UiResponseDto {
     private Integer positionX;
     private Integer positionY;
     private String colorCode;
+    private String sizeType;
 
     public static UiResponseDto toResponseDto(Long generatedUiId, UiLayout newUi) {
         return UiResponseDto.builder()
                 .uiId(generatedUiId)
                 .colorCode(newUi.getColorCode())
-                .positionX(0)
-                .positionY(0)
+                .positionX(newUi.getPositionX())
+                .positionY(newUi.getPositionY())
+                .sizeType(newUi.getSizeType())
                 .build();
     }
 }

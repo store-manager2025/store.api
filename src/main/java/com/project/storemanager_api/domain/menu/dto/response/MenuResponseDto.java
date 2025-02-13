@@ -1,9 +1,11 @@
 package com.project.storemanager_api.domain.menu.dto.response;
 
-import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
-import com.project.storemanager_api.domain.ui.entity.UiLayout;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @ToString
@@ -14,32 +16,17 @@ import lombok.*;
 public class MenuResponseDto {
 
     private Long menuId;
-    private Long storeId;
+    private Long categoryId;
     private String menuName;
     private int discountRate; // 할인률
     private int price;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime createdAt;
+
+    @JsonIgnore
+    private Long uiId;
+
+    @Setter
     private UiResponseDto menuStyle;
 
-
-    public static MenuResponseDto toResponseDto(
-            Long generatedMenuId,
-            Long generatedUiId,
-            SaveMenuRequestDto dto,
-            UiLayout newUi) {
-
-        return MenuResponseDto.builder()
-                .menuId(generatedMenuId)
-                .storeId(dto.getStoreId())
-                .menuName(dto.getMenuName())
-                .price(dto.getPrice())
-                .discountRate(0)
-                .menuStyle(UiResponseDto.builder()
-                        .uiId(generatedUiId)
-                        .colorCode(newUi.getColorCode())
-                        .positionX(0)
-                        .positionY(0)
-                        .build())
-                .build();
-
-    }
 }
