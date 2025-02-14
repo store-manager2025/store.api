@@ -5,10 +5,7 @@ import com.project.storemanager_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -28,7 +25,9 @@ public class OrderController {
     }
 
     @PostMapping("/add/{orderId}")
-    public ResponseEntity<?> addOrder(@RequestBody OrderRequestDto dto) {
-        return null;
+    public ResponseEntity<?> addOrder(@RequestBody OrderRequestDto dto, @PathVariable Long orderId) {
+        log.info("주문 누적 요청: {}", dto);
+        orderService.addOrder(dto, orderId);
+        return ResponseEntity.ok(Map.of("message", "주문추가가 완료되었습니다."));
     }
 }

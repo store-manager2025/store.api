@@ -10,4 +10,18 @@
         VALUES
             (#{placeId}, #{storeId}, #{price}, #{orderType}, #{orderStatus}, CURRENT_TIMESTAMP)
     </insert>
+
+    <select id="findById" resultType="com.project.storemanager_api.domain.order.entity.Order">
+        SELECT
+            *
+        FROM orders
+        WHERE order_id = #{orderId}
+    </select>
+
+    <update id="updatePrice">
+        UPDATE orders
+        SET
+            price = #{updatedPrice}
+        WHERE order_id = #{orderId}
+    </update>
 </mapper>
