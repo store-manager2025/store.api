@@ -1,6 +1,8 @@
 package com.project.storemanager_api.validator;
 
 import com.project.storemanager_api.domain.place.dto.request.ModifyPlaceRequestDto;
+import com.project.storemanager_api.exception.ErrorCode;
+import com.project.storemanager_api.exception.PlaceException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +16,13 @@ public class PlaceValidator {
      * @param dto           수정 요청 DTO
      */
     public void prepareModifyPlace(ModifyPlaceRequestDto originalData, ModifyPlaceRequestDto dto) {
+
+        // 모두 비어있으면
+        if (dto.getPlaceName() == null || dto.getPlaceName().trim().isEmpty()
+                && dto.getSizeType() == null || dto.getSizeType().trim().isEmpty()) {
+            throw new PlaceException(ErrorCode.EMPTY_DATA, "한개의 값이라도 입력해야 합니다.");
+        }
+
         if (dto.getPlaceName() == null || dto.getPlaceName().trim().isEmpty()) {
             dto.setPlaceName(originalData.getPlaceName());
         }
