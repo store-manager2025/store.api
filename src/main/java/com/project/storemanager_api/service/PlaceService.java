@@ -1,8 +1,8 @@
 package com.project.storemanager_api.service;
 
+import com.project.storemanager_api.domain.place.dto.request.ModifyPlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.request.SavePlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto;
-import com.project.storemanager_api.domain.ui.dto.response.UiResponseDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PlaceException;
@@ -68,7 +68,8 @@ public class PlaceService {
             for (PlaceResponseDto dto : list) {
                 UiLayout foundUi = uiRepository.findById(dto.getUiId())
                         .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
-                dto.setStyle(UiResponseDto.toResponseDto(dto.getUiId(), foundUi));
+                dto.setSizeType(foundUi.getSizeType());
+                dto.setUiId(foundUi.getUiId());
             }
             return list;
         }
@@ -84,8 +85,14 @@ public class PlaceService {
         UiLayout foundUi = uiRepository.findById(foundPlace.getUiId())
                 .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
 
-        foundPlace.setStyle(UiResponseDto.toResponseDto(foundPlace.getUiId(), foundUi));
+        foundPlace.setSizeType(foundUi.getSizeType());
+        foundPlace.setUiId(foundUi.getUiId());
 
         return foundPlace;
+    }
+
+    public void modifyPlace(ModifyPlaceRequestDto dto) {
+        log.info("requestDTO : {} ", dto.toString());
+
     }
 }

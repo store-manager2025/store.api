@@ -1,5 +1,6 @@
 package com.project.storemanager_api.controller;
 
+import com.project.storemanager_api.domain.place.dto.request.ModifyPlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.request.SavePlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto;
 import com.project.storemanager_api.service.PlaceService;
@@ -40,6 +41,16 @@ public class PlaceController {
         log.info("get place : {}", placeId);
         PlaceResponseDto result = placeService.getPlace(placeId);
         return ResponseEntity.ok().body(result);
+    }
+
+    // 좌석 이름, ui 수정
+    @PatchMapping
+    public ResponseEntity<Map<String, Object>> updatePlace(@RequestBody ModifyPlaceRequestDto dto) {
+        log.info("update place dto : {}", dto);
+        placeService.modifyPlace(dto);
+        return ResponseEntity.ok().body(Map.of(
+                "message", "성공적으로 수정되었습니다."
+        ));
     }
 
 }
