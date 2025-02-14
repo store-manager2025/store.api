@@ -17,6 +17,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    // 주문 최초 생성
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequestDto dto) {
         log.info("주문 생성 요청: {}", dto);
@@ -24,10 +25,16 @@ public class OrderController {
         return ResponseEntity.ok(Map.of("message", "주문이 성공적으로 생성되었습니다."));
     }
 
+    // 추가 주문
     @PostMapping("/add/{orderId}")
     public ResponseEntity<?> addOrder(@RequestBody OrderRequestDto dto, @PathVariable Long orderId) {
         log.info("주문 누적 요청: {}", dto);
         orderService.addOrder(dto, orderId);
         return ResponseEntity.ok(Map.of("message", "주문추가가 완료되었습니다."));
     }
+
+
+
+
+
 }

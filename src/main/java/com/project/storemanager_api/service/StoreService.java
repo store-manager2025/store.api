@@ -1,5 +1,6 @@
 package com.project.storemanager_api.service;
 
+import com.project.storemanager_api.domain.category.dto.request.SaveCategoryDto;
 import com.project.storemanager_api.domain.store.dto.request.DeleteStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
@@ -27,6 +28,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final PasswordEncoder passwordEncoder;
     private final StoreValidator storeValidator;
+    private final CategoryService categoryService;
 
     /**
      * 매장 생성
@@ -41,8 +43,20 @@ public class StoreService {
         dto.setPassword(encodedPassword);
         // JWT 등에서 추출한 userId 설정
         dto.setUserId(userId);
+
+
         // 매장 생성
         storeRepository.saveStore(dto);
+        Long generatedStoreId = dto.getStoreId();
+        log.info("생성된 storeId: {}", generatedStoreId);
+
+        // 기본 카테고리 하나 생성
+        categoryService.saveCategory(
+                SaveCategoryDto.builder()
+                        .storeId(generatedStoreId)
+                        .categoryName("category_1")
+                        .build()
+        );
     }
 
     /**
