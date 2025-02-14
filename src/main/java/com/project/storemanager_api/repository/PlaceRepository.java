@@ -27,4 +27,6 @@ public interface PlaceRepository {
     Optional<ModifyPlaceRequestDto> findModifyDtoById(Long placeId);
 
     void updatePlace(ModifyPlaceRequestDto dto);
+
+    void deletePlaceById(Long placeId);
 }

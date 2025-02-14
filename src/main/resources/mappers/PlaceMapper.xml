@@ -54,5 +54,11 @@
         WHERE place_id = #{placeId}
     </update>
 
+    <delete id="deletePlaceById">
+        DELETE FROM
+        places
+        WHERE place_id = #{placeId}
+    </delete>
+
 
 </mapper>

@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/places")
+@RequestMapping("/api/places")
 @RequiredArgsConstructor
 public class PlaceController {
 
@@ -50,6 +50,15 @@ public class PlaceController {
         placeService.modifyPlace(dto);
         return ResponseEntity.ok().body(Map.of(
                 "message", "성공적으로 수정되었습니다."
+        ));
+    }
+
+    @DeleteMapping("/{placeId}")
+    public ResponseEntity<Map<String, Object>> deletePlace(@PathVariable Long placeId) {
+        log.info("delete place : {}", placeId);
+        placeService.deletePlace(placeId);
+        return ResponseEntity.ok().body(Map.of(
+                "message", "좌석이 성공적으로 삭제되었습니다."
         ));
     }
 

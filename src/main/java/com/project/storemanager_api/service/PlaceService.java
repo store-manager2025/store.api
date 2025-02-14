@@ -111,4 +111,12 @@ public class PlaceService {
                 .colorCode("#FAFAFA")
                 .build());
     }
+
+    public void deletePlace(Long placeId) {
+        PlaceResponseDto exist = placeRepository.findById(placeId)
+                .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND, ErrorCode.PLACE_NOT_FOUND.getMessage()));
+        if (exist != null) {
+            placeRepository.deletePlaceById(placeId);
+        }
+    }
 }
