@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.storemanager_api.repository.PlaceRepository">
+
+    <select id="findNameListById" resultType="java.lang.String">
+        SELECT
+            place_name
+        FROM places
+        WHERE store_id = #{storeId}
+    </select>
+
+    <insert id="savePlace">
+        INSERT INTO places
+            (store_id, ui_id, place_name)
+        VALUES
+            (#{storeId}, #{uiId}, #{placeName})
+    </insert>
+
+    <select id="findListById" resultType="com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto">
+        SELECT
+            place_name,
+            ui_id,
+            place_id
+        FROM places
+        WHERE store_id = #{storeId}
+    </select>
+
+    <select id="findById" resultType="com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto">
+        SELECT
+            place_name,
+            ui_id,
+            place_id
+        FROM places
+        WHERE place_id = #{placeId}
+    </select>
+
+    <select id="findModifyDtoById" resultType="com.project.storemanager_api.domain.place.dto.request.ModifyPlaceRequestDto">
+        SELECT
+            P.ui_id,
+            P.place_name,
+            U.size_type
+        FROM places P
+        INNER JOIN ui_layout U
+        ON P.ui_id = U.ui_id
+        WHERE place_id = #{placeId}
+    </select>
+
+    <update id="updatePlace">
+        UPDATE places
+        SET
+        place_name = #{placeName}
+        WHERE place_id = #{placeId}
+    </update>
+
+    <delete id="deletePlaceById">
+        DELETE FROM
+        places
+        WHERE place_id = #{placeId}
+    </delete>
+
+
+</mapper>

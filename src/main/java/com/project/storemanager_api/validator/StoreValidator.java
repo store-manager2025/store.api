@@ -63,6 +63,13 @@ public class StoreValidator {
     public void prepareModifyStoreInput(ModifyStoreRequestDto dto,
                                         StoreDetailResponseDto currentStore,
                                         String currentEncodedPassword) {
+
+        if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty()
+        && dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty()
+        && dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+            throw new StoreException(ErrorCode.EMPTY_DATA, "한개의 값이라도 입력해야 합니다.");
+        }
+
         // storeName: 값이 없으면 기존 값 사용
         if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty()) {
             dto.setStoreName(currentStore.getStoreName());

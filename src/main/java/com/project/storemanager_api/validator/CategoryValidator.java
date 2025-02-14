@@ -14,6 +14,7 @@ public class CategoryValidator {
      * @param dto           수정 요청 DTO
      */
     public void prepareModifyCategory(ModifyCategoryRequestDto originalData, ModifyCategoryRequestDto dto) {
+
         // categoryName: 값이 비어있으면 기존 값 사용
         if (dto.getCategoryName() == null || dto.getCategoryName().trim().isEmpty()) {
             dto.setCategoryName(originalData.getCategoryName());

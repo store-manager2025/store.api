@@ -45,8 +45,13 @@ public enum ErrorCode {
     NOT_CORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 
     // ui관련 에러
-    UI_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 ui 정보입니다.")
+    UI_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 ui 정보입니다."),
 
+    // 주문 관련 에러
+
+    // 장소 관련 에러
+    DUPLICATE_PLACE(HttpStatus.CONFLICT, "이미 존재하는 테이블입니다."),
+    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 정보가 없습니다.")
     ;
 
     private final HttpStatus status;
