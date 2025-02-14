@@ -17,13 +17,13 @@ public class UiResponseDto {
     private String colorCode;
     private String sizeType;
 
-    public static UiResponseDto toResponseDto(Long generatedUiId, UiLayout newUi) {
+    public static UiResponseDto toResponseDto(Long uiId, UiLayout ui) {
         return UiResponseDto.builder()
-                .uiId(generatedUiId)
-                .colorCode(newUi.getColorCode())
-                .positionX(newUi.getPositionX())
-                .positionY(newUi.getPositionY())
-                .sizeType(newUi.getSizeType())
+                .uiId(uiId)
+                .colorCode(ui.getColorCode())
+                .positionX(ui.getPositionX())
+                .positionY(ui.getPositionY())
+                .sizeType(ui.getSizeType())
                 .build();
     }
 }

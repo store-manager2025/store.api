@@ -1,4 +1,4 @@
-package com.project.storemanager_api.domain.place.entity;
+package com.project.storemanager_api.domain.place.dto.request;
 
 import lombok.*;
 

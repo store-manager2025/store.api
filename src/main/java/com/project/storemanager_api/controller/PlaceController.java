@@ -1,15 +1,14 @@
 package com.project.storemanager_api.controller;
 
-import com.project.storemanager_api.domain.place.entity.SavePlaceRequestDto;
+import com.project.storemanager_api.domain.place.dto.request.SavePlaceRequestDto;
+import com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto;
 import com.project.storemanager_api.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,12 +20,19 @@ public class PlaceController {
     private final PlaceService placeService;
 
     @PostMapping
-    public ResponseEntity<?> createPlace(@RequestBody SavePlaceRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> createPlace(@RequestBody SavePlaceRequestDto dto) {
         log.info("save place dto : {} ", dto);
         placeService.savePlace(dto);
         return ResponseEntity.ok().body(Map.of(
                 "message", "장소가 성공적으로 등록되었습니다."
         ));
+    }
+
+    @GetMapping("/all/{storeId}")
+    public ResponseEntity<List<PlaceResponseDto>> getAllPlaces(@PathVariable Long storeId) {
+        log.info("get all places : {}", storeId);
+        List<PlaceResponseDto> result = placeService.getPlaces(storeId);
+        return ResponseEntity.ok().body(result);
     }
 
 }
