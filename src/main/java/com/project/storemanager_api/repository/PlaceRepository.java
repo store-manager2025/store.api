@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 @Repository
@@ -18,4 +19,6 @@ public interface PlaceRepository {
     void savePlace(SavePlaceRequestDto dto);
 
     List<PlaceResponseDto> findListById(Long storeId);
+
+    Optional<PlaceResponseDto> findById(Long placeId);
 }

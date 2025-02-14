@@ -51,7 +51,7 @@ public enum ErrorCode {
 
     // 장소 관련 에러
     DUPLICATE_PLACE(HttpStatus.CONFLICT, "이미 존재하는 테이블입니다."),
-    EMPTY_PLACES(HttpStatus.NOT_FOUND, "좌석 정보가 없습니다.")
+    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 정보가 없습니다.")
     ;
 
     private final HttpStatus status;

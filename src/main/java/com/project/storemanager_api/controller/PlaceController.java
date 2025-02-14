@@ -35,4 +35,11 @@ public class PlaceController {
         return ResponseEntity.ok().body(result);
     }
 
+    @GetMapping("/{placeId}")
+    public ResponseEntity<PlaceResponseDto> getPlace(@PathVariable Long placeId) {
+        log.info("get place : {}", placeId);
+        PlaceResponseDto result = placeService.getPlace(placeId);
+        return ResponseEntity.ok().body(result);
+    }
+
 }

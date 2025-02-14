@@ -27,4 +27,13 @@
         WHERE store_id = #{storeId}
     </select>
 
+    <select id="findById" resultType="com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto">
+        SELECT
+            place_name,
+            ui_id,
+            place_id
+        FROM places
+        WHERE place_id = #{placeId}
+    </select>
+
 </mapper>

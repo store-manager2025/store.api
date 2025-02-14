@@ -63,7 +63,7 @@ public class PlaceService {
         if (exist != null) {
             List<PlaceResponseDto> list = placeRepository.findListById(storeId);
             if (list.isEmpty()) {
-                throw new PlaceException(ErrorCode.EMPTY_PLACES, "좌석 정보가 없습니다.");
+                throw new PlaceException(ErrorCode.PLACE_NOT_FOUND, "좌석 정보가 없습니다.");
             }
             for (PlaceResponseDto dto : list) {
                 UiLayout foundUi = uiRepository.findById(dto.getUiId())
@@ -73,5 +73,19 @@ public class PlaceService {
             return list;
         }
         return null;
+    }
+
+    @Transactional
+    public PlaceResponseDto getPlace(Long placeId) {
+        PlaceResponseDto foundPlace = placeRepository.findById(placeId)
+                .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND, ErrorCode.PLACE_NOT_FOUND.getMessage()));
+
+        // ui 담는 과정
+        UiLayout foundUi = uiRepository.findById(foundPlace.getUiId())
+                .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
+
+        foundPlace.setStyle(UiResponseDto.toResponseDto(foundPlace.getUiId(), foundUi));
+
+        return foundPlace;
     }
 }
