@@ -48,6 +48,7 @@ public enum ErrorCode {
     UI_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 ui 정보입니다."),
 
     // 주문 관련 에러
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
 
     // 장소 관련 에러
     DUPLICATE_PLACE(HttpStatus.CONFLICT, "이미 존재하는 테이블입니다."),

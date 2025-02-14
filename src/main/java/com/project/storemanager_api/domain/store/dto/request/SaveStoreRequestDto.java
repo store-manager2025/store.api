@@ -11,6 +11,8 @@ import lombok.*;
 public class SaveStoreRequestDto {
 
     @Setter
+    private Long storeId; // DB에서 auto-generated된 store_id를 받을 필드
+    @Setter
     private Long userId;
     @Setter
     private String password;

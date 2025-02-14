@@ -15,16 +15,17 @@ public class Order {
 
     private Long orderId;
     private Long storeId;
+    private Long placeId;
     private Integer price;
     private OrderType orderType;
     private OrderStatus orderStatus;
     private LocalDateTime orderedAt;
 
-    private enum OrderType {
+    public enum OrderType {
         CASH, CARD, UNPAID
     }
 
-    private enum OrderStatus {
+    public enum OrderStatus {
         SUCCESS, UNPAID
     }
 }
