@@ -133,5 +133,45 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    // order관련
+    @ExceptionHandler(UiException.class)
+    public ResponseEntity<ErrorResponse> handleOrderException(
+            OrderException e, HttpServletRequest request) {
+
+        log.error("OrderException occurred: {}", e.getMessage(), e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(e.getErrorCode().getStatus().value())
+                .error(e.getErrorCode().name())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(response);
+    }
+
+    // 장소(place)관련
+    @ExceptionHandler(PlaceException.class)
+    public ResponseEntity<ErrorResponse> handlePlaceException(
+            PlaceException e, HttpServletRequest request) {
+
+        log.error("PlaceException occurred: {}", e.getMessage(), e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(e.getErrorCode().getStatus().value())
+                .error(e.getErrorCode().name())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(response);
+    }
+
 }
 

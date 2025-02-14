@@ -47,6 +47,8 @@ public enum ErrorCode {
     // ui관련 에러
     UI_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 ui 정보입니다.")
 
+    // 주문 관련 에러
+
     ;
 
     private final HttpStatus status;
