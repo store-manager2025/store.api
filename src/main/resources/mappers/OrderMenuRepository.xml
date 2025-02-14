@@ -4,4 +4,14 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.OrderMenuRepository">
 
+    <insert id="saveOrderMenu" parameterType="map"
+            useGeneratedKeys="true"
+            keyProperty="item.orderMenuId"
+            keyColumn="order_menu_id">
+        INSERT INTO order_menus
+            (order_id, menu_id, order_item_quantity, order_price)
+        VALUES
+            (#{orderId}, #{item.menuId}, #{item.quantity}, #{item.orderPrice})
+    </insert>
+
 </mapper>
