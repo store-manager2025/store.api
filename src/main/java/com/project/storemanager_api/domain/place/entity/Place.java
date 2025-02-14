@@ -1,4 +1,4 @@
-package com.project.storemanager_api.domain.order.entity;
+package com.project.storemanager_api.domain.place.entity;
 
 import lombok.*;
 

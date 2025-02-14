@@ -134,7 +134,7 @@ public class GlobalExceptionHandler {
     }
 
     // order관련
-    @ExceptionHandler(UiException.class)
+    @ExceptionHandler(OrderException.class)
     public ResponseEntity<ErrorResponse> handleOrderException(
             OrderException e, HttpServletRequest request) {
 
