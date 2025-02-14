@@ -1,8 +1,8 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
-import com.project.storemanager_api.domain.order.dto.request.CreateOrderRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
+import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
 import com.project.storemanager_api.domain.order.entity.Order;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.MenuException;
@@ -23,7 +23,7 @@ public class OrderService {
     private final OrderMenuService orderMenuService;
     private final MenuRepository menuRepository; // 메뉴 가격 조회를 위한 Repository
 
-    public void createOrder(CreateOrderRequestDto dto) {
+    public void createOrder(OrderRequestDto dto) {
         // 1. 각 주문 항목의 가격 계산 및 총 주문 금액 합산
         int totalPrice = 0;
         for (OrderItemRequestDto item : dto.getItems()) {

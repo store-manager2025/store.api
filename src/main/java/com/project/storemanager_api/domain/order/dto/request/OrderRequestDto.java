@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateOrderRequestDto {
+public class OrderRequestDto {
     private Long storeId;                     // 주문이 발생한 매장 ID
     private Long placeId;                     // 주문 장소 ID
     private Integer totalPrice;               // 주문 전체 금액
