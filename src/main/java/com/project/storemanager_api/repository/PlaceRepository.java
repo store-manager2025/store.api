@@ -1,5 +1,6 @@
 package com.project.storemanager_api.repository;
 
+import com.project.storemanager_api.domain.place.dto.request.ModifyPlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.request.SavePlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,4 +22,9 @@ public interface PlaceRepository {
     List<PlaceResponseDto> findListById(Long storeId);
 
     Optional<PlaceResponseDto> findById(Long placeId);
+
+    // 수정요청과 비교할 원본데이터
+    Optional<ModifyPlaceRequestDto> findModifyDtoById(Long placeId);
+
+    void updatePlace(ModifyPlaceRequestDto dto);
 }

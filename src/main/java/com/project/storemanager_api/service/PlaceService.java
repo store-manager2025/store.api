@@ -3,6 +3,7 @@ package com.project.storemanager_api.service;
 import com.project.storemanager_api.domain.place.dto.request.ModifyPlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.request.SavePlaceRequestDto;
 import com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto;
+import com.project.storemanager_api.domain.ui.dto.request.ChangeStyleRequestDto;
 import com.project.storemanager_api.domain.ui.entity.UiLayout;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PlaceException;
@@ -11,6 +12,7 @@ import com.project.storemanager_api.exception.UiException;
 import com.project.storemanager_api.repository.PlaceRepository;
 import com.project.storemanager_api.repository.StoreRepository;
 import com.project.storemanager_api.repository.UiRepository;
+import com.project.storemanager_api.validator.PlaceValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
     private final UiRepository uiRepository;
     private final StoreRepository storeRepository;
+    private final PlaceValidator placeValidator;
 
     public void savePlace(SavePlaceRequestDto dto) {
         // storeId로 이미 있는 장소인지 검증
@@ -93,6 +96,19 @@ public class PlaceService {
 
     public void modifyPlace(ModifyPlaceRequestDto dto) {
         log.info("requestDTO : {} ", dto.toString());
+        // 원래 값 가져오기
+        ModifyPlaceRequestDto originalData = placeRepository.findModifyDtoById(dto.getPlaceId()).orElseThrow(
+                () -> new PlaceException(ErrorCode.PLACE_NOT_FOUND, ErrorCode.PLACE_NOT_FOUND.getMessage())
+        );
+        log.info("original Data = {}", originalData);
+        placeValidator.prepareModifyPlace(originalData, dto);
 
+        placeRepository.updatePlace(dto);
+
+        uiRepository.updateUi(ChangeStyleRequestDto.builder()
+                .uiId(dto.getUiId())
+                .sizeType(dto.getSizeType())
+                .colorCode("#FAFAFA")
+                .build());
     }
 }
