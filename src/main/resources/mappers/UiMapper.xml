@@ -9,9 +9,9 @@
             keyProperty="uiId"
             useGeneratedKeys="true">
         INSERT INTO ui_layout
-        (store_id)
+        (store_id, position_x, position_y, size_type, color_code)
         VALUES
-        (#{storeId})
+        (#{storeId}, #{positionX}, #{positionY}, #{sizeType}, #{colorCode})
     </insert>
 
     <select id="findById" resultType="com.project.storemanager_api.domain.ui.entity.UiLayout">
