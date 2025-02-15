@@ -36,12 +36,14 @@ public class OrderController {
 
 
     // 오더 단일 상세조회
-    @GetMapping("/{orderId}")
+    @GetMapping("/detail/{orderId}")
     public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
         log.info("오더 단일 상세 조회 : {} ", orderId);
         OrderDetailResponseDto result = orderService.getDetail(orderId);
         return ResponseEntity.ok().body(result);
     }
+
+
 
 
 
