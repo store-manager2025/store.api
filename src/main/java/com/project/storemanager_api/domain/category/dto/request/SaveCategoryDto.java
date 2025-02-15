@@ -16,4 +16,11 @@ public class SaveCategoryDto {
     private Long uiId;
     private String categoryName;
 
+    // ui
+    private String colorCode;
+    private Integer positionX;
+    private Integer positionY;
+    private String sizeType;
+
+
 }
