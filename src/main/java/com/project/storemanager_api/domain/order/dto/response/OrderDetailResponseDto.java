@@ -1,6 +1,7 @@
 package com.project.storemanager_api.domain.order.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseDto;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class OrderDetailResponseDto {
     private LocalDateTime orderedAt;
     private String placeName;
 
-//    @JsonIgnore
+    @JsonIgnore
     private List<Long> menuId;
 
     // 중첩 객체로 메뉴 상세 정보

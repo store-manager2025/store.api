@@ -72,4 +72,15 @@
         WHERE menu_id = #{menuId}
     </update>
 
+    <select id="findMenuInOrderDtoById" resultType="com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseDto">
+        SELECT
+        M.menu_name,
+        M.discount_rate,
+        M.price * om.order_item_quantity AS totalPrice,
+        OM.order_item_quantity AS totalCount
+        FROM menus M
+        JOIN order_menus OM on M.menu_id = om.menu_id
+        WHERE OM.order_id = #{orderId}
+    </select>
+
 </mapper>

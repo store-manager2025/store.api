@@ -1,5 +1,6 @@
 package com.project.storemanager_api.service;
 
+import com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -95,6 +98,10 @@ public class OrderService {
         OrderDetailResponseDto result = orderRepository.findDetailById(orderId).orElseThrow(
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
         );
+//        List<MenuDetailResponseDto> menuDetail = new ArrayList<>();
+            List<MenuDetailResponseDto> responseDto = menuRepository.findMenuInOrderDtoById(orderId);
+        result.setMenuDetail(responseDto);
+
         return result;
 
     }

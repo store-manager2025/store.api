@@ -2,6 +2,7 @@ package com.project.storemanager_api.repository;
 
 import com.project.storemanager_api.domain.menu.dto.request.ModifyMenuRequestDto;
 import com.project.storemanager_api.domain.menu.dto.request.SaveMenuRequestDto;
+import com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -25,4 +26,7 @@ public interface MenuRepository {
     void updateMenu(ModifyMenuRequestDto dto);
 
     void deleteMenuById(Long menuId);
+
+    // order쪽에서 내보낼 정보만 담은 Dto
+    List<MenuDetailResponseDto> findMenuInOrderDtoById(Long menuId);
 }
