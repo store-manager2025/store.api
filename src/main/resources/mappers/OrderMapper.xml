@@ -3,6 +3,24 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.OrderRepository">
+
+    <resultMap id="orderDetailResultMap" type="com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto">
+        <!-- 주문 기본 정보 매핑 -->
+        <id property="orderId" column="order_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="price" column="price"/>
+        <result property="orderType" column="order_type"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="placeName" column="place_name"/>
+
+        <!-- 여러 메뉴 ID를 List<Long>로 매핑 -->
+        <collection property="menuId" ofType="java.lang.Long">
+            <result column="menu_id"/>
+        </collection>
+    </resultMap>
+
+
     <insert id="saveOrder" parameterType="com.project.storemanager_api.domain.order.entity.Order"
             useGeneratedKeys="true" keyProperty="orderId" keyColumn="order_id">
         INSERT INTO orders
@@ -24,4 +42,21 @@
             price = #{updatedPrice}
         WHERE order_id = #{orderId}
     </update>
+
+    <select id="findDetailById" resultMap="orderDetailResultMap" parameterType="long">
+        SELECT
+        O.order_id,
+        O.store_id,
+        O.price,
+        O.order_type,
+        O.order_status,
+        O.ordered_at,
+        P.place_name,
+        M.menu_id
+        FROM orders O
+        JOIN order_menus OM ON O.order_id = OM.order_id
+        JOIN places P ON O.place_id = P.place_id
+        JOIN menus M ON OM.menu_id = M.menu_id
+        WHERE O.order_id = #{orderId}
+    </select>
 </mapper>

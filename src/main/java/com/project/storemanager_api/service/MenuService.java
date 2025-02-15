@@ -36,9 +36,17 @@ public class MenuService {
     public void saveMenu(SaveMenuRequestDto dto) {
 
         // storeId가 있어야 ui에 insert를 하고 생성된 uiId를 받을 수 있다.
+        Integer positionX = dto.getPositionX() != null ? dto.getPositionX() : 0;
+        Integer positionY = dto.getPositionY() != null ? dto.getPositionY() : 0;
+        String sizeType = dto.getSizeType() != null ? dto.getSizeType() : "";
+        String colorCode = dto.getColorCode() != null ? dto.getColorCode() : "#FAFAFA";
+
         UiLayout newUi = UiLayout.builder()
                 .storeId(dto.getStoreId())
-                .colorCode("#FAFAFA") // 기본값
+                .colorCode(colorCode) // 기본값
+                .positionX(positionX)
+                .positionY(positionY)
+                .sizeType(sizeType)
                 .build();
 
         // 1. ui 객체를 저장 후 생성된 id를 받아온다

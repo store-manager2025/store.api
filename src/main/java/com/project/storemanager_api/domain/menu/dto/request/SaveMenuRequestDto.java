@@ -19,5 +19,12 @@ public class SaveMenuRequestDto {
     private Long storeId;
     private String menuName;
     private Integer price;
+    private Integer discountRate;
+
+    // ui
+    private String colorCode;
+    private Integer positionX;
+    private Integer positionY;
+    private String sizeType;
 
 }
