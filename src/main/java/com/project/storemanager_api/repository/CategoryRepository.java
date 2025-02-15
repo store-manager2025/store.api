@@ -4,6 +4,7 @@ import com.project.storemanager_api.domain.category.dto.request.ModifyCategoryRe
 import com.project.storemanager_api.domain.category.dto.request.SaveCategoryDto;
 import com.project.storemanager_api.domain.category.dto.response.CategoryResponseDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,5 +26,5 @@ public interface CategoryRepository {
     void deleteCategoryById(Long categoryId);
 
     // 수정
-    void modifyCategory(String categoryName, Long categoryId);
+    void modifyCategory(@Param("categoryName") String categoryName,@Param("categoryId") Long categoryId);
 }
