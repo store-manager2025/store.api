@@ -1,5 +1,6 @@
 package com.project.storemanager_api.repository;
 
+import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,6 +17,8 @@ public interface OrderRepository {
     Optional<Order> findById(Long orderId);
 
     void updatePrice(@Param("orderId") Long orderId, @Param("updatedPrice") int updatedPrice);
+
+    Optional<OrderDetailResponseDto> findDetailById(Long orderId);
 }
 
 

@@ -3,6 +3,7 @@ package com.project.storemanager_api.service;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
+import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.MenuException;
@@ -89,4 +90,12 @@ public class OrderService {
         return totalPrice;
     }
 
+    public OrderDetailResponseDto getDetail(Long orderId) {
+
+        OrderDetailResponseDto result = orderRepository.findDetailById(orderId).orElseThrow(
+                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
+        );
+        return result;
+
+    }
 }

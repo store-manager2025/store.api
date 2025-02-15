@@ -3,6 +3,34 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.OrderRepository">
+
+    <resultMap id="orderDetailResultMap" type="com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto">
+        <!-- 주문 기본 정보 -->
+        <id property="orderId" column="order_id" />
+        <result property="storeId" column="store_id" />
+        <result property="price" column="price" />
+        <result property="orderType" column="order_type" />
+        <result property="orderStatus" column="order_status" />
+        <result property="orderedAt" column="ordered_at" />
+        <result property="placeName" column="place_name" />
+
+        <!-- 메뉴 상세 정보를 중첩 매핑 (association) -->
+        <collection property="menuDetail" ofType="com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseDto">
+            <id property="menuId" column="menu_id" />
+            <result property="menuName" column="menu_name" />
+            <result property="discountRate" column="discount_rate" />
+            <!-- 메뉴의 가격은 별도의 alias(menu_price)를 사용 -->
+            <result property="price" column="menu_price" />
+        </collection>
+
+        <!-- 주문 항목 상세 정보를 중첩 매핑 (association) -->
+        <collection property="orderMenuDetail" ofType="com.project.storemanager_api.domain.order.dto.response.OrderMenuDetailResponseDto">
+            <id property="orderMenuId" column="order_menu_id" />
+            <result property="orderItemQuantity" column="order_item_quantity" />
+            <result property="orderPrice" column="order_price" />
+        </collection>
+    </resultMap>
+
     <insert id="saveOrder" parameterType="com.project.storemanager_api.domain.order.entity.Order"
             useGeneratedKeys="true" keyProperty="orderId" keyColumn="order_id">
         INSERT INTO orders
@@ -24,4 +52,32 @@
             price = #{updatedPrice}
         WHERE order_id = #{orderId}
     </update>
+
+    <select id="findDetailById" resultMap="orderDetailResultMap" parameterType="long">
+        SELECT
+            O.order_id,
+            O.store_id,
+            O.price,
+            O.order_type,
+            O.order_status,
+            O.ordered_at,
+            P.place_name,
+
+        -- 메뉴 정보
+            M.menu_id,
+            M.menu_name,
+            M.discount_rate,
+            M.price AS menu_price,
+
+        -- 주문 항목 정보
+            OM.order_menu_id,
+            OM.order_item_quantity,
+            OM.order_price
+
+        FROM orders O
+        JOIN order_menus OM ON O.order_id = OM.order_id
+        JOIN places P ON O.place_id = P.place_id
+        JOIN menus M ON OM.menu_id = M.menu_id
+        WHERE O.order_id = #{orderId}
+    </select>
 </mapper>
