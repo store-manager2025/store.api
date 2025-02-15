@@ -28,10 +28,9 @@ public class OrderDetailResponseDto {
     private LocalDateTime orderedAt;
     private String placeName;
 
+//    @JsonIgnore
+    private List<Long> menuId;
+
     // 중첩 객체로 메뉴 상세 정보
-
     private List<MenuDetailResponseDto> menuDetail;
-    // 중첩 객체로 주문 항목 상세 정보
-
-    private List<OrderMenuDetailResponseDto> orderMenuDetail;
 }
