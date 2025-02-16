@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.storemanager_api.repository.OrderMenuRepository">
+
+    <!-- 주문 항목 저장 (INSERT) -->
+    <insert id="saveOrderMenu" parameterType="map"
+            useGeneratedKeys="true"
+            keyProperty="item.orderMenuId"
+            keyColumn="order_menu_id">
+        INSERT INTO order_menus
+        (order_id, menu_id, order_item_quantity, order_price)
+        VALUES
+        (#{orderId}, #{item.menuId}, #{item.quantity}, #{item.orderPrice})
+    </insert>
+
+    <!-- 주문 항목 조회: 특정 주문(orderId)에서 특정 메뉴(menuId)를 찾음 -->
+    <select id="findByOrderIdAndMenuId" resultType="com.project.storemanager_api.domain.order.entity.OrderMenu" parameterType="map">
+        SELECT *
+        FROM order_menus
+        WHERE order_id = #{orderId} AND menu_id = #{menuId}
+    </select>
+
+    <!-- 주문 항목 업데이트: 수량과 가격 업데이트 -->
+    <update id="updateQuantityAndPrice" parameterType="map">
+        UPDATE order_menus
+        SET
+        order_item_quantity = order_item_quantity + #{quantity},
+        order_price = order_price + #{price}
+        WHERE order_id = #{orderId} AND menu_id = #{menuId}
+    </update>
+
+</mapper>
