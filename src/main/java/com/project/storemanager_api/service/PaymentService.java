@@ -26,10 +26,11 @@ public class PaymentService {
         // 주문 id가 유효한지 검증
         checkOrderId(dto.getOrderId());
 
-
         paymentRepository.savePayment(dto);
 
     }
+
+
 
     private Order checkOrderId(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(
