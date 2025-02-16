@@ -58,22 +58,21 @@ public class OrderService {
     // 추가 주문 로직
     public void addOrder(OrderRequestDto dto, Long orderId) {
 
-        // 우선 기존 주문 내역이 있는지 조회
+        // 1. 우선 기존 주문 내역이 있는지 조회
         Order exist = orderRepository.findById(orderId).orElseThrow(
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
         );
-        if (exist != null) {
 
-            // 1. 각 주문 항목의 가격 계산 및 총 주문 금액 합산
-            int updatedPrice = getTotalPrice(dto) + exist.getPrice();
+        // 2. 각 주문 항목의 가격 계산 및 총 주문 금액 합산
+        int updatedPrice = getTotalPrice(dto) + exist.getPrice();
 
-            // 3. orders 테이블에 totalPrice 새롭게 update
-            orderRepository.updatePrice(orderId, updatedPrice);
+        // 3. orders 테이블에 totalPrice 새롭게 update
+        orderRepository.updatePrice(orderId, updatedPrice);
 
-            // 4. 각 주문 항목 저장: OrderMenuService를 통해 처리 (order_menu 테이블에 저장)
-            for (OrderItemRequestDto item : dto.getItems()) {
-                orderMenuService.createOrderMenu(orderId, item);
-            }
+        // 4. 각 주문 항목 저장: OrderMenuService를 통해 처리 (order_menu 테이블에 저장)
+        for (OrderItemRequestDto item : dto.getItems()) {
+            orderMenuService.createOrderMenu(orderId, item);
+
         }
     }
 

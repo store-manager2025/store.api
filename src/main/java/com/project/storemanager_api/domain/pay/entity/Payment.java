@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 public class Payment {
 
     private Long paymentId;
-    private Long orderId; // 주문과 연결 1:1관계
+    private Long orderId; // 주문과 연결 1:1관계, NOT NULL
     private PaymentType paymentType;
-    private Integer paymentAmount; // 해당 결제 방식의 결제 금액 (총 금액)
+    private Integer paymentAmount; // 해당 결제 방식의 결제 금액 (총 금액), NOT NULL
     private Integer discountAmount; // 할인 결제인 경우
     private LocalDateTime createdAt;
 
