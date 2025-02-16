@@ -39,7 +39,7 @@ public enum ErrorCode {
     EMPTY_DATA(HttpStatus.BAD_REQUEST, "이름, 비밀번호 중 한개의 값이라도 존재해야 합니다."),
     SAME_DATA(HttpStatus.BAD_REQUEST, "이전과 동일한 입력값입니다."),
 
-    // store관련 에러
+    // 매장 관련 에러
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),
     NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 4자리의 숫자여야 합니다."),
     NOT_CORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
@@ -52,7 +52,9 @@ public enum ErrorCode {
 
     // 장소 관련 에러
     DUPLICATE_PLACE(HttpStatus.CONFLICT, "이미 존재하는 테이블입니다."),
-    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 정보가 없습니다.")
+    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 정보가 없습니다."),
+
+    // 결제 관련 에러
     ;
 
     private final HttpStatus status;
