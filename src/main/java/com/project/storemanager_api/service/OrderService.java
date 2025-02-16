@@ -4,13 +4,16 @@ import com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseD
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
+import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.MenuException;
 import com.project.storemanager_api.exception.OrderException;
+import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.OrderRepository;
+import com.project.storemanager_api.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMenuService orderMenuService;
     private final MenuRepository menuRepository; // 메뉴 가격 조회를 위한 Repository
+    private final StoreRepository storeRepository;
 
     public void createOrder(OrderRequestDto dto) {
         // 1. 각 주문 항목의 가격 계산 및 총 주문 금액 합산
@@ -104,5 +108,16 @@ public class OrderService {
 
         return result;
 
+    }
+
+    @Transactional
+    public List<OrderAllResponseDto> getAllOrders(Long storeId) {
+        String exist = storeRepository.findPasswordById(storeId).orElseThrow(
+                () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
+        );
+        if (exist != null) {
+            return orderRepository.findAllListByStoreId(storeId);
+        }
+        return null;
     }
 }

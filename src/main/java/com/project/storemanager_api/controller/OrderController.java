@@ -1,6 +1,7 @@
 package com.project.storemanager_api.controller;
 
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
+import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,7 +22,7 @@ public class OrderController {
 
     // 주문 최초 생성
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> createOrder(@RequestBody OrderRequestDto dto) {
         log.info("주문 생성 요청: {}", dto);
         orderService.createOrder(dto);
         return ResponseEntity.ok(Map.of("message", "주문이 성공적으로 생성되었습니다."));
@@ -28,7 +30,7 @@ public class OrderController {
 
     // 추가 주문
     @PostMapping("/add/{orderId}")
-    public ResponseEntity<?> addOrder(@RequestBody OrderRequestDto dto, @PathVariable Long orderId) {
+    public ResponseEntity<Map<String, Object>> addOrder(@RequestBody OrderRequestDto dto, @PathVariable Long orderId) {
         log.info("주문 누적 요청: {}", dto);
         orderService.addOrder(dto, orderId);
         return ResponseEntity.ok(Map.of("message", "주문추가가 완료되었습니다."));
@@ -37,13 +39,19 @@ public class OrderController {
 
     // 오더 단일 상세조회
     @GetMapping("/detail/{orderId}")
-    public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
+    public ResponseEntity<OrderDetailResponseDto> getOrder(@PathVariable Long orderId) {
         log.info("오더 단일 상세 조회 : {} ", orderId);
         OrderDetailResponseDto result = orderService.getDetail(orderId);
         return ResponseEntity.ok().body(result);
     }
 
-
+    // 모든 오더 기록을 조회하는 API
+    @GetMapping("/all/{storeId}")
+    public ResponseEntity<List<OrderAllResponseDto>> getAllOrders(@PathVariable Long storeId) {
+        log.info("모든 오더 기록 조회 요청 - {}", storeId);
+        List<OrderAllResponseDto> result = orderService.getAllOrders(storeId);
+        return ResponseEntity.ok().body(result);
+    }
 
 
 

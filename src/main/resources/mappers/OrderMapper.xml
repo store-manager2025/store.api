@@ -59,4 +59,13 @@
         JOIN menus M ON OM.menu_id = M.menu_id
         WHERE O.order_id = #{orderId}
     </select>
+
+    <select id="findAllListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
+        SELECT
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
+        FROM orders
+        WHERE store_id = #{storeId}
+        GROUP BY  DATE_FORMAT(ordered_at, '%Y%m%d')
+    </select>
 </mapper>

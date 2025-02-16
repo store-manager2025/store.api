@@ -1,11 +1,13 @@
 package com.project.storemanager_api.repository;
 
+import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -19,6 +21,8 @@ public interface OrderRepository {
     void updatePrice(@Param("orderId") Long orderId, @Param("updatedPrice") int updatedPrice);
 
     Optional<OrderDetailResponseDto> findDetailById(Long orderId);
+
+    List<OrderAllResponseDto> findAllListByStoreId(Long storeId);
 }
 
 
