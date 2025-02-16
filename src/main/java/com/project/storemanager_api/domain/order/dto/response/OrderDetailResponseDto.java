@@ -22,6 +22,7 @@ public class OrderDetailResponseDto {
 
     private Long orderId;
     private Long storeId;
+    private Long placeId;
     private Integer price;
     private OrderType orderType;
     private OrderStatus orderStatus;
