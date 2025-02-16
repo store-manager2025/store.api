@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,11 @@ public interface OrderRepository {
     Optional<OrderDetailResponseDto> findDetailById(Long orderId);
 
     List<OrderAllResponseDto> findAllListByStoreId(Long storeId);
+
+    List<OrderAllResponseDto> findPeriodOrderListByStoreId(
+            @Param("storeId") Long storeId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }
 
 

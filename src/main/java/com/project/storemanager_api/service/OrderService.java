@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -103,7 +104,7 @@ public class OrderService {
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
         );
 //        List<MenuDetailResponseDto> menuDetail = new ArrayList<>();
-            List<MenuDetailResponseDto> responseDto = menuRepository.findMenuInOrderDtoById(orderId);
+        List<MenuDetailResponseDto> responseDto = menuRepository.findMenuInOrderDtoById(orderId);
         result.setMenuDetail(responseDto);
 
         return result;
@@ -112,12 +113,26 @@ public class OrderService {
 
     @Transactional
     public List<OrderAllResponseDto> getAllOrders(Long storeId) {
-        String exist = storeRepository.findPasswordById(storeId).orElseThrow(
+        String exist = validateStoreId(storeId);
+        if (exist == null) {
+            return null;
+        }
+        return orderRepository.findAllListByStoreId(storeId);
+    }
+
+
+    public List<OrderAllResponseDto> getPeriodOrderList(Long storeId, LocalDate startDate, LocalDate endDate) {
+        String exist = validateStoreId(storeId);
+        if (exist == null) {
+            return null;
+        }
+        return orderRepository.findPeriodOrderListByStoreId(storeId, startDate, endDate);
+    }
+
+
+    private String validateStoreId(Long storeId) {
+        return storeRepository.findPasswordById(storeId).orElseThrow(
                 () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
         );
-        if (exist != null) {
-            return orderRepository.findAllListByStoreId(storeId);
-        }
-        return null;
     }
 }

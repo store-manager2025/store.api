@@ -6,9 +6,11 @@ import com.project.storemanager_api.domain.order.dto.response.OrderDetailRespons
 import com.project.storemanager_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +55,16 @@ public class OrderController {
         return ResponseEntity.ok().body(result);
     }
 
-
+    // 특정 기간에 대한 주문 목록 조회
+    @GetMapping
+    public ResponseEntity<List<OrderAllResponseDto>> getPeriodOrderList(
+            @RequestParam Long storeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        log.info("시작일 : {} , 종료일 : {}", startDate, endDate);
+        List<OrderAllResponseDto> result = orderService.getPeriodOrderList(storeId, startDate, endDate);
+        return ResponseEntity.ok().body(result);
+    }
 
 
 
