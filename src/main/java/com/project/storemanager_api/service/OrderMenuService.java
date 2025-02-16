@@ -1,11 +1,14 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
+import com.project.storemanager_api.domain.order.entity.OrderMenu;
 import com.project.storemanager_api.repository.OrderMenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -16,12 +19,24 @@ public class OrderMenuService {
     private final OrderMenuRepository orderMenuRepository;
 
     /**
-     * 주문 항목을 저장하는 메서드
+     * 추가 주문 시, 이미 주문한 메뉴가 있다면 수량 및 가격 업데이트, 없으면 신규 저장
+     *
      * @param orderId 주문 ID
      * @param item    주문 항목 DTO
      */
     public void createOrderMenu(Long orderId, OrderItemRequestDto item) {
-        orderMenuRepository.saveOrderMenu(orderId, item);
-        log.info("주문 항목 저장: orderId={}, item={}", orderId, item);
+        // 동일한 주문 내 동일한 메뉴가 이미 존재하는지 조회
+        Optional<OrderMenu> existing = orderMenuRepository.findByOrderIdAndMenuId(orderId, item.getMenuId());
+
+        if (existing.isPresent()) {
+            // 기존 항목이 있다면, 수량과 가격을 업데이트
+            orderMenuRepository.updateQuantityAndPrice(orderId, item.getMenuId(), item.getQuantity(), item.getOrderPrice());
+            log.info("기존 주문 항목 업데이트: orderId={}, menuId={}, 추가 수량={}, 추가 가격={}",
+                    orderId, item.getMenuId(), item.getQuantity(), item.getOrderPrice());
+        } else {
+            // 없으면 새로운 주문 항목 삽입
+            orderMenuRepository.saveOrderMenu(orderId, item);
+            log.info("신규 주문 항목 저장: orderId={}, item={}", orderId, item);
+        }
     }
 }
