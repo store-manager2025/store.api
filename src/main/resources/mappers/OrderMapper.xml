@@ -59,4 +59,41 @@
         JOIN menus M ON OM.menu_id = M.menu_id
         WHERE O.order_id = #{orderId}
     </select>
+
+    <select id="findAllListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
+        SELECT
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
+        FROM orders
+        WHERE store_id = #{storeId}
+        GROUP BY  DATE_FORMAT(ordered_at, '%Y%m%d')
+    </select>
+
+    <select id="findPeriodOrderListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
+        SELECT
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
+        FROM orders
+        WHERE store_id = #{storeId}
+        AND DATE_FORMAT(ordered_at, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
+        GROUP BY DATE_FORMAT(ordered_at, '%Y-%m-%d');
+    </select>
+
+    <select id="findDailyListByStoreId" resultMap="orderDetailResultMap">
+        SELECT
+            O.order_id,
+            O.store_id,
+            O.price,
+            O.order_type,
+            O.order_status,
+            O.ordered_at,
+            P.place_name,
+            M.menu_id
+        FROM orders O
+        JOIN order_menus OM ON O.order_id = OM.order_id
+        JOIN places P ON O.place_id = P.place_id
+        JOIN menus M ON OM.menu_id = M.menu_id
+        WHERE O.store_id = #{storeId}
+        AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
+    </select>
 </mapper>

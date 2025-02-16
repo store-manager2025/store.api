@@ -26,5 +26,5 @@ public interface CategoryRepository {
     void deleteCategoryById(Long categoryId);
 
     // 수정
-    void modifyCategory(@Param("categoryName") String categoryName,@Param("categoryId") Long categoryId);
+    void modifyCategory(@Param("categoryName") String categoryName, @Param("categoryId") Long categoryId);
 }
