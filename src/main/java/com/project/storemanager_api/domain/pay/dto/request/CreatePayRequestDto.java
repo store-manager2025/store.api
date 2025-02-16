@@ -12,10 +12,14 @@ import java.util.List;
 @Builder
 public class CreatePayRequestDto {
 
+    @Setter
+    private Long paymentId;
+
     private Long orderId;
-    private String placeName;
+    private Long placeId;
     private Integer totalAmount;
     private Integer discountAmount;
+
     private List<CreatePaymentDetailDto> payList;
 
 }
