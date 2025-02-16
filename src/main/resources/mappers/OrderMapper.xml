@@ -68,4 +68,14 @@
         WHERE store_id = #{storeId}
         GROUP BY  DATE_FORMAT(ordered_at, '%Y%m%d')
     </select>
+
+    <select id="findPeriodOrderListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
+        SELECT
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
+        FROM orders
+        WHERE store_id = #{storeId}
+        AND DATE_FORMAT(ordered_at, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
+        GROUP BY DATE_FORMAT(ordered_at, '%Y-%m-%d');
+    </select>
 </mapper>
