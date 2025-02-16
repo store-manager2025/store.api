@@ -21,14 +21,20 @@ public interface OrderRepository {
 
     void updatePrice(@Param("orderId") Long orderId, @Param("updatedPrice") int updatedPrice);
 
+    // 단일 조회
     Optional<OrderDetailResponseDto> findDetailById(Long orderId);
 
+    // 한 매장에 대한 전체 기록 조회
     List<OrderAllResponseDto> findAllListByStoreId(Long storeId);
 
+    // 특정 기간에 대한 기록 조회
     List<OrderAllResponseDto> findPeriodOrderListByStoreId(
             @Param("storeId") Long storeId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    // 하루별 기록 상세 조회
+    List<OrderDetailResponseDto> findDailyListByStoreId(@Param("storeId") Long storeId, @Param("date") LocalDate date);
 }
 
 

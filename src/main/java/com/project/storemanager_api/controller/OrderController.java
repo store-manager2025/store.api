@@ -66,6 +66,12 @@ public class OrderController {
         return ResponseEntity.ok().body(result);
     }
 
-
-
+    // 하루에 대한 주문 리스트
+    @GetMapping("/daily")
+    public ResponseEntity<List<OrderDetailResponseDto>> getDailyOrderList(
+            @RequestParam Long storeId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            List<OrderDetailResponseDto> result = orderService.getDailyOrderList(storeId, date);
+            return ResponseEntity.ok().body(result);
+    }
 }

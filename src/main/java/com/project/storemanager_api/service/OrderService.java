@@ -1,6 +1,5 @@
 package com.project.storemanager_api.service;
 
-import com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseDto;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
@@ -104,8 +103,7 @@ public class OrderService {
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
         );
 //        List<MenuDetailResponseDto> menuDetail = new ArrayList<>();
-        List<MenuDetailResponseDto> responseDto = menuRepository.findMenuInOrderDtoById(orderId);
-        result.setMenuDetail(responseDto);
+        result.setMenuDetail(menuRepository.findMenuInOrderDtoById(orderId));
 
         return result;
 
@@ -113,26 +111,32 @@ public class OrderService {
 
     @Transactional
     public List<OrderAllResponseDto> getAllOrders(Long storeId) {
-        String exist = validateStoreId(storeId);
-        if (exist == null) {
-            return null;
-        }
+        validateStoreId(storeId);
         return orderRepository.findAllListByStoreId(storeId);
     }
 
 
+    @Transactional
     public List<OrderAllResponseDto> getPeriodOrderList(Long storeId, LocalDate startDate, LocalDate endDate) {
-        String exist = validateStoreId(storeId);
-        if (exist == null) {
-            return null;
-        }
+        validateStoreId(storeId);
         return orderRepository.findPeriodOrderListByStoreId(storeId, startDate, endDate);
     }
 
+    @Transactional
+    public List<OrderDetailResponseDto> getDailyOrderList(Long storeId, LocalDate date) {
+        validateStoreId(storeId);
+        List<OrderDetailResponseDto> result = orderRepository.findDailyListByStoreId(storeId, date);
+        for (OrderDetailResponseDto dto : result) {
+            dto.setMenuDetail(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
+        }
+        return result;
+    }
 
-    private String validateStoreId(Long storeId) {
-        return storeRepository.findPasswordById(storeId).orElseThrow(
+    @Transactional
+    public void validateStoreId(Long storeId) {
+        storeRepository.findPasswordById(storeId).orElseThrow(
                 () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
         );
     }
+
 }
