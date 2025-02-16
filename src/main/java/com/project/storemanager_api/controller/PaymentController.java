@@ -27,4 +27,6 @@ public class PaymentController {
         return ResponseEntity.ok().body(Map.of("message", "결제가 완료되었습니다."));
     }
 
+
+
 }

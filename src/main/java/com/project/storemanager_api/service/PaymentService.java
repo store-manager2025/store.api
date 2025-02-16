@@ -31,6 +31,9 @@ public class PaymentService {
         // 유효하다면 결제 정보 저장
         paymentRepository.savePayment(dto);
 
+        // order쪽에서의 orderStatus도 SUCCESS로 변경
+        orderRepository.updateOrderStatus(dto.getOrderId(), "SUCCESS");
+
         // 저장 후 생성된 id 받아와서 결제디테일 테이블에 저장
         Long generatedPaymentId = dto.getPaymentId();
         log.info("생성된 결제ID : {}", generatedPaymentId);
