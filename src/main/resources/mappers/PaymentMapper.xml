@@ -8,8 +8,29 @@
             useGeneratedKeys="true"
             keyProperty="paymentId">
         INSERT INTO payments
-            (order_id, place_id, payment_amount, discount_amount)
+            (store_id, order_id, place_id, payment_amount, discount_amount)
         VALUES
-            (#{orderId}, #{placeId}, #{totalAmount}, #{discountAmount})
+            (#{storeId}, #{orderId}, #{placeId}, #{totalAmount}, #{discountAmount})
     </insert>
+
+    <select id="findAllByStoreId" resultType="com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto">
+        SELECT
+            PAY.payment_id,
+            PAY.payment_amount,
+            PAY.discount_amount,
+            PAY.created_at,
+            PLACE.place_name,
+        -- 메뉴 이름과 수량을 "이름 수량" 형태로 연결하여 하나의 문자열로 합침
+            GROUP_CONCAT(
+            DISTINCT CONCAT(M.menu_name, ' ', OM.order_item_quantity) SEPARATOR ', ' ) AS menu_names
+        FROM payments PAY
+            INNER JOIN places PLACE ON PAY.place_id = PLACE.place_id
+            INNER JOIN orders O ON PAY.order_id = O.order_id
+            INNER JOIN order_menus OM ON O.order_id = OM.order_id
+            INNER JOIN menus M ON OM.menu_id = M.menu_id
+        WHERE PAY.store_id = #{storeId}
+        GROUP BY
+        PAY.payment_id;
+    </select>
+
 </mapper>

@@ -14,6 +14,8 @@ public class CreatePayRequestDto {
 
     @Setter
     private Long paymentId;
+    @Setter
+    private Long storeId;
 
     private Long orderId;
     private Long placeId;
