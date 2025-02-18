@@ -1,6 +1,7 @@
 package com.project.storemanager_api.controller;
 
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
+import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +34,9 @@ public class PaymentController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<PaymentResponseDto> getPaymentDetails(@RequestParam Long paymentId) {
+    public ResponseEntity<PaymentDetailResponseDto> getPaymentDetails(@RequestParam Long paymentId) {
         log.info("Get payment details request: {}", paymentId);
-        PaymentResponseDto result = paymentService.getPaymentDetail(paymentId);
+        PaymentDetailResponseDto result = paymentService.getPaymentDetail(paymentId);
         return ResponseEntity.ok().body(result);
     }
 

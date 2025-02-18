@@ -60,7 +60,7 @@
 
     <!-- 특정 결제 상세 조회 -->
     <select id="findPaymentDetail"
-            resultType="com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto"
+            resultType="com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto"
             parameterType="long">
         SELECT
             pay.payment_id,
@@ -70,10 +70,9 @@
             place.place_name,
 
         -- (메뉴 이름과 수량)
-            GROUP_CONCAT(
-        DISTINCT CONCAT(M.menu_name, ' ', OM.order_item_quantity)
-        SEPARATOR ', '
-        ) AS menu_names,
+            GROUP_CONCAT
+        (DISTINCT CONCAT('메뉴: ',M.menu_name, ' ', '수량: ',OM.order_item_quantity, ' 가격: ', M.price)
+        SEPARATOR ', ') AS menu_list,
 
         <include refid="casePaymentType" /> AS payment_type
 

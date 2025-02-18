@@ -1,6 +1,7 @@
 package com.project.storemanager_api.repository;
 
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
+import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,5 @@ public interface PaymentRepository {
     List<PaymentResponseDto> findAllByStoreId(Long storeId);
 
     // 결제 정보 단일 조회
-    Optional<PaymentResponseDto> findPaymentDetail(Long paymentId);
+    Optional<PaymentDetailResponseDto> findPaymentDetail(Long paymentId);
 }

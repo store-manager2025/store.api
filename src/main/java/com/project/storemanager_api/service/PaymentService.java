@@ -3,6 +3,7 @@ package com.project.storemanager_api.service;
 import com.project.storemanager_api.domain.order.entity.Order;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
+import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.exception.*;
 import com.project.storemanager_api.repository.OrderRepository;
@@ -14,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -70,10 +71,16 @@ public class PaymentService {
 
     }
 
-    public PaymentResponseDto getPaymentDetail(Long paymentId) {
-        return paymentRepository.findPaymentDetail(paymentId).orElseThrow(
+    public PaymentDetailResponseDto getPaymentDetail(Long paymentId) {
+        PaymentDetailResponseDto result = paymentRepository.findPaymentDetail(paymentId).orElseThrow(
                 () -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾을 수 없습니다.")
         );
+        log.info("result: {}", result.toString());
+
+        // menuList 파싱
+        result.setMenuInfo(parseMenuList(result.getMenuList()));
+
+        return result;
     }
 
     private void validateStoreId(Long storeId) {
@@ -93,5 +100,62 @@ public class PaymentService {
         placeRepository.findById(placeId).orElseThrow(
                 () -> new PlaceException(ErrorCode.INVALID_ID, "장소 정보를 찾을 수 없습니다.")
         );
+    }
+
+    public static List<Map<String, Object>> parseMenuList(String data) {
+        if (data == null || data.isBlank()) {
+            return null;
+        }
+
+        // 쉼표로 구분된 세그먼트 split
+        // "메뉴: 간장치킨 수량: 1 가격: 16000", " 메뉴: 사이다 수량: 4 가격: 2000", " 메뉴: 휠렛버거 수량: 2 가격: 5600"
+        String[] segments = data.split(",");
+
+        List<Map<String, Object>> menuList = new ArrayList<>();
+
+        for (String seg : segments) {
+            seg = seg.trim(); // 앞뒤 공백 제거
+
+            // 공백 기준으로 토큰화
+            // ex: ["메뉴:", "간장치킨", "수량:", "1", "가격:", "16000"]
+            String[] tokens = seg.split("\\s+");
+
+            String menuName = null;
+            Integer quantity = null;
+            Integer price = null;
+
+            for (int i = 0; i < tokens.length; i++) {
+                switch (tokens[i]) {
+                    case "메뉴:":
+                        if (i + 1 < tokens.length) {
+                            menuName = tokens[i + 1];
+                        }
+                        break;
+                    case "수량:":
+                        if (i + 1 < tokens.length) {
+                            quantity = Integer.valueOf(tokens[i + 1]);
+                        }
+                        break;
+                    case "가격:":
+                        if (i + 1 < tokens.length) {
+                            price = Integer.valueOf(tokens[i + 1]);
+                        }
+                        break;
+                    default:
+                        // 무시
+                }
+            }
+
+            // 제대로 파싱되었다면 Map에 담아서 List에 추가
+            if (menuName != null && quantity != null && price != null) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("menuName", menuName);
+                map.put("quantity", quantity);
+                map.put("price", price);
+                menuList.add(map);
+            }
+        }
+
+        return menuList;
     }
 }
