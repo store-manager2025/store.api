@@ -64,8 +64,11 @@ public class PlaceService {
             for (PlaceResponseDto dto : list) {
                 UiLayout foundUi = uiRepository.findById(dto.getUiId())
                         .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
+                dto.setPositionX(foundUi.getPositionX());
+                dto.setPositionY(foundUi.getPositionY());
                 dto.setSizeType(foundUi.getSizeType());
                 dto.setUiId(foundUi.getUiId());
+
             }
             return list;
         }
@@ -82,6 +85,8 @@ public class PlaceService {
                 .orElseThrow(() -> new UiException(ErrorCode.INVALID_ID, ErrorCode.INVALID_ID.getMessage()));
 
         foundPlace.setSizeType(foundUi.getSizeType());
+        foundPlace.setPositionX(foundUi.getPositionX());
+        foundPlace.setPositionY(foundUi.getPositionY());
         foundPlace.setUiId(foundUi.getUiId());
 
         return foundPlace;

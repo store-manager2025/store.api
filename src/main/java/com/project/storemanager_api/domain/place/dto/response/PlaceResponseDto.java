@@ -3,6 +3,7 @@ package com.project.storemanager_api.domain.place.dto.response;
 import lombok.*;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -11,12 +12,11 @@ import lombok.*;
 public class PlaceResponseDto {
 
     private Long placeId;
-
-    @Setter
     private Long uiId;
-
     private String placeName;
 
-    @Setter
+    // ui정보
     private String sizeType;
+    private Integer positionX;
+    private Integer positionY;
 }
