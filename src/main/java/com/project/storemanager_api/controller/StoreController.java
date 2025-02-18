@@ -9,10 +9,12 @@ import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import com.project.storemanager_api.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -44,11 +46,16 @@ public class StoreController {
         return ResponseEntity.ok().body(storeList);
     }
 
+
     @PostMapping("/login")
-    public ResponseEntity<StoreDetailResponseDto> loginInStore(@RequestBody StoreLoginRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> loginInStore(@AuthenticationPrincipal Long userId, @RequestBody StoreLoginRequestDto dto) {
         log.info("StoreLoginRequestDto : {}", dto.toString());
-        StoreDetailResponseDto storeDetailResponseDto = storeService.loginInStore(dto);
-        return ResponseEntity.ok().body(storeDetailResponseDto);
+        StoreDetailResponseDto storeDetail = storeService.loginInStore(userId, dto);
+        return ResponseEntity.ok(Map.of(
+                "message", "매장 로그인 성공",
+                "storeDetail", storeDetail,
+                "accessToken", storeDetail.getAccessToken()  // 새 토큰 포함
+        ));
     }
 
     /**
@@ -58,12 +65,20 @@ public class StoreController {
      * @return updatedStoreDto - 수정된 store 객체
      */
     @PatchMapping
-    public ResponseEntity<Map<String, String>> modifyStore(@RequestBody ModifyStoreRequestDto dto) {
-        log.info("ModifyStoreRequestDto : {}", dto.toString());
-         storeService.modifyStoreInfo(dto);
-        return ResponseEntity.ok().body(Map.of(
-                "message", "매장이 성공적으로 수정 되었습니다."
-        ));
+    public ResponseEntity<Map<String, String>> modifyStore(@RequestBody ModifyStoreRequestDto dto,
+                                                           HttpServletRequest request) {
+        // Authorization 헤더에서 토큰 추출 (Bearer 토큰 가정)
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Missing or invalid token"));
+        }
+        String token = authHeader.substring(7);  // "Bearer " 제거
+
+        // 서비스에 토큰과 DTO 전달
+        storeService.modifyStoreInfo(dto, token);
+
+        return ResponseEntity.ok(Map.of("message", "매장이 성공적으로 수정되었습니다."));
     }
 
     // 매장 삭제 API
