@@ -20,7 +20,4 @@ public class StoreDetailResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
 
-    @Setter
-    private String accessToken;
-
 }

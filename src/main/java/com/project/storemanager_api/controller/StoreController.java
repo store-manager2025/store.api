@@ -48,14 +48,10 @@ public class StoreController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginInStore(@AuthenticationPrincipal Long userId, @RequestBody StoreLoginRequestDto dto) {
+    public ResponseEntity<StoreDetailResponseDto> loginInStore(@RequestBody StoreLoginRequestDto dto) {
         log.info("StoreLoginRequestDto : {}", dto.toString());
-        StoreDetailResponseDto storeDetail = storeService.loginInStore(userId, dto);
-        return ResponseEntity.ok(Map.of(
-                "message", "매장 로그인 성공",
-                "storeDetail", storeDetail,
-                "accessToken", storeDetail.getAccessToken()  // 새 토큰 포함
-        ));
+        StoreDetailResponseDto storeDetail = storeService.loginInStore(dto);
+        return ResponseEntity.ok().body(storeDetail);
     }
 
     /**

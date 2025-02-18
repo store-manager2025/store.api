@@ -76,7 +76,7 @@ public class StoreService {
      * 입력된 비밀번호와 DB에 저장된 인코딩된 비밀번호를 비교하여 매장 상세 정보 반환
      */
     @Transactional(readOnly = true)
-    public StoreDetailResponseDto loginInStore(Long userId, StoreLoginRequestDto dto) {
+    public StoreDetailResponseDto loginInStore(StoreLoginRequestDto dto) {
         // 로그인 입력 검증
         storeValidator.validateStoreLoginInput(dto);
         // DB에서 인코딩된 비밀번호 조회 (없으면 예외 발생)
@@ -85,16 +85,8 @@ public class StoreService {
         log.info("originPassword: {}", originPassword);
         // 비밀번호 비교 검증
         storeValidator.validatePassword(dto.getPassword(), originPassword);
-        // 비밀번호 일치 시,
-        List<Long> storeIds = storeRepository.findStoreIdsByUserId(userId);
-
-        // 새 토큰 생성 (storeIds 포함)
-        String newAccessToken = jwtTokenProvider.addStoreIdInClaims(userId, storeIds);
 
         // 매장 정보 상세 조회
-        StoreDetailResponseDto storeDetail = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
-        storeDetail.setAccessToken(newAccessToken);
-
         return storeRepository.findStoreDetailByStoreId(dto.getStoreId());
     }
 

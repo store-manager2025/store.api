@@ -1,5 +1,6 @@
 package com.project.storemanager_api.jwt;
 
+import com.project.storemanager_api.repository.StoreRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
+    private final StoreRepository storeRepository;
 
     // 비밀키를 생성
     private SecretKey key;
@@ -55,7 +57,12 @@ public class JwtTokenProvider {
         // 만료 시간
         Date validity = new Date(now.getTime() + validityTime);
 
+        List<Long> storeIdList = storeRepository.findStoreIdsByUserId(userId);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("storeIds", storeIdList); // 사용자가 소유한 매장 id 리스트
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setIssuer("store") // 발급자 정보
                 .setIssuedAt(now) // 발급 시간
                 .setExpiration(validity) // 만료 시간
