@@ -55,6 +55,7 @@ public enum ErrorCode {
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 정보가 없습니다."),
 
     // 결제 관련 에러
+    TOO_MUCH_PRICE(HttpStatus.BAD_REQUEST, "필요한 금액을 초과합니다."),
     ;
 
     private final HttpStatus status;

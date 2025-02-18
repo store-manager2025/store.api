@@ -99,4 +99,11 @@
         WHERE O.store_id = #{storeId}
         AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
     </select>
+
+    <update id="updateOrderStatus">
+        UPDATE orders
+        SET
+            order_status = #{success}
+        WHERE order_id = #{orderId}
+    </update>
 </mapper>

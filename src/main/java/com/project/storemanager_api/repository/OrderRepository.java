@@ -35,6 +35,9 @@ public interface OrderRepository {
 
     // 하루별 기록 상세 조회
     List<OrderDetailResponseDto> findDailyListByStoreId(@Param("storeId") Long storeId, @Param("date") LocalDate date);
+
+    // 결제 상태 변경
+    void updateOrderStatus(Long orderId, String success);
 }
 
 

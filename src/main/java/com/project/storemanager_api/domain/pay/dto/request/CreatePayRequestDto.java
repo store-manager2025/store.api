@@ -4,8 +4,6 @@ import lombok.*;
 
 import java.util.List;
 
-import static com.project.storemanager_api.domain.pay.entity.Payment.PaymentType;
-
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -14,22 +12,16 @@ import static com.project.storemanager_api.domain.pay.entity.Payment.PaymentType
 @Builder
 public class CreatePayRequestDto {
 
+    @Setter
+    private Long paymentId;
+    @Setter
+    private Long storeId;
+
     private Long orderId;
-    private String placeName;
+    private Long placeId;
     private Integer totalAmount;
     private Integer discountAmount;
-    private List<PayRequestDto> payList;
 
-
-    @Getter
-    @ToString
-    @EqualsAndHashCode
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    private static class PayRequestDto {
-        private Integer paidMoney;
-        private PaymentType paymentType;
-    }
+    private List<CreatePaymentDetailDto> payList;
 
 }

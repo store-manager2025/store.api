@@ -14,4 +14,10 @@ public class SavePlaceRequestDto {
     private Long uiId;
     private Long storeId;
     private String placeName;
+
+    // ui
+    private String colorCode;
+    private Integer positionX;
+    private Integer positionY;
+    private String sizeType;
 }
