@@ -19,8 +19,6 @@ public class PaymentResponseDto {
     private Long paymentId;
     private String placeName;
     private Integer paymentAmount;
-    private Integer discountAmount;
-    private String menuNames;
     private PaymentType paymentType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
