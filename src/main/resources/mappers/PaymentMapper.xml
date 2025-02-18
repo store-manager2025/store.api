@@ -39,7 +39,7 @@
         GROUP_CONCAT(DISTINCT pd.payment_type ORDER BY pd.payment_type SEPARATOR ',') AS all_types
         FROM payments p
         JOIN payment_detail pd ON p.payment_id = pd.payment_id
-        WHERE p.store_id = 16
+        WHERE p.store_id = #{storeId}
         GROUP BY p.payment_id
         ) pay
         JOIN places place ON pay.place_id = place.place_id
@@ -47,6 +47,42 @@
         JOIN order_menus OM ON O.order_id = OM.order_id
         JOIN menus M ON OM.menu_id = M.menu_id
         GROUP BY pay.payment_id;
+    </select>
+
+    <select id="findPaymentDetail" resultType="com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto">
+        SELECT
+            pay.payment_id,
+            pay.payment_amount,
+            pay.discount_amount,
+            pay.created_at,
+            place.place_name,
+
+        -- (메뉴 이름과 수량)
+            GROUP_CONCAT(DISTINCT CONCAT(M.menu_name, ' ', OM.order_item_quantity)
+        SEPARATOR ', ') AS menu_names,
+
+        -- 모든 결제 타입을 하나의 문자열(all_types)에 합침
+        CASE
+            WHEN all_types LIKE '%CASH%'
+            AND all_types LIKE '%CARD%'  THEN 'MIX'
+            WHEN all_types = 'CASH'          THEN 'CASH'
+            WHEN all_types = 'CARD'          THEN 'CARD'
+            WHEN all_types = 'MIX'           THEN 'MIX'
+            ELSE 'DIVIDE'
+            END AS payment_type
+
+        FROM (
+        SELECT p.*,
+        GROUP_CONCAT(DISTINCT pd.payment_type ORDER BY pd.payment_type SEPARATOR ',') AS all_types
+        FROM payments p
+        JOIN payment_detail pd ON p.payment_id = pd.payment_id
+        WHERE p.payment_id = #{paymentId}
+        GROUP BY p.payment_id
+        ) pay
+        JOIN places place ON pay.place_id = place.place_id
+        JOIN orders O ON pay.order_id = O.order_id
+        JOIN order_menus OM ON O.order_id = OM.order_id
+        JOIN menus M ON OM.menu_id = M.menu_id
     </select>
 
 </mapper>

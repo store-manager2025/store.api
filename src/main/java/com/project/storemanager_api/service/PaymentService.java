@@ -70,6 +70,12 @@ public class PaymentService {
 
     }
 
+    public PaymentResponseDto getPaymentDetail(Long paymentId) {
+        return paymentRepository.findPaymentDetail(paymentId).orElseThrow(
+                () -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾을 수 없습니다.")
+        );
+    }
+
     private void validateStoreId(Long storeId) {
         storeRepository.findPasswordById(storeId).orElseThrow(
                 () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
@@ -88,5 +94,4 @@ public class PaymentService {
                 () -> new PlaceException(ErrorCode.INVALID_ID, "장소 정보를 찾을 수 없습니다.")
         );
     }
-
 }

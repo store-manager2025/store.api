@@ -27,10 +27,18 @@ public class PaymentController {
     }
 
     @GetMapping("/all/{storeId}")
-    public ResponseEntity<?> getAllPayments(@PathVariable Long storeId) {
+    public ResponseEntity<List<PaymentResponseDto>> getAllPayments(@PathVariable Long storeId) {
         List<PaymentResponseDto> allPayments = paymentService.getAllPayments(storeId);
         return ResponseEntity.ok().body(allPayments);
     }
+
+    @GetMapping("/detail")
+    public ResponseEntity<PaymentResponseDto> getPaymentDetails(@RequestParam Long paymentId) {
+        log.info("Get payment details request: {}", paymentId);
+        PaymentResponseDto result = paymentService.getPaymentDetail(paymentId);
+        return ResponseEntity.ok().body(result);
+    }
+
 
 
 
