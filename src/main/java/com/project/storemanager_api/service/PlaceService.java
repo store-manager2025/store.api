@@ -42,15 +42,8 @@ public class PlaceService {
             }
         }
 
-        // ui 하나 생성
-        UiLayout newUi = UiLayout.builder()
-                .storeId(dto.getStoreId())
-                .colorCode("#FAFAFA") // 기본값
-                .build();
 
-        uiRepository.saveUi(newUi);
-        Long generatedUiId = newUi.getUiId();
-        log.info("방금 save된 ui id - {} ", generatedUiId);
+        Long generatedUiId = createUi(dto);
 
         dto.setUiId(generatedUiId);
         placeRepository.savePlace(dto);
@@ -118,5 +111,25 @@ public class PlaceService {
         if (exist != null) {
             placeRepository.deletePlaceById(placeId);
         }
+    }
+
+    private Long createUi(SavePlaceRequestDto dto) {
+        Integer positionX = dto.getPositionX() != null ? dto.getPositionX() : 0;
+        Integer positionY = dto.getPositionY() != null ? dto.getPositionY() : 0;
+        String sizeType = dto.getSizeType() != null ? dto.getSizeType() : "";
+
+        // ui 하나 생성
+        UiLayout newUi = UiLayout.builder()
+                .storeId(dto.getStoreId())
+                .positionX(positionX)
+                .positionY(positionY)
+                .colorCode("#FAFAFA") // 무결성때문에 기본값
+                .sizeType(sizeType)
+                .build();
+
+        uiRepository.saveUi(newUi);
+        Long generatedUiId = newUi.getUiId();
+        log.info("방금 save된 ui id - {} ", generatedUiId);
+        return generatedUiId;
     }
 }
