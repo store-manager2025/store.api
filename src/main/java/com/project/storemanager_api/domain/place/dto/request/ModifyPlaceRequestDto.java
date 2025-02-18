@@ -17,4 +17,6 @@ public class ModifyPlaceRequestDto {
     // 수정 가능한 값들
     private String placeName;
     private String sizeType;
+    private Integer positionX;
+    private Integer positionY;
 }

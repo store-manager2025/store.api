@@ -101,6 +101,8 @@ public class PlaceService {
         uiRepository.updateUi(ChangeStyleRequestDto.builder()
                 .uiId(dto.getUiId())
                 .sizeType(dto.getSizeType())
+                .positionY(dto.getPositionY())
+                .positionX(dto.getPositionX())
                 .colorCode("#FAFAFA")
                 .build());
     }
