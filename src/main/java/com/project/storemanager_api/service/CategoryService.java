@@ -40,24 +40,7 @@ public class CategoryService {
             throw new MenuException(ErrorCode.EMPTY_DATA, "값을 모두 입력해주세요.");
         }
 
-        // storeId가 있어야 ui에 insert를 하고 생성된 uiId를 받을 수 있다.
-        Integer positionX = dto.getPositionX() != null ? dto.getPositionX() : 0;
-        Integer positionY = dto.getPositionY() != null ? dto.getPositionY() : 0;
-        String sizeType = dto.getSizeType() != null ? dto.getSizeType() : "";
-        String colorCode = dto.getColorCode() != null ? dto.getColorCode() : "#FAFAFA";
-
-        UiLayout newUi = UiLayout.builder()
-                .storeId(dto.getStoreId())
-                .colorCode(colorCode) // 기본값
-                .positionX(positionX)
-                .positionY(positionY)
-                .sizeType(sizeType)
-                .build();
-
-        // 1. ui 객체를 저장 후 생성된 id를 받아온다
-        uiRepository.saveUi(newUi);
-        Long generatedUiId = newUi.getUiId();
-        log.info("방금 save된 ui id - {} ", generatedUiId);
+        Long generatedUiId = createUi(dto);
 
         // 2. 받아온 id를 dto에 저장
         dto.setUiId(generatedUiId);
@@ -147,5 +130,26 @@ public class CategoryService {
         if (exist != null) {
             categoryRepository.deleteCategoryById(categoryId);
         }
+    }
+
+    private Long createUi(SaveCategoryDto dto) {
+        Integer positionX = dto.getPositionX() != null ? dto.getPositionX() : 0;
+        Integer positionY = dto.getPositionY() != null ? dto.getPositionY() : 0;
+        String sizeType = dto.getSizeType() != null ? dto.getSizeType() : "";
+        String colorCode = dto.getColorCode() != null ? dto.getColorCode() : "#FAFAFA";
+
+        UiLayout newUi = UiLayout.builder()
+                .storeId(dto.getStoreId())
+                .colorCode(colorCode) // 기본값
+                .positionX(positionX)
+                .positionY(positionY)
+                .sizeType(sizeType)
+                .build();
+
+        // 1. ui 객체를 저장 후 생성된 id를 받아온다
+        uiRepository.saveUi(newUi);
+        Long generatedUiId = newUi.getUiId();
+        log.info("방금 save된 ui id - {} ", generatedUiId);
+        return generatedUiId;
     }
 }
