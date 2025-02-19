@@ -1,5 +1,6 @@
 package com.project.storemanager_api.jwt;
 
+import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -65,9 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 토큰이 유효하므로, 토큰에서 사용자 id 추출
             Long userId = tokenProvider.getCurrentLoginUserId(token);
             List<Long> currentLoginStoreIds = tokenProvider.getCurrentLoginStoreIds(token);
-            currentLoginStoreIds.forEach(System.out::println);
-
-
+            CustomUserPrincipal userPrincipal = new CustomUserPrincipal(userId, currentLoginStoreIds);
             // Spring Security에게 접근을 허용하라고 명령 (막아두었던 요청 허용)
             // Authentication 객체 생성 → SecurityContextHolder에 저장
             Authentication authentication =
@@ -76,13 +75,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         두번째 파라미터: 비밀번호를 저장 (일반적으로 저장하지 않음)
                         세번째 파라미터: 권한정보를 저장 (나중에 인가 처리시 사용)
                      */
-                    new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
+                    new UsernamePasswordAuthenticationToken(userPrincipal, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            log.info("authentication success: userId - {}", userId);
+            log.info("authentication success: userId - {}", userPrincipal);
         }
     }
-
 
 
     /**
@@ -119,6 +117,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isApiRequest(HttpServletRequest request) {
         return request.getRequestURI().startsWith("/api/");
     }
-
-
 }
