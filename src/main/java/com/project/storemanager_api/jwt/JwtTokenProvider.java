@@ -109,26 +109,5 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-
-    // 매장 로그인 시 JWT claims에 추가 정보를 담는 메서드
-    public String addStoreIdInClaims(Long userId, List<Long> storeIdList) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("storeIds", storeIdList); // 사용자가 소유한 매장 id 리스트
-
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + jwtProperties.getAccessTokenValidityTime());
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuer("store")
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .setSubject(String.valueOf(userId))
-                .signWith(key)
-                .compact();
-
-    }
-
 }
 

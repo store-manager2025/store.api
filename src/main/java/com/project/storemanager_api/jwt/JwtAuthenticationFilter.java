@@ -111,7 +111,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    // 현재 요청이 API요청인지 JSP페이지 라우팅 요청인지를 확인
+    // 현재 요청이 API요청인지 라우팅 요청인지를 확인
     private boolean isApiRequest(HttpServletRequest request) {
         return request.getRequestURI().startsWith("/api/");
     }

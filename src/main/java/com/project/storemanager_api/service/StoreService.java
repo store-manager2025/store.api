@@ -9,18 +9,14 @@ import com.project.storemanager_api.domain.store.dto.response.StoreDetailRespons
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
-import com.project.storemanager_api.exception.UserException;
-import com.project.storemanager_api.jwt.JwtTokenProvider;
 import com.project.storemanager_api.repository.StoreRepository;
 import com.project.storemanager_api.validator.StoreValidator;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Service
@@ -33,7 +29,6 @@ public class StoreService {
     private final PasswordEncoder passwordEncoder;
     private final StoreValidator storeValidator;
     private final CategoryService categoryService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 매장 생성
@@ -98,11 +93,9 @@ public class StoreService {
      * .
      * 입력된 값이 비어있는 경우, 기존 값을 그대로 사용하고 비밀번호는 인코딩 후 업데이트 처리
      * @param dto   수정 요청 DTO (storeId, storeName, storePlace, password 등)
-     * @param request JWT 토큰 (Authorization 헤더에서 추출)
+     *
      */
-    public void modifyStoreInfo(ModifyStoreRequestDto dto, HttpServletRequest request) {
-
-        validateToken(dto.getStoreId(), request);
+    public void modifyStoreInfo(ModifyStoreRequestDto dto) {
 
         // 기존 매장 상세 정보 조회
         StoreDetailResponseDto currentStore = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
@@ -133,28 +126,5 @@ public class StoreService {
         }
         // 삭제 실행
         storeRepository.deleteStore(dto.getStoreId());
-    }
-
-    // 토큰이 유효한지 검증, 유효하다면 Bearer를 제거한 토큰을 리턴
-    private void validateToken(Long storeId, HttpServletRequest request) {
-        // Authorization 헤더에서 토큰 추출 (Bearer 토큰)
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new UserException(ErrorCode.UNAUTHORIZED, "접근 권한이 없습니다.");
-        }
-        validateUserAuthority(storeId, authHeader.substring(7));
-    }
-
-    // 토큰에 저장된 storeId들이 유효한지 검증
-    private void validateUserAuthority(Long storeId, String token) {
-        // JWT 토큰 파싱하여 Claims 가져오기
-        Claims claims = jwtTokenProvider.parseClaims(token);
-        // "storeIds" claim에 저장된 매장 ID 리스트 추출
-        List<?> storeIds = claims.get("storeIds", List.class);
-        log.info("storeIds!!!: {}", storeIds);
-        if (storeIds == null ||
-                storeIds.stream().noneMatch(id -> id.toString().equals(storeId.toString()))) {
-            throw new StoreException(ErrorCode.UNAUTHORIZED, "해당 매장에 대한 접근 권한이 없습니다.");
-        }
     }
 }

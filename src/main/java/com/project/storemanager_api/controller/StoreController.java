@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -47,10 +46,7 @@ public class StoreController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<StoreDetailResponseDto> loginInStore(@RequestBody StoreLoginRequestDto dto,
-                                                               HttpServletRequest request) {
-
-
+    public ResponseEntity<StoreDetailResponseDto> loginInStore(@RequestBody StoreLoginRequestDto dto) {
 
         log.info("StoreLoginRequestDto : {}", dto.toString());
         StoreDetailResponseDto storeDetail = storeService.loginInStore(dto);
@@ -64,11 +60,10 @@ public class StoreController {
      * @return updatedStoreDto - 수정된 store 객체
      */
     @PatchMapping
-    public ResponseEntity<Map<String, String>> modifyStore(@RequestBody ModifyStoreRequestDto dto,
-                                                           HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> modifyStore(@RequestBody ModifyStoreRequestDto dto) {
 
         // 서비스에 토큰과 DTO 전달
-        storeService.modifyStoreInfo(dto, request);
+        storeService.modifyStoreInfo(dto);
 
         return ResponseEntity.ok(Map.of("message", "매장이 성공적으로 수정되었습니다."));
     }
