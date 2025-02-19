@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -33,18 +37,18 @@ public class JwtTokenProvider {
 
     // 토큰 발급 로직
     // 엑세스 토큰 생성 (사용자가 들고다닐 신분증) : 유효기간이 짧다.
-    public String createAccessToken(Long userId, String email) {
-        return createToken(userId, jwtProperties.getAccessTokenValidityTime());
+    public String createAccessToken(Long userId, List<Long> storeIdList) {
+        return createToken(userId, storeIdList, jwtProperties.getAccessTokenValidityTime());
     }
     // 리프레시 토큰 생성 (서버가 보관할 신분증을 재발급하기 위한 정보) : 유효기간이 비교적 길다.
-    public String createRefreshToken(Long userId, String email) {
+    public String createRefreshToken(Long userId, List<Long> storeIdList) {
 
-        return createToken(userId, jwtProperties.getRefreshTokenValidityTime());
+        return createToken(userId, storeIdList, jwtProperties.getRefreshTokenValidityTime());
     }
 
     // 공통 토큰 생성 로직
     // 엑세스,리프레시 생성 로직은 똑같고, 시간만 다르다
-    private String createToken(Long userId, long validityTime) {
+    private String createToken(Long userId, List<Long> storeIdList, long validityTime) {
 
         // 현재 시간
         Date now = new Date();
@@ -52,7 +56,13 @@ public class JwtTokenProvider {
         // 만료 시간
         Date validity = new Date(now.getTime() + validityTime);
 
+        // claims에 userId와 storeIdList를 담는다.
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("storeIdList", storeIdList);
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setIssuer("store") // 발급자 정보
                 .setIssuedAt(now) // 발급 시간
                 .setExpiration(validity) // 만료 시간
@@ -93,6 +103,14 @@ public class JwtTokenProvider {
      */
     public Long getCurrentLoginUserId(String token) {
         return Long.valueOf(parseClaims(token).getSubject());
+    }
+
+    public List<Long> getCurrentLoginStoreIds(String token) {
+        Claims claims = parseClaims(token);
+        List<?> storeIds = claims.get("storeIdList", List.class);
+        return storeIds.stream()
+                .map(id -> ((Number) id).longValue())
+                .collect(Collectors.toList());
     }
 
     /**

@@ -30,5 +30,6 @@ public interface StoreRepository {
 
     void deleteStore(Long storeId);
 
+    List<Long> findStoreIdsByUserId(Long userId);
 
 }

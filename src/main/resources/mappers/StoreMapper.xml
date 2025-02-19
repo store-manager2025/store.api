@@ -56,4 +56,11 @@
         WHERE store_id = #{storeId}
     </delete>
 
+    <select id="findStoreIdsByUserId" resultType="java.lang.Long">
+        SELECT
+            store_id
+        FROM stores
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>

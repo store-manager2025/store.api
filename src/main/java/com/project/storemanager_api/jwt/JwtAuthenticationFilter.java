@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 // 토큰 검증만 수행 - 토큰이 없거나 위조되거나 만료되었으면 요청을 돌려보냄
 @Component
@@ -63,6 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
             // 토큰이 유효하므로, 토큰에서 사용자 id 추출
             Long userId = tokenProvider.getCurrentLoginUserId(token);
+            List<Long> currentLoginStoreIds = tokenProvider.getCurrentLoginStoreIds(token);
+            currentLoginStoreIds.forEach(System.out::println);
+
 
             // Spring Security에게 접근을 허용하라고 명령 (막아두었던 요청 허용)
             // Authentication 객체 생성 → SecurityContextHolder에 저장
