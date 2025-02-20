@@ -1,5 +1,6 @@
 package com.project.storemanager_api.controller;
 
+import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.store.dto.request.DeleteStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
@@ -61,12 +62,10 @@ public class StoreController {
      * @param dto - storePlace, storeName, password를 수정할 수 있는 DTO
      * @return updatedStoreDto - 수정된 store 객체
      */
+    @StoreAuthCheck
     @PatchMapping
     public ResponseEntity<Map<String, String>> modifyStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
                                                            @RequestBody ModifyStoreRequestDto dto) {
-
-        storeValidator.checkStoreAuth(userInfo, dto.getStoreId());
-        log.info("ModifyStoreRequestDto : {}", dto.toString());
          storeService.modifyStoreInfo(dto);
         return ResponseEntity.ok().body(Map.of(
                 "message", "매장이 성공적으로 수정 되었습니다."
