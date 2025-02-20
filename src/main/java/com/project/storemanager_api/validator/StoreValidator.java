@@ -4,8 +4,10 @@ import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestD
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
+import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
+import com.project.storemanager_api.exception.UserException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -90,5 +92,18 @@ public class StoreValidator {
                 dto.setPassword(passwordEncoder.encode(dto.getPassword()));
             }
         }
+    }
+
+    /**
+     *
+     * @param userInfo - 입력을 보낸 사용자의 userId, storeIdList가 들어있는 객체
+     * @param storeId - 요청을 원하는 storeId
+     */
+    public void checkStoreAuth(CustomUserPrincipal userInfo, Long storeId) {
+        // 대조검사 실행
+        if (userInfo.getStoreIds().stream().noneMatch(storeId::equals)) {
+            throw new UserException(ErrorCode.UNAUTHORIZED, ErrorCode.UNAUTHORIZED.getMessage());
+        }
+
     }
 }

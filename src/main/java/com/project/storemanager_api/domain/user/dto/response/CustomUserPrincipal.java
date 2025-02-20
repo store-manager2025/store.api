@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomUserPrincipal {
+
     private Long userId;
     private List<Long> storeIds;
 

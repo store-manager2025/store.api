@@ -8,6 +8,7 @@ import com.project.storemanager_api.domain.store.dto.response.StoreDetailRespons
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.StoreService;
+import com.project.storemanager_api.validator.StoreValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class StoreController {
 
     private final StoreService storeService;
+    private final StoreValidator storeValidator;
 
     // 새 매장 생성
     @PostMapping
@@ -55,11 +57,15 @@ public class StoreController {
     /**
      * 매장 정보 수정 API
      *
+     * @param userInfo - 검증을 위한, 입력을 보낸 사용자의 id, storeIdList가 들어있는 객체
      * @param dto - storePlace, storeName, password를 수정할 수 있는 DTO
      * @return updatedStoreDto - 수정된 store 객체
      */
     @PatchMapping
-    public ResponseEntity<Map<String, String>> modifyStore(@RequestBody ModifyStoreRequestDto dto) {
+    public ResponseEntity<Map<String, String>> modifyStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
+                                                           @RequestBody ModifyStoreRequestDto dto) {
+
+        storeValidator.checkStoreAuth(userInfo, dto.getStoreId());
         log.info("ModifyStoreRequestDto : {}", dto.toString());
          storeService.modifyStoreInfo(dto);
         return ResponseEntity.ok().body(Map.of(
