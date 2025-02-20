@@ -9,7 +9,6 @@ import com.project.storemanager_api.domain.store.dto.response.StoreDetailRespons
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.StoreService;
-import com.project.storemanager_api.validator.StoreValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +25,11 @@ import java.util.Map;
 public class StoreController {
 
     private final StoreService storeService;
-    private final StoreValidator storeValidator;
 
     // 새 매장 생성
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createStore(@AuthenticationPrincipal CustomUserPrincipal userInfo, @RequestBody SaveStoreRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> createStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
+                                                           @RequestBody SaveStoreRequestDto dto) {
         storeService.saveStore(dto, userInfo.getUserId());
         return ResponseEntity.ok().body(Map.of(
                 "message", "매장이 성공적으로 생성 되었습니다."
@@ -73,8 +72,10 @@ public class StoreController {
     }
 
     // 매장 삭제 API
+    @StoreAuthCheck
     @DeleteMapping
-    public ResponseEntity<Map<String, Object>> deleteStore(@RequestBody DeleteStoreRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> deleteStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
+                                                           @RequestBody DeleteStoreRequestDto dto) {
         log.info("DeleteStoreRequestDto : {}", dto);
         storeService.deleteStore(dto);
         return ResponseEntity.ok().body(Map.of(

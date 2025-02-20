@@ -11,6 +11,12 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.HandlerMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Component
 @Aspect
@@ -24,15 +30,53 @@ public class StoreAuthAspect {
     public void checkStoreAuth(JoinPoint joinPoint, StoreAuthCheck storeAuthCheck) {
         log.info("joinPoint: {}", joinPoint);
         Object[] args = joinPoint.getArgs();
+
         // 첫 번째 인자는 CustomUserPrincipal라고 가정
         CustomUserPrincipal userInfo = (CustomUserPrincipal) args[0];
         // 두 번째 인자는 storeId를 포함하는 DTO라고 가정 (예: ModifyStoreRequestDto)
         Object dto = args[1];
-        Long storeId;
+        Long storeId = null;
         try {
-            // DTO에 getStoreId() 메서드가 있다고 가정
+            // 우선 DTO에 getStoreId() 메서드가 있으면 호출
             storeId = (Long) dto.getClass().getMethod("getStoreId").invoke(dto);
         } catch (Exception e) {
+            log.warn("DTO에서 storeId 추출 실패: {}", e.getMessage());
+        }
+
+        // DTO에서 storeId를 추출하지 못했으면, 요청 객체에서 추출 시도
+        if (storeId == null) {
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attr != null) {
+                HttpServletRequest request = attr.getRequest();
+
+                // PathVariable 추출
+                @SuppressWarnings("unchecked")
+                Map<String, String> pathVars = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+                if (pathVars != null && pathVars.containsKey("storeId")) {
+                    try {
+                        storeId = Long.valueOf(pathVars.get("storeId"));
+                        log.info("PathVariable에서 storeId 추출: {}", storeId);
+                    } catch (NumberFormatException e) {
+                        log.warn("PathVariable storeId 변환 실패: {}", e.getMessage());
+                    }
+                }
+
+                // Query Parameter에서 추출
+                if (storeId == null) {
+                    String storeIdStr = request.getParameter("storeId");
+                    if (storeIdStr != null && !storeIdStr.isEmpty()) {
+                        try {
+                            storeId = Long.valueOf(storeIdStr);
+                            log.info("Query Parameter에서 storeId 추출: {}", storeId);
+                        } catch (NumberFormatException e) {
+                            log.warn("Query Parameter storeId 변환 실패: {}", e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (storeId == null) {
             throw new StoreException(ErrorCode.EMPTY_DATA, "Store Id가 없습니다.");
         }
         log.info("StoreAuthAspect: userInfo = {}, storeId = {}", userInfo, storeId);

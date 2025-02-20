@@ -8,10 +8,12 @@ import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.exception.UserException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class StoreValidator {
 
     private final PasswordEncoder passwordEncoder;
@@ -102,8 +104,10 @@ public class StoreValidator {
     public void checkStoreAuth(CustomUserPrincipal userInfo, Long storeId) {
         // 대조검사 실행
         if (userInfo.getStoreIds().stream().noneMatch(storeId::equals)) {
+            log.info("권한 없음!");
             throw new UserException(ErrorCode.UNAUTHORIZED, ErrorCode.UNAUTHORIZED.getMessage());
         }
+        log.info("권한 유효.");
 
     }
 }
