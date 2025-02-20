@@ -17,6 +17,8 @@ public class SaveStoreRequestDto {
     @Setter
     private String password;
 
+    private String phoneNumber;
+
     private String storeName;
     private String storePlace;
 }

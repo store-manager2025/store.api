@@ -15,4 +15,5 @@ public class ModifyStoreRequestDto {
     private String storeName;
     private String storePlace;
     private String password;
+    private String phoneNumber;
 }

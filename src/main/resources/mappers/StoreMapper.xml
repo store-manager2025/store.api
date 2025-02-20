@@ -7,9 +7,9 @@
     <insert id="saveStore" parameterType="com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto"
             useGeneratedKeys="true" keyProperty="storeId" keyColumn="store_id">
         INSERT INTO stores
-            (user_id, store_name, store_place, password)
+            (user_id, store_name, store_place, password, phone_number)
         VALUES
-            (#{userId}, #{storeName}, #{storePlace}, #{password})
+            (#{userId}, #{storeName}, #{storePlace}, #{password}, #{phoneNumber})
     </insert>
 
 
@@ -19,6 +19,7 @@
             S.store_name,
             S.store_place,
             S.password,
+            S.phone_number,
             S.created_at
         FROM stores S
         WHERE user_id = #{userId}
@@ -36,7 +37,8 @@
             S.store_id,
             S.store_name,
             S.store_place,
-            S.created_at
+            S.created_at,
+            S.phone_number
         FROM stores S
         WHERE store_id = #{storeId}
     </select>
@@ -46,7 +48,8 @@
         SET
             store_name = #{storeName},
             store_place = #{storePlace},
-            password = #{password}
+            password = #{password},
+            phone_number = #{phoneNumber}
         WHERE store_id = #{storeId}
     </update>
 

@@ -28,8 +28,10 @@ public class StoreValidator {
     public void validateSaveStoreInput(SaveStoreRequestDto dto) {
         if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty() ||
                 dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty() ||
-                dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
-            throw new StoreException(ErrorCode.EMPTY_DATA, "가게 이름, 가게 장소, 비밀번호는 필수 입력값입니다.");
+                dto.getPassword() == null || dto.getPassword().trim().isEmpty() ||
+                dto.getPhoneNumber() == null || dto.getPhoneNumber().trim().isEmpty()
+        ) {
+            throw new StoreException(ErrorCode.EMPTY_DATA, "가게 이름, 가게 장소, 비밀번호, 연락처는 필수 입력값입니다.");
         }
         if (dto.getPassword().length() != 4) {
             throw new StoreException(ErrorCode.NOT_VALID_PASSWORD, ErrorCode.NOT_VALID_PASSWORD.getMessage());
@@ -70,6 +72,7 @@ public class StoreValidator {
 
         if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty()
         && dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty()
+        && dto.getPhoneNumber() == null || dto.getPhoneNumber().trim().isEmpty()
         && dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
             throw new StoreException(ErrorCode.EMPTY_DATA, "한개의 값이라도 입력해야 합니다.");
         }
@@ -81,6 +84,10 @@ public class StoreValidator {
         // storePlace: 값이 없으면 기존 값 사용
         if (dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty()) {
             dto.setStorePlace(currentStore.getStorePlace());
+        }
+        // phoneNumber: 값이 없으면 기존 값 사용
+        if (dto.getPhoneNumber() == null || dto.getPhoneNumber().trim().isEmpty()) {
+            dto.setPhoneNumber(currentStore.getPhoneNumber());
         }
         // password: 값이 없으면 기존 비밀번호 사용, 있으면 비교 후 처리
         if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
