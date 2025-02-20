@@ -1,9 +1,9 @@
 package com.project.storemanager_api.aspect;
 
 import com.project.storemanager_api.annotation.StoreAuthCheck;
+import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
-import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.validator.StoreValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,46 +35,7 @@ public class StoreAuthAspect {
         CustomUserPrincipal userInfo = (CustomUserPrincipal) args[0];
         // 두 번째 인자는 storeId를 포함하는 DTO라고 가정 (예: ModifyStoreRequestDto)
         Object dto = args[1];
-        Long storeId = null;
-        try {
-            // 우선 DTO에 getStoreId() 메서드가 있으면 호출
-            storeId = (Long) dto.getClass().getMethod("getStoreId").invoke(dto);
-        } catch (Exception e) {
-            log.warn("DTO에서 storeId 추출 실패: {}", e.getMessage());
-        }
-
-        // DTO에서 storeId를 추출하지 못했으면, 요청 객체에서 추출 시도
-        if (storeId == null) {
-            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attr != null) {
-                HttpServletRequest request = attr.getRequest();
-
-                // PathVariable 추출
-                @SuppressWarnings("unchecked")
-                Map<String, String> pathVars = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-                if (pathVars != null && pathVars.containsKey("storeId")) {
-                    try {
-                        storeId = Long.valueOf(pathVars.get("storeId"));
-                        log.info("PathVariable에서 storeId 추출: {}", storeId);
-                    } catch (NumberFormatException e) {
-                        log.warn("PathVariable storeId 변환 실패: {}", e.getMessage());
-                    }
-                }
-
-                // Query Parameter에서 추출
-                if (storeId == null) {
-                    String storeIdStr = request.getParameter("storeId");
-                    if (storeIdStr != null && !storeIdStr.isEmpty()) {
-                        try {
-                            storeId = Long.valueOf(storeIdStr);
-                            log.info("Query Parameter에서 storeId 추출: {}", storeId);
-                        } catch (NumberFormatException e) {
-                            log.warn("Query Parameter storeId 변환 실패: {}", e.getMessage());
-                        }
-                    }
-                }
-            }
-        }
+        Long storeId = getStoreIdInDto(dto);
 
         if (storeId == null) {
             throw new StoreException(ErrorCode.EMPTY_DATA, "Store Id가 없습니다.");
@@ -82,5 +43,55 @@ public class StoreAuthAspect {
         log.info("StoreAuthAspect: userInfo = {}, storeId = {}", userInfo, storeId);
         // 검증 로직 호출 (검증 실패 시 예외 발생)
         storeValidator.checkStoreAuth(userInfo, storeId);
+    }
+
+    private static Long getStoreIdInDto(Object dto) {
+        Long storeId = null;
+        try {
+            // 우선 DTO에 getStoreId() 메서드가 있으면 호출
+            storeId = (Long) dto.getClass().getMethod("getStoreId").invoke(dto);
+        } catch (Exception e) {
+            log.warn("DTO에서 storeId 추출 실패: {}", e.getMessage());
+        }
+        // DTO에서 storeId를 추출하지 못했으면, 요청 객체에서 추출 시도
+        if (storeId == null) {
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attr != null) {
+
+                return getStoreIdInPathVariable(attr);
+            }
+        }
+        return storeId;
+    }
+
+    private static Long getStoreIdInPathVariable(ServletRequestAttributes attr) {
+
+        HttpServletRequest request = attr.getRequest();
+        Long storeId = null;
+        // PathVariable 추출
+        @SuppressWarnings("unchecked")
+        Map<String, String> pathVars = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        if (pathVars != null && pathVars.containsKey("storeId")) {
+            try {
+                storeId = Long.valueOf(pathVars.get("storeId"));
+                log.info("PathVariable에서 storeId 추출: {}", storeId);
+            } catch (NumberFormatException e) {
+                log.warn("PathVariable storeId 변환 실패: {}", e.getMessage());
+            }
+        }
+
+        // Query Parameter에서 추출
+        if (storeId == null) {
+            String storeIdStr = request.getParameter("storeId");
+            if (storeIdStr != null && !storeIdStr.isEmpty()) {
+                try {
+                    storeId = Long.valueOf(storeIdStr);
+                    log.info("Query Parameter에서 storeId 추출: {}", storeId);
+                } catch (NumberFormatException e) {
+                    log.warn("Query Parameter storeId 변환 실패: {}", e.getMessage());
+                }
+            }
+        }
+        return storeId;
     }
 }
