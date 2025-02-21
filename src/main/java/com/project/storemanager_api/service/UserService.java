@@ -7,6 +7,7 @@ import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.UserException;
 import com.project.storemanager_api.jwt.JwtTokenProvider;
+import com.project.storemanager_api.repository.StoreRepository;
 import com.project.storemanager_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final StoreRepository storeRepository;
 
     public void signUp(SignUpRequestDto signUpRequest) {
 
@@ -72,8 +75,11 @@ public class UserService {
             throw new UserException(ErrorCode.INVALID_PASSWORD);
         }
 
-        // 로그인이 성공했을 때 액세스/리프레시 토큰을 전송
-        String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), foundUser.getEmail());
+        // 로그인이 성공했을 때, 해당 유저가 가진 store의 Id list를 조회, token생성시 포함
+        List<Long> storeIdList = storeRepository.findStoreIdsByUserId(foundUser.getUserId());
+
+        // 액세스/리프레시 토큰을 전송
+        String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), storeIdList);
         log.info("new refresh token: {}", refreshToken);
 
         userRepository.updateRefreshToken(refreshToken, foundUser.getUserId());
@@ -81,7 +87,7 @@ public class UserService {
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "name", foundUser.getName(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), foundUser.getEmail()),
+                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), storeIdList),
                 "refreshToken", refreshToken
         );
     }
@@ -140,10 +146,11 @@ public class UserService {
             throw new UserException(ErrorCode.INVALID_TOKEN, "리프레시 토큰이 일치하지 않습니다.");
         }
 
+        List<Long> storeIdList = storeRepository.findStoreIdsByUserId(user.getUserId());
         // 5. 새로운 access token 생성
-        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getEmail());
+        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), storeIdList);
         // 6. 새로운 refresh token 생성 (리프레시 토큰 회전)
-        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), user.getEmail());
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), storeIdList);
 
         // 7. DB에 새로운 refresh token 저장
         user.setRefreshToken(newRefreshToken);

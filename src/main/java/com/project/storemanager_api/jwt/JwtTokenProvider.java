@@ -1,6 +1,5 @@
 package com.project.storemanager_api.jwt;
 
-import com.project.storemanager_api.repository.StoreRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +23,6 @@ import java.util.Map;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
-    private final StoreRepository storeRepository;
 
     // 비밀키를 생성
     private SecretKey key;
@@ -38,18 +37,18 @@ public class JwtTokenProvider {
 
     // 토큰 발급 로직
     // 엑세스 토큰 생성 (사용자가 들고다닐 신분증) : 유효기간이 짧다.
-    public String createAccessToken(Long userId, String email) {
-        return createToken(userId, jwtProperties.getAccessTokenValidityTime());
+    public String createAccessToken(Long userId, List<Long> storeIdList) {
+        return createToken(userId, storeIdList, jwtProperties.getAccessTokenValidityTime());
     }
     // 리프레시 토큰 생성 (서버가 보관할 신분증을 재발급하기 위한 정보) : 유효기간이 비교적 길다.
-    public String createRefreshToken(Long userId, String email) {
+    public String createRefreshToken(Long userId, List<Long> storeIdList) {
 
-        return createToken(userId, jwtProperties.getRefreshTokenValidityTime());
+        return createToken(userId, storeIdList, jwtProperties.getRefreshTokenValidityTime());
     }
 
     // 공통 토큰 생성 로직
     // 엑세스,리프레시 생성 로직은 똑같고, 시간만 다르다
-    private String createToken(Long userId, long validityTime) {
+    private String createToken(Long userId, List<Long> storeIdList, long validityTime) {
 
         // 현재 시간
         Date now = new Date();
@@ -57,9 +56,10 @@ public class JwtTokenProvider {
         // 만료 시간
         Date validity = new Date(now.getTime() + validityTime);
 
-        List<Long> storeIdList = storeRepository.findStoreIdsByUserId(userId);
+        // claims에 userId와 storeIdList를 담는다.
         Map<String, Object> claims = new HashMap<>();
-        claims.put("storeIds", storeIdList); // 사용자가 소유한 매장 id 리스트
+        claims.put("userId", userId);
+        claims.put("storeIdList", storeIdList);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -86,6 +86,7 @@ public class JwtTokenProvider {
         }
     }
 
+
     /**
      * 검증된 토큰에서 사용자 id를 추출하는 메서드
      * @param token - 인증 토큰
@@ -96,18 +97,32 @@ public class JwtTokenProvider {
     }
 
     /**
+     * 검증된 토큰에서 사용자의 소유 매장id리스트를 추출하는 메서드
+     * @param token - 인증 토큰
+     * @return 토큰에서 추출한 사용자의 소유 매장id리스트
+     */
+    public List<Long> getCurrentLoginStoreIds(String token) {
+        Claims claims = parseClaims(token);
+        List<?> storeIds = claims.get("storeIdList", List.class);
+        return storeIds.stream()
+                .map(id -> ((Number) id).longValue())
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 내부적으로 토큰을 파싱하여 Claims 객체를 반환하는 메서드
      * (인코딩해놓은 문자열의 토큰을 해체하는 메서드)
      * @param token JWT 토큰
      * @return 파싱된 Claims 객체
      * @throws JwtException 토큰이 유효하지 않은 경우 발생
      */
-    public Claims parseClaims(String token) {
+    private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 }
 

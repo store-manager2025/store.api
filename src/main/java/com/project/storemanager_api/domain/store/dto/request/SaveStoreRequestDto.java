@@ -3,6 +3,7 @@ package com.project.storemanager_api.domain.store.dto.request;
 import lombok.*;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -10,13 +11,10 @@ import lombok.*;
 @Builder
 public class SaveStoreRequestDto {
 
-    @Setter
     private Long storeId; // DB에서 auto-generated된 store_id를 받을 필드
-    @Setter
     private Long userId;
-    @Setter
     private String password;
-
+    private String phoneNumber;
     private String storeName;
     private String storePlace;
 }

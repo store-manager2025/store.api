@@ -4,6 +4,7 @@ import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.RefreshTokenRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
+import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,10 +61,11 @@ public class AuthController {
     }
 
     @PatchMapping("/api/user")
-    public ResponseEntity<Map<String, Object>> patchUserInfo(@RequestBody ModifyUserRequestDto modifyUserRequestDto, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<Map<String, Object>> patchUserInfo(@RequestBody ModifyUserRequestDto modifyUserRequestDto,
+                                                             @AuthenticationPrincipal CustomUserPrincipal userInfo) {
 
-        log.info("인증된 사용자의 patch요청 id : {} ", userId);
-        userService.modifyUserInfo(modifyUserRequestDto, userId);
+        log.info("인증된 사용자의 patch요청 id : {} ", userInfo.getUserId());
+        userService.modifyUserInfo(modifyUserRequestDto, userInfo.getUserId());
 
         return ResponseEntity.ok().body(Map.of(
                 "message", "회원정보 수정이 완료되었습니다."
@@ -71,9 +73,9 @@ public class AuthController {
     }
 
     @DeleteMapping("/api/user")
-    public ResponseEntity<Map<String, Object>> deleteUserInfo(@AuthenticationPrincipal Long userId) {
-        log.info("인증된 사용자의 delete요청  id : {} ", userId);
-        userService.deleteUser(userId);
+    public ResponseEntity<Map<String, Object>> deleteUserInfo(@AuthenticationPrincipal CustomUserPrincipal userInfo) {
+        log.info("인증된 사용자의 delete요청  id : {} ", userInfo.getUserId());
+        userService.deleteUser(userInfo.getUserId());
 
         return ResponseEntity.ok().body(Map.of(
                 "message", "성공적으로 탈퇴 되었습니다."
