@@ -6,10 +6,7 @@ import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDt
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.exception.*;
-import com.project.storemanager_api.repository.OrderRepository;
-import com.project.storemanager_api.repository.PaymentRepository;
-import com.project.storemanager_api.repository.PlaceRepository;
-import com.project.storemanager_api.repository.StoreRepository;
+import com.project.storemanager_api.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +20,17 @@ import java.util.*;
 @Transactional
 public class PaymentService {
 
-    private final PaymentRepository paymentRepository;
-    private final PaymentDetailService paymentDetailService;
-    private final OrderRepository orderRepository;
-    private final PlaceRepository placeRepository;
-    private final StoreRepository storeRepository;
+    private final PaymentRepository paymentRepository; // 페이와 1:1로 연결된 객체
+
+    private final PaymentDetailService paymentDetailService; // 페이와 1:n로 디테일 처리를 담당하는 객체
+
+    private final OrderRepository orderRepository; // 주문과 연관된 데이터를 처리
+
+    private final PlaceRepository placeRepository; // 장소 정보 유효성 검증을 위한
+
+    private final StoreRepository storeRepository; // 매장 유효성 검증
+
+    private final CardService cardService; // 카드 정보 저장
 
 
     public void requestPayment(CreatePayRequestDto dto) {
@@ -53,6 +56,8 @@ public class PaymentService {
         // 저장 후 생성된 id 받아와서 결제디테일 테이블에 저장
         Long generatedPaymentId = dto.getPaymentId();
         log.info("생성된 결제ID : {}", generatedPaymentId);
+
+        cardService.saveCard(generatedPaymentId, dto.getPayList());
 
         for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
             paymentDetailService.savePayInfo(payDetail, generatedPaymentId);

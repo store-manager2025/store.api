@@ -2,6 +2,8 @@ package com.project.storemanager_api.domain.pay.entity;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -16,7 +18,7 @@ public class PayTransaction {
     private Long cardId;
     private Integer transactionAmount; // 거래 금액
     private TransactionStatus transactionStatus;
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
     public enum TransactionStatus {
         APPROVE, // 승인됨

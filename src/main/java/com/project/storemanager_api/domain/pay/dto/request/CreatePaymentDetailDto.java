@@ -14,5 +14,6 @@ public class CreatePaymentDetailDto {
 
     private Integer paidMoney;
     private PaymentType paymentType;
+    private String cardCompany;
 
 }
