@@ -34,6 +34,7 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
     INVALID_ID(HttpStatus.NOT_FOUND, "유효하지 않은 ID입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 유효하지 않습니다." ),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
 
     // 입력값 검증
     EMPTY_DATA(HttpStatus.BAD_REQUEST, "이름, 비밀번호 중 한개의 값이라도 존재해야 합니다."),
@@ -42,6 +43,7 @@ public enum ErrorCode {
     // 매장 관련 에러
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),
     NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 4자리의 숫자여야 합니다."),
+    NOT_CORRECT_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "전화번호는 11자리여야 합니다."),
     NOT_CORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 
     // ui관련 에러

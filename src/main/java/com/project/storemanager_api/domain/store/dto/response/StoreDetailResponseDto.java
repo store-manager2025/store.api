@@ -19,5 +19,6 @@ public class StoreDetailResponseDto {
     private String storePlace;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
+    private String phoneNumber;
 
 }

@@ -9,7 +9,9 @@ import com.project.storemanager_api.domain.store.dto.response.StoreDetailRespons
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
+import com.project.storemanager_api.jwt.JwtTokenProvider;
 import com.project.storemanager_api.repository.StoreRepository;
+import com.project.storemanager_api.repository.UserRepository;
 import com.project.storemanager_api.validator.StoreValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -26,15 +29,18 @@ import java.util.List;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final PasswordEncoder passwordEncoder;
     private final StoreValidator storeValidator;
+    private final PasswordEncoder passwordEncoder;
     private final CategoryService categoryService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     /**
      * 매장 생성
      * 입력값 검증 후, 비밀번호 인코딩 및 DB 저장
      */
-    public void saveStore(SaveStoreRequestDto dto, Long userId) {
+    // 문제가 있다. 매장 생성 후, 다시 로그인 하기 전까지 토큰에 storeIds에 포함되지 않는다
+    public Map<String, Object> saveStore(SaveStoreRequestDto dto, Long userId) {
         log.info("매장 생성 요청 : userId={}", userId);
         // 입력값 검증
         storeValidator.validateSaveStoreInput(dto);
@@ -44,11 +50,16 @@ public class StoreService {
         // JWT 등에서 추출한 userId 설정
         dto.setUserId(userId);
 
-
         // 매장 생성
         storeRepository.saveStore(dto);
         Long generatedStoreId = dto.getStoreId();
         log.info("생성된 storeId: {}", generatedStoreId);
+
+        // 토큰 재발급에 사용될 데이터
+        List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId);
+        userRepository.updateRefreshToken(refreshToken, userId);
 
         // 기본 카테고리 하나 생성
         categoryService.saveCategory(
@@ -56,6 +67,11 @@ public class StoreService {
                         .storeId(generatedStoreId)
                         .categoryName("category_1")
                         .build()
+        );
+        return Map.of(
+                "message", "매장이 성공적으로 생성 되었습니다.",
+                "accessToken", accessToken,
+                "refreshToken", refreshToken
         );
     }
 
@@ -82,15 +98,21 @@ public class StoreService {
         log.info("originPassword: {}", originPassword);
         // 비밀번호 비교 검증
         storeValidator.validatePassword(dto.getPassword(), originPassword);
-        // 비밀번호 일치 시, 매장 상세 정보 반환
+
+        // 매장 정보 상세 조회
         return storeRepository.findStoreDetailByStoreId(dto.getStoreId());
     }
 
     /**
-     * 매장 정보 수정
+     * 매장 정보 수정 시, JWT 토큰의 Claims에 포함된 소유 매장(storeIds) 리스트에
+     * 요청된 매장(storeId)가 있는지 확인한 후 수정 처리.
+     * .
      * 입력된 값이 비어있는 경우, 기존 값을 그대로 사용하고 비밀번호는 인코딩 후 업데이트 처리
+     * @param dto   수정 요청 DTO (storeId, storeName, storePlace, password 등)
+     *
      */
-    public StoreDetailResponseDto modifyStoreInfo(ModifyStoreRequestDto dto) {
+    public void modifyStoreInfo(ModifyStoreRequestDto dto) {
+
         // 기존 매장 상세 정보 조회
         StoreDetailResponseDto currentStore = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
         if (currentStore == null) {
@@ -104,7 +126,6 @@ public class StoreService {
         // 업데이트 실행
         storeRepository.updateStore(dto);
         // 업데이트 후 최신 매장 상세 정보 반환
-        return storeRepository.findStoreDetailByStoreId(dto.getStoreId());
     }
 
     /**

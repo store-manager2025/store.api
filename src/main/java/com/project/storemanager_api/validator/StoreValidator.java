@@ -4,15 +4,23 @@ import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestD
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
+import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
+import com.project.storemanager_api.exception.UserException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Pattern;
+
 @Component
+@Slf4j
 public class StoreValidator {
 
     private final PasswordEncoder passwordEncoder;
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^010-\\d{4}-\\d{4}$");
+
 
     public StoreValidator(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -22,15 +30,29 @@ public class StoreValidator {
      * 매장 생성 시 입력값 검증
      */
     public void validateSaveStoreInput(SaveStoreRequestDto dto) {
+        String phoneNumber = dto.getPhoneNumber();
         if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty() ||
                 dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty() ||
-                dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
-            throw new StoreException(ErrorCode.EMPTY_DATA, "가게 이름, 가게 장소, 비밀번호는 필수 입력값입니다.");
+                dto.getPassword() == null || dto.getPassword().trim().isEmpty() ||
+                phoneNumber == null || phoneNumber.trim().isEmpty()
+        ) {
+            throw new StoreException(ErrorCode.EMPTY_DATA, "가게 이름, 가게 장소, 비밀번호, 연락처는 필수 입력값입니다.");
         }
         if (dto.getPassword().length() != 4) {
             throw new StoreException(ErrorCode.NOT_VALID_PASSWORD, ErrorCode.NOT_VALID_PASSWORD.getMessage());
         }
+        if (phoneNumber.length() != 11) {
+            throw new StoreException(ErrorCode.NOT_CORRECT_PHONE_NUMBER, ErrorCode.NOT_CORRECT_PHONE_NUMBER.getMessage());
+        }
+
+        // 전화번호가 "010-1234-1234" 형식이 아니라면(예: "01012341234"인 경우)
+        if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
+            // 11자리 숫자라고 가정하고 포맷팅
+            String formattedPhone = getFormattedPhone(phoneNumber);
+            dto.setPhoneNumber(formattedPhone);
+        }
     }
+
 
     /**
      * 매장 로그인 시 입력값 검증
@@ -63,32 +85,72 @@ public class StoreValidator {
     public void prepareModifyStoreInput(ModifyStoreRequestDto dto,
                                         StoreDetailResponseDto currentStore,
                                         String currentEncodedPassword) {
-
-        if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty()
-        && dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty()
-        && dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
-            throw new StoreException(ErrorCode.EMPTY_DATA, "한개의 값이라도 입력해야 합니다.");
+        // 모든 입력값이 비어있는지 검사
+        if (isBlank(dto.getStoreName()) && isBlank(dto.getStorePlace())
+                && isBlank(dto.getPassword()) && isBlank(dto.getPhoneNumber())) {
+            throw new StoreException(ErrorCode.EMPTY_DATA, "한 개 이상의 값을 입력해야 합니다.");
         }
 
-        // storeName: 값이 없으면 기존 값 사용
-        if (dto.getStoreName() == null || dto.getStoreName().trim().isEmpty()) {
-            dto.setStoreName(currentStore.getStoreName());
-        }
-        // storePlace: 값이 없으면 기존 값 사용
-        if (dto.getStorePlace() == null || dto.getStorePlace().trim().isEmpty()) {
-            dto.setStorePlace(currentStore.getStorePlace());
-        }
-        // password: 값이 없으면 기존 비밀번호 사용, 있으면 비교 후 처리
-        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
-            dto.setPassword(currentEncodedPassword);
+        // storeName, storePlace, phoneNumber는 값이 없으면 기존 값을 적용
+        dto.setStoreName(defaultIfBlank(dto.getStoreName(), currentStore.getStoreName()));
+        dto.setStorePlace(defaultIfBlank(dto.getStorePlace(), currentStore.getStorePlace()));
+
+        String phoneNumber = dto.getPhoneNumber();
+        if (isBlank(phoneNumber)) {
+            dto.setPhoneNumber(currentStore.getPhoneNumber());
         } else {
-            if (passwordEncoder.matches(dto.getPassword(), currentEncodedPassword)) {
-                // 입력된 비밀번호가 기존과 동일하면 그대로 사용
-                dto.setPassword(currentEncodedPassword);
+            // 하이픈이 없는 11자리 숫자면 포맷팅하고, 그렇지 않으면 그대로 사용
+            if (phoneNumber.length() != 11) {
+                throw new StoreException(ErrorCode.NOT_CORRECT_PHONE_NUMBER, ErrorCode.NOT_CORRECT_PHONE_NUMBER.getMessage());
+            }
+            if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
+                dto.setPhoneNumber(getFormattedPhone(phoneNumber));
             } else {
-                // 새 비밀번호가 다르면 인코딩 후 설정
-                dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+                dto.setPhoneNumber(phoneNumber);
             }
         }
+
+        // password 처리: 비어있으면 기존 인코딩된 비밀번호 사용, 입력값이 있으면 비교 후 처리
+        String password = dto.getPassword();
+        if (isBlank(password)) {
+            dto.setPassword(currentEncodedPassword);
+        } else {
+            if (passwordEncoder.matches(password, currentEncodedPassword)) {
+                dto.setPassword(currentEncodedPassword);
+            } else {
+                dto.setPassword(passwordEncoder.encode(password));
+            }
+        }
+    }
+
+    // 입력값이 null이거나 공백이면 true
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    // 입력값이 공백이면 기존값 반환, 그렇지 않으면 입력값 반환
+    private String defaultIfBlank(String newValue, String existingValue) {
+        return isBlank(newValue) ? existingValue : newValue;
+    }
+
+
+    /**
+     *
+     * @param userInfo - 입력을 보낸 사용자의 userId, storeIdList가 들어있는 객체
+     * @param storeId - 요청을 원하는 storeId
+     */
+    public void checkStoreAuth(CustomUserPrincipal userInfo, Long storeId) {
+        // 대조검사 실행
+        if (userInfo.getStoreIds().stream().noneMatch(storeId::equals)) {
+            log.info("권한 없음!");
+            throw new UserException(ErrorCode.UNAUTHORIZED, ErrorCode.UNAUTHORIZED.getMessage());
+        }
+        log.info("권한 유효.");
+    }
+
+    private static String getFormattedPhone(String phoneNumber) {
+        return phoneNumber.substring(0, 3) + "-"
+                + phoneNumber.substring(3, 7) + "-"
+                + phoneNumber.substring(7, 11);
     }
 }

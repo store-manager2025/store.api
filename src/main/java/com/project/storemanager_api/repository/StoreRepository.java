@@ -30,5 +30,6 @@ public interface StoreRepository {
 
     void deleteStore(Long storeId);
 
-
+    // 매장 로그인 성공시, JWT claims에 담을 storeId 정보
+    List<Long> findStoreIdsByUserId(Long userId);
 }

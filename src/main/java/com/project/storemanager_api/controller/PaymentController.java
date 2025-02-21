@@ -1,12 +1,15 @@
 package com.project.storemanager_api.controller;
 
+import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
+import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +31,9 @@ public class PaymentController {
     }
 
     @GetMapping("/all/{storeId}")
-    public ResponseEntity<List<PaymentResponseDto>> getAllPayments(@PathVariable Long storeId) {
+    @StoreAuthCheck
+    public ResponseEntity<List<PaymentResponseDto>> getAllPayments(@AuthenticationPrincipal CustomUserPrincipal userData,
+                                                                   @PathVariable Long storeId) {
         List<PaymentResponseDto> allPayments = paymentService.getAllPayments(storeId);
         return ResponseEntity.ok().body(allPayments);
     }
