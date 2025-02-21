@@ -43,6 +43,7 @@ public enum ErrorCode {
     // 매장 관련 에러
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),
     NOT_VALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 4자리의 숫자여야 합니다."),
+    NOT_CORRECT_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "전화번호는 11자리여야 합니다."),
     NOT_CORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 
     // ui관련 에러
