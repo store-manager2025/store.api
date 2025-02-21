@@ -88,15 +88,6 @@ public class JwtTokenProvider {
 
 
     /**
-     * 검증된 토큰에서 사용자이름을 추출하는 메서드
-     * @param token - 인증 토큰
-     * @return 토큰에서 추출한 사용자 이름
-     */
-    public String getCurrentLoginUsername(String token) {
-        return parseClaims(token).getSubject();
-    }
-
-    /**
      * 검증된 토큰에서 사용자 id를 추출하는 메서드
      * @param token - 인증 토큰
      * @return 토큰에서 추출한 사용자 id
@@ -105,6 +96,11 @@ public class JwtTokenProvider {
         return Long.valueOf(parseClaims(token).getSubject());
     }
 
+    /**
+     * 검증된 토큰에서 사용자의 소유 매장id리스트를 추출하는 메서드
+     * @param token - 인증 토큰
+     * @return 토큰에서 추출한 사용자의 소유 매장id리스트
+     */
     public List<Long> getCurrentLoginStoreIds(String token) {
         Claims claims = parseClaims(token);
         List<?> storeIds = claims.get("storeIdList", List.class);

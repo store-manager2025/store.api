@@ -30,10 +30,8 @@ public class StoreController {
     @PostMapping
     public ResponseEntity<Map<String, Object>> createStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
                                                            @RequestBody SaveStoreRequestDto dto) {
-        storeService.saveStore(dto, userInfo.getUserId());
-        return ResponseEntity.ok().body(Map.of(
-                "message", "매장이 성공적으로 생성 되었습니다."
-        ));
+        Map<String, Object> messageAndToken = storeService.saveStore(dto, userInfo.getUserId());
+        return ResponseEntity.ok().body(messageAndToken);
     }
 
     /**
