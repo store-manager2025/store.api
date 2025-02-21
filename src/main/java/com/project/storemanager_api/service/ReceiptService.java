@@ -5,6 +5,7 @@ import com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto;
 import com.project.storemanager_api.domain.pay.entity.Receipt;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PaymentException;
+import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.ReceiptRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import java.util.Random;
 public class ReceiptService {
 
     private final ReceiptRepository receiptRepository;
+    private final MenuRepository menuRepository;
 
     // 영수증 리스폰 과정.
     // 1. 일단 영수증을 DB에 저장
@@ -42,6 +44,7 @@ public class ReceiptService {
         ReceiptResponseDto receiptResponseDto = receiptRepository.findByOrderId(dto.getOrderId()).orElseThrow(
                 () -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾지 못하였습니다.")
         );
+        receiptResponseDto.setMenuList(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
         // 나머지 임의의 값들을 채워서 리턴
         return receiptResponseDto.fillRestValue(receiptResponseDto, dto.getPayList());
     }

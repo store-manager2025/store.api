@@ -29,8 +29,6 @@ public class ReceiptResponseDto {
     private String phoneNumber; // stores
     private String storePlace; // 주소 stores
 
-    private List<MenuDetailResponseDto> menuList;
-
     private Long orderId; // 주문번호
     private String receiptDate; // 영수증번호, 20190729-10008, createdAt + -10000 + id
     private String placeName; // 장소 이름 places
@@ -46,6 +44,7 @@ public class ReceiptResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd a hh:mm:ss")
     private LocalDateTime createdAt; // 발행 일시
 
+    private List<MenuDetailResponseDto> menuList;
 
     public ReceiptResponseDto fillRestValue(ReceiptResponseDto dto,
                                             List<CreatePaymentDetailDto> payList) {
