@@ -49,7 +49,7 @@ public class CardService {
 
     }
 
-    private String makeRandomCardNum() {
+    public static String makeRandomCardNum() {
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 4; i++) {

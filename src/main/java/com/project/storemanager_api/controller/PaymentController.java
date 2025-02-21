@@ -4,6 +4,7 @@ import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
+import com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,10 +24,11 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createPayment(@RequestBody CreatePayRequestDto dto) {
+    public ResponseEntity<ReceiptResponseDto> createPayment(@RequestBody CreatePayRequestDto dto) {
         log.info("Create payment request: {}", dto);
-        paymentService.requestPayment(dto);
-        return ResponseEntity.ok().body(Map.of("message", "결제가 완료되었습니다."));
+        ReceiptResponseDto receiptResponseDto = paymentService.requestPayment(dto);
+        // 결제 성공시, 영수증 반환
+        return ResponseEntity.ok().body(receiptResponseDto);
     }
 
     @GetMapping("/all/{storeId}")

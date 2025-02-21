@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class PayTransaction {
-
     private Long transactionId;
     private Long paymentId;
     private Long cardId;

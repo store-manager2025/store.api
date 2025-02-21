@@ -4,6 +4,7 @@ import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
+import com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PaymentException;
 import com.project.storemanager_api.repository.OrderRepository;
@@ -37,8 +38,10 @@ public class PaymentService {
 
     private final PayValidator payValidator; // 입력값에 대한 검증 전용 클래스
 
+    private final ReceiptService receiptService;
 
-    public void requestPayment(CreatePayRequestDto dto) {
+
+    public ReceiptResponseDto requestPayment(CreatePayRequestDto dto) {
         log.info("requestPayment의 DTO : {} ", dto.toString());
 
         // 입력값 검증
@@ -59,6 +62,8 @@ public class PaymentService {
         for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
             paymentDetailService.savePayInfo(payDetail, generatedPaymentId);
         }
+
+        return receiptService.saveAndResponseReceipt(dto);
     }
 
     // 한 매장에 등록된 결제 정보 반환 메서드
