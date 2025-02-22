@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.project.storemanager_api.domain.user.entity.User.*;
+
 @Service
 @Slf4j
 @Transactional
@@ -30,7 +32,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final StoreRepository storeRepository;
 
-    public void signUp(SignUpRequestDto signUpRequest) {
+    public void signUp(SignUpRequestDto signUpRequest, Role role) {
 
 
         userRepository.findByEmail(signUpRequest.getEmail())
@@ -41,7 +43,7 @@ public class UserService {
         // 암호화 작업
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        User newUser = signUpRequest.toEntity();
+        User newUser = signUpRequest.toEntity(role);
         newUser.setPassword(encodedPassword);
         userRepository.saveUser(newUser);
 

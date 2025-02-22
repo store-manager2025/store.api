@@ -5,6 +5,7 @@ import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto
 import com.project.storemanager_api.domain.user.dto.request.RefreshTokenRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
+import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +28,22 @@ public class AuthController {
 
     @PostMapping("/auth/register")
     public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpRequestDto signUpRequest) {
-        log.info("request for signup: {}", signUpRequest.getName());
-        userService.signUp(signUpRequest);
+        userService.signUp(signUpRequest, User.Role.OWNER);
 
         return ResponseEntity.ok().body(Map.of(
                 "message", "회원가입이 완료되었습니다.",
+                "username", signUpRequest.getName()
+        ));
+    }
+
+    // 사장이 직원의 아이디를 만들어준다.
+    @PostMapping("/api/join-emp")
+    public ResponseEntity<Map<String, Object>> joinEmployee(@RequestBody @Valid SignUpRequestDto signUpRequest) {
+        log.info("request for signup: {}", signUpRequest.getName());
+        userService.signUp(signUpRequest, User.Role.EMPLOYEE);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "가입이 완료되었습니다.",
                 "username", signUpRequest.getName()
         ));
     }
