@@ -47,7 +47,6 @@ public class PaymentService {
         // 입력값 검증
         payValidator.validateValues(dto);
 
-        // 유효하다면 결제 정보 저장
         paymentRepository.savePayment(dto);
 
         // order쪽에서의 orderStatus도 SUCCESS로 변경
