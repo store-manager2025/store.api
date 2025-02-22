@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CARD;
+import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CASH;
 import static com.project.storemanager_api.service.ReceiptService.makeRandomValue;
 
 @Getter
@@ -49,16 +51,31 @@ public class ReceiptResponseDto {
         // 리스트에 값 채워서 보내야함!
         List<CardInfoAboutPayDto> infoList = new ArrayList<>();
         for (CreatePaymentDetailDto info : payList) {
-            CardInfoAboutPayDto build = CardInfoAboutPayDto.builder()
-                    .cardCompany(info.getCardCompany())
-                    .cardNumber(info.getCardNumber())
-                    .inputMethod("SWIPE")
-                    .approveDate(makeRandomValue(12))
-                    .approveNumber(makeRandomValue(8))
-                    .paidMoney(info.getPaidMoney())
-                    .installmentPeriod("일시불")
-                    .build();
-            infoList.add(build);
+            if (info.getPaymentType().equals(CASH)) {
+                CardInfoAboutPayDto build = CardInfoAboutPayDto.builder()
+                        .paymentType(CASH)
+                        .cardCompany("")
+                        .cardNumber("")
+                        .inputMethod("")
+                        .approveDate("")
+                        .approveNumber("")
+                        .paidMoney(info.getPaidMoney())
+                        .installmentPeriod("")
+                        .build();
+                infoList.add(build);
+            } else {
+                CardInfoAboutPayDto build = CardInfoAboutPayDto.builder()
+                        .paymentType(CARD)
+                        .cardCompany(info.getCardCompany())
+                        .cardNumber(info.getCardNumber())
+                        .inputMethod("SWIPE")
+                        .approveDate(makeRandomValue(12))
+                        .approveNumber(makeRandomValue(8))
+                        .paidMoney(info.getPaidMoney())
+                        .installmentPeriod("일시불")
+                        .build();
+                infoList.add(build);
+            }
         }
         dto.setCardInfoList(infoList);
 
