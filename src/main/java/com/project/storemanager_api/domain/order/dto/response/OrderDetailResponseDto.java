@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus;
-import static com.project.storemanager_api.domain.order.entity.Order.OrderType;
 
 @Getter
 @Setter
@@ -24,7 +23,6 @@ public class OrderDetailResponseDto {
     private Long storeId;
     private Long placeId;
     private Integer price;
-    private OrderType orderType;
     private OrderStatus orderStatus;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orderedAt;

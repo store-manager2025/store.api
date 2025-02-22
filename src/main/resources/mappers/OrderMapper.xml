@@ -10,7 +10,6 @@
         <result property="storeId" column="store_id"/>
         <result property="placeId" column="place_id"/>
         <result property="price" column="price"/>
-        <result property="orderType" column="order_type"/>
         <result property="orderStatus" column="order_status"/>
         <result property="orderedAt" column="ordered_at"/>
         <result property="placeName" column="place_name"/>
@@ -25,9 +24,9 @@
     <insert id="saveOrder" parameterType="com.project.storemanager_api.domain.order.entity.Order"
             useGeneratedKeys="true" keyProperty="orderId" keyColumn="order_id">
         INSERT INTO orders
-            (place_id, store_id, price, order_type, order_status, ordered_at)
+            (place_id, store_id, price, order_status, ordered_at)
         VALUES
-            (#{placeId}, #{storeId}, #{price}, #{orderType}, #{orderStatus}, CURRENT_TIMESTAMP)
+            (#{placeId}, #{storeId}, #{price}, #{orderStatus}, CURRENT_TIMESTAMP)
     </insert>
 
     <select id="findById" resultType="com.project.storemanager_api.domain.order.entity.Order">
@@ -49,7 +48,6 @@
             O.order_id,
             O.store_id,
             O.price,
-            O.order_type,
             O.order_status,
             O.ordered_at,
             P.place_name,
@@ -86,7 +84,6 @@
             O.order_id,
             O.store_id,
             O.price,
-            O.order_type,
             O.order_status,
             O.ordered_at,
             P.place_name,

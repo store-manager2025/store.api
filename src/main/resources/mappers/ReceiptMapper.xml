@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.storemanager_api.repository.ReceiptRepository">
+
+    <insert id="saveReceipt">
+        INSERT INTO receipts
+            (payment_id, store_id, order_id, place_id, receipt_date, approve_number, join_number)
+        VALUES
+            (#{paymentId}, #{storeId}, #{orderId}, #{placeId},
+            #{receiptDate}, #{approveNumber}, #{joinNumber})
+    </insert>
+
+    <select id="findByOrderId" resultType="com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto">
+        SELECT
+        DISTINCT
+            S.store_name,
+            U.name AS owner,
+            S.phone_number,
+            S.store_place,
+            O.order_id,
+            R.receipt_date,
+            PLACE.place_name,
+            R.approve_number,
+            R.join_number,
+            O.price AS totalAmount,
+            R.created_at
+        FROM receipts R
+        INNER JOIN stores S ON R.store_id = S.store_id
+        INNER JOIN orders O ON R.order_id = O.order_id
+        INNER JOIN users U ON S.user_id = U.user_id
+        INNER JOIN places PLACE ON R.place_id = PLACE.place_id
+        WHERE O.order_id = #{orderId};
+    </select>
+
+</mapper>
