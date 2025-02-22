@@ -66,14 +66,15 @@ public class PaymentService {
         Long generatedPaymentId = dto.getPaymentId();
         log.info("생성된 결제ID : {}", generatedPaymentId);
 
-        cardService.saveCard(generatedPaymentId, dto.getPayList());
-
+        // 주문 상세정보 저장
         for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
             // payDetail.getExpiryDate() 날짜 확인
             checkExpiryDate(payDetail.getExpiryDate(), payDetail.getPaymentType());
 
             paymentDetailService.savePayInfo(payDetail, generatedPaymentId);
         }
+        // 결제에 사용된 카드정보 저장
+        cardService.saveCard(generatedPaymentId, dto.getPayList());
 
         return receiptService.saveAndResponseReceipt(dto);
     }
@@ -166,8 +167,8 @@ public class PaymentService {
         if (paymentType.equals(CASH)) {
             return;
         }
-
-
+        // 문자 형식 검증
+        validateExpiryDate(expiryDate);
 
         // 예시 -> "2025/03"은 2025년 3월 1일로 간주
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM");
@@ -181,7 +182,23 @@ public class PaymentService {
 
         // 만료 여부 확인
         if (today.isAfter(expirationDate)) {
-           throw new PaymentException(ErrorCode.DATE_EXPIRATION, ErrorCode.DATE_EXPIRATION.getMessage());
+           throw new PaymentException(ErrorCode.DATE_EXPIRATION, ErrorCode.DATE_EXPIRATION.getMessage() + " " + expiryDate);
+        }
+    }
+
+    // 문자 형식 검증
+    private void validateExpiryDate(String expiryDate) {
+        if (expiryDate.length() != 7) {
+            throw new PaymentException(ErrorCode.NOT_CORRECT_EXPIRATION, ErrorCode.NOT_CORRECT_EXPIRATION.getMessage());
+        }
+        String[] parts = expiryDate.split("/"); // ["2026", "03"]
+        if (parts.length != 2) {
+            throw new PaymentException(ErrorCode.NOT_CORRECT_EXPIRATION, ErrorCode.NOT_CORRECT_EXPIRATION.getMessage());
+        }
+
+        int month = Integer.parseInt(parts[1]); // "03" → 3
+        if (month < 1 || month > 12) {
+            throw new PaymentException(ErrorCode.NOT_CORRECT_MONTH, ErrorCode.NOT_CORRECT_MONTH.getMessage());
         }
     }
 
