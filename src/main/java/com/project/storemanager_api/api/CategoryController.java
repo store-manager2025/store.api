@@ -1,4 +1,4 @@
-package com.project.storemanager_api.controller;
+package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.category.dto.request.ModifyCategoryRequestDto;
