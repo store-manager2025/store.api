@@ -50,11 +50,8 @@ public class UserService {
 
         if (role.equals(Role.EMPLOYEE)) {
             Long userId = newUser.getUserId();
-            log.info("방금 생성된 유저id {}", userId);
             employeeService.saveEmp(userId, storeId);
         }
-
-
     }
 
     // 로그인 처리 (인증 처리)
@@ -86,7 +83,13 @@ public class UserService {
         }
 
         // 로그인이 성공했을 때, 해당 유저가 가진 store의 Id list를 조회, token생성시 포함
-        List<Long> storeIdList = storeRepository.findStoreIdsByUserId(foundUser.getUserId());
+        List<Long> storeIdList;
+        if (foundUser.getRole().equals(Role.OWNER)) { // 점주라면
+            storeIdList = storeRepository.findStoreIdsByUserId(foundUser.getUserId());
+        } else { // 알바생이라면
+            storeIdList = employeeService.findStoreIdByUserId(foundUser.getUserId());
+        }
+        log.info("found store id: {}", storeIdList);
 
         // 액세스/리프레시 토큰을 전송
         String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), storeIdList, foundUser.getRole());

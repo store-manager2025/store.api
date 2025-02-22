@@ -11,4 +11,11 @@
             (#{storeId}, #{userId})
     </insert>
 
+    <select id="findStoreIdByUserId" resultType="java.lang.Long">
+        SELECT
+            store_id
+        FROM employees
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
