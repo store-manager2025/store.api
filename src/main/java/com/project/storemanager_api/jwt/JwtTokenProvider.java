@@ -57,11 +57,11 @@ public class JwtTokenProvider {
         // 만료 시간
         Date validity = new Date(now.getTime() + validityTime);
 
-        // claims에 userId와 storeIdList를 담는다.
+        // claims에 userId와 storeIdList, 권한을 담는다.
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("storeIdList", storeIdList);
-        claims.put("role", role);
+        claims.put("role", String.valueOf(role));
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -116,8 +116,8 @@ public class JwtTokenProvider {
      * @param token - 인증 토큰
      * @return 토큰에서 추출한 사용자의 권한
      */
-    public User.Role getCurrentUserRole(String token) {
-        return (User.Role) parseClaims(token).get("role", User.Role.class);
+    public String getCurrentUserRole(String token) {
+        return parseClaims(token).get("role", String.class);
     }
 
     /**

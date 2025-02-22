@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -16,8 +17,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 // 토큰 검증만 수행 - 토큰이 없거나 위조되거나 만료되었으면 요청을 돌려보냄
@@ -42,10 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 유저 ID 및 소유 매장 목록 추출
             Long userId = tokenProvider.getCurrentLoginUserId(token);
             List<Long> currentLoginStoreIds = tokenProvider.getCurrentLoginStoreIds(token);
+            String role = "ROLE_" + tokenProvider.getCurrentUserRole(token);
+            List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
 
             // ✅ CustomUserPrincipal을 이용해 SecurityContext에 저장
             CustomUserPrincipal userPrincipal = new CustomUserPrincipal(userId, currentLoginStoreIds);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal, null, new ArrayList<>());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             log.info("Authentication success - User ID: {}, Stores: {}", userId, currentLoginStoreIds);

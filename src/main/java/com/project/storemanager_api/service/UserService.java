@@ -31,8 +31,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final StoreRepository storeRepository;
+    private final EmployeeService employeeService;
 
-    public void signUp(SignUpRequestDto signUpRequest, Role role) {
+    public void signUp(SignUpRequestDto signUpRequest, Role role, Long storeId) {
 
 
         userRepository.findByEmail(signUpRequest.getEmail())
@@ -46,6 +47,13 @@ public class UserService {
         User newUser = signUpRequest.toEntity(role);
         newUser.setPassword(encodedPassword);
         userRepository.saveUser(newUser);
+
+        if (role.equals(Role.EMPLOYEE)) {
+            Long userId = newUser.getUserId();
+            log.info("방금 생성된 유저id {}", userId);
+            employeeService.saveEmp(userId, storeId);
+        }
+
 
     }
 
