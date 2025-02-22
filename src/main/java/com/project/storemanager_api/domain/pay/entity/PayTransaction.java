@@ -20,7 +20,7 @@ public class PayTransaction {
     private LocalDateTime createdAt;
 
     public enum TransactionStatus {
-        APPROVE, // 승인됨
+        APPROVED, // 승인됨
         DECLINED, // 거절됨
         PENDING // 대기중 (기본값)
     }

@@ -3,7 +3,9 @@ package com.project.storemanager_api.repository;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
+import com.project.storemanager_api.domain.pay.entity.Payment;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +23,7 @@ public interface PaymentRepository {
 
     // 결제 정보 단일 조회
     Optional<PaymentDetailResponseDto> findPaymentDetail(Long paymentId);
+
+    // 결제 성공시 상태값 변경
+    void changeStatus(@Param("status") Payment.Status status, @Param("paymentId") Long paymentId);
 }

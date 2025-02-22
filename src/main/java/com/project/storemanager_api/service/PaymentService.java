@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
+import static com.project.storemanager_api.domain.pay.entity.Payment.Status;
 
 @Service
 @Slf4j
@@ -40,22 +41,22 @@ public class PaymentService {
 
     private final ReceiptService receiptService;
 
+    private final PayTransactionService payTransactionService;
+
     /** 카드 결제 데이터 흐름
-     * 결제 진행 -> payments 생성 (상태: pending)
-     * 카드 결제 요청 -> PG사 API 호출 (생략)
-     * 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
-     * 영수증 발행 -> receipts 생성
+     * 1. 결제 진행 -> payments 생성 (상태: pending)
+     * 2. 카드 결제 요청 -> PG사 API 호출 (생략)
+     * 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
+     * 4. 영수증 발행 -> receipts 생성
      */
     public ReceiptResponseDto requestPayment(CreatePayRequestDto dto) {
         log.info("requestPayment의 DTO : {} ", dto.toString());
 
-        // 입력값 검증
+        // 모든 입력값 검증
         payValidator.validateValues(dto);
 
+        // 1. 결제 진행 -> payments 생성 (상태: pending)
         paymentRepository.savePayment(dto);
-
-        // order쪽에서의 orderStatus도 SUCCESS로 변경
-        orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
 
         // 저장 후 생성된 id 받아와서 결제디테일 테이블에 저장
         Long generatedPaymentId = dto.getPaymentId();
@@ -69,6 +70,14 @@ public class PaymentService {
         // 결제에 사용된 카드정보 저장
         cardService.saveCard(generatedPaymentId, dto.getPayList());
 
+        // order쪽에서의 orderStatus도 SUCCESS로 변경
+        orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
+
+        // 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
+        payTransactionService.saveTransaction(dto.getPaymentId(), dto.getTotalAmount());
+        paymentRepository.changeStatus(Status.SUCCESS, dto.getPaymentId());
+
+        // 4. 영수증 발행 -> receipts 생성
         return receiptService.saveAndResponseReceipt(dto);
     }
 

@@ -92,4 +92,10 @@
         JOIN menus M ON OM.menu_id = M.menu_id
     </select>
 
+    <update id="changeStatus">
+        UPDATE payments
+        SET status = #{status}
+        WHERE payment_id = #{paymentId}
+    </update>
+
 </mapper>
