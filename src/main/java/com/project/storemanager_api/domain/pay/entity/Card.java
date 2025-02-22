@@ -17,5 +17,6 @@ public class Card {
     private Long paymentId;
     private String cardNumber;
     private String cardCompany;
+    private Integer paidMoney;
     private LocalDateTime createdAt;
 }

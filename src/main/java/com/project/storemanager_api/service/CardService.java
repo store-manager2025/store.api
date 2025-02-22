@@ -35,14 +35,11 @@ public class CardService {
                 continue;
             }
 
-            // 임의의 랜덤 카드번호 생성
-            String cardNum = makeRandomCardNum();
-            log.info("cardNumber = {}", cardNum);
-
             Card newCard = Card.builder()
-                    .cardCompany(dto.getCardCompany())
                     .paymentId(payId)
-                    .cardNumber(cardNum)
+                    .cardCompany(dto.getCardCompany())
+                    .cardNumber(dto.getCardNumber())
+                    .paidMoney(dto.getPaidMoney())
                     .build();
             cardRepository.saveCard(newCard);
         }
