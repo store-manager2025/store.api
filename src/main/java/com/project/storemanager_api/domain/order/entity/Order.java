@@ -17,13 +17,8 @@ public class Order {
     private Long storeId;
     private Long placeId;
     private Integer price;
-    private OrderType orderType;
     private OrderStatus orderStatus;
     private LocalDateTime orderedAt;
-
-    public enum OrderType {
-        CASH, CARD, UNPAID
-    }
 
     public enum OrderStatus {
         SUCCESS, UNPAID

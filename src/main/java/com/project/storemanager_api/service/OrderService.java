@@ -32,6 +32,10 @@ public class OrderService {
     private final MenuRepository menuRepository; // 메뉴 가격 조회를 위한 Repository
     private final StoreRepository storeRepository;
 
+    /**
+     * 결제 요청 처리 비즈니스로직
+     * @param dto 가게id, 주문 장소id, 총 금액, 주문항목 리스트가 담긴 dto
+     */
     public void createOrder(OrderRequestDto dto) {
         // 1. 각 주문 항목의 가격 계산 및 총 주문 금액 합산
         int totalPrice = getTotalPrice(dto);
@@ -41,7 +45,6 @@ public class OrderService {
                 .storeId(dto.getStoreId())
                 .price(totalPrice)
                 .placeId(dto.getPlaceId())
-                .orderType(Order.OrderType.UNPAID)   // 기본값
                 .orderStatus(Order.OrderStatus.UNPAID) // 기본값
                 .build();
 
@@ -76,6 +79,7 @@ public class OrderService {
         }
     }
 
+    //
     private int getTotalPrice(OrderRequestDto dto) {
         int totalPrice = 0;
         for (OrderItemRequestDto item : dto.getItems()) {
