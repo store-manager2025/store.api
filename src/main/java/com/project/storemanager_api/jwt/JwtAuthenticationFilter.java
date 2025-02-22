@@ -46,12 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role = "ROLE_" + tokenProvider.getCurrentUserRole(token);
             List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
 
-            // ✅ CustomUserPrincipal을 이용해 SecurityContext에 저장
-            CustomUserPrincipal userPrincipal = new CustomUserPrincipal(userId, currentLoginStoreIds);
+            //  CustomUserPrincipal을 이용해 SecurityContext에 저장
+            CustomUserPrincipal userPrincipal = new CustomUserPrincipal(userId, currentLoginStoreIds, role);
             Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            log.info("Authentication success - User ID: {}, Stores: {}", userId, currentLoginStoreIds);
+            log.info("Authentication success - User ID: {}, Stores: {}, role: {}", userId, currentLoginStoreIds, role);
         }
 
         // 다음 필터로 요청 전달
