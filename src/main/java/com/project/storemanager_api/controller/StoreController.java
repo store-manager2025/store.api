@@ -78,6 +78,7 @@ public class StoreController {
     // 매장 삭제 API
     @StoreAuthCheck
     @DeleteMapping
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, Object>> deleteStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
                                                            @RequestBody DeleteStoreRequestDto dto) {
         log.info("DeleteStoreRequestDto : {}", dto);

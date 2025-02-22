@@ -11,6 +11,7 @@ import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,7 @@ public class AuthController {
 
     // 사장이 직원의 아이디를 만들어준다.
     @PostMapping("/api/join-emp/{storeId}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, Object>> joinEmployee(@RequestBody @Valid SignUpRequestDto signUpRequest
                                                             , @PathVariable("storeId") Long storeId) {
         log.info("request for signup: {}", signUpRequest.getName());
