@@ -15,12 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
+import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType;
+import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CASH;
 
 @Service
 @Slf4j
@@ -40,7 +45,12 @@ public class PaymentService {
 
     private final ReceiptService receiptService;
 
-
+    /** 카드 결제 데이터 흐름
+     * 결제 진행 -> payments 생성 (상태: pending)
+     * 카드 결제 요청 -> PG사 API 호출 (생략)
+     * 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
+     * 영수증 발행 -> receipts 생성
+     */
     public ReceiptResponseDto requestPayment(CreatePayRequestDto dto) {
         log.info("requestPayment의 DTO : {} ", dto.toString());
 
@@ -59,11 +69,15 @@ public class PaymentService {
         cardService.saveCard(generatedPaymentId, dto.getPayList());
 
         for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
+            // payDetail.getExpiryDate() 날짜 확인
+            checkExpiryDate(payDetail.getExpiryDate(), payDetail.getPaymentType());
+
             paymentDetailService.savePayInfo(payDetail, generatedPaymentId);
         }
 
         return receiptService.saveAndResponseReceipt(dto);
     }
+
 
     // 한 매장에 등록된 결제 정보 반환 메서드
     public List<PaymentResponseDto> getAllPayments(Long storeId) {
@@ -145,6 +159,30 @@ public class PaymentService {
         }
 
         return menuList;
+    }
+
+    private void checkExpiryDate(String expiryDate, PaymentType paymentType) {
+        // 현금 결제는 패스
+        if (paymentType.equals(CASH)) {
+            return;
+        }
+
+
+
+        // 예시 -> "2025/03"은 2025년 3월 1일로 간주
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM");
+        YearMonth yearMonth = YearMonth.parse(expiryDate, formatter);
+
+        // ✅ 해당 월의 1일을 LocalDate로 변환
+        LocalDate expirationDate = yearMonth.atDay(1);
+
+        // 현재 날짜 가져오기
+        LocalDate today = LocalDate.now();
+
+        // 만료 여부 확인
+        if (today.isAfter(expirationDate)) {
+           throw new PaymentException(ErrorCode.DATE_EXPIRATION, ErrorCode.DATE_EXPIRATION.getMessage());
+        }
     }
 
 }

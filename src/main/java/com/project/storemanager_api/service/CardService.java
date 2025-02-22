@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Random;
 
 import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CARD;
 
@@ -40,23 +39,10 @@ public class CardService {
                     .cardCompany(dto.getCardCompany())
                     .cardNumber(dto.getCardNumber())
                     .paidMoney(dto.getPaidMoney())
+                    .expiryDate(dto.getExpiryDate())
                     .build();
             cardRepository.saveCard(newCard);
         }
 
-    }
-
-    public static String makeRandomCardNum() {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 4; i++) {
-            // 1000 ~ 9999 범위의 4자리 숫자 생성
-            int group = random.nextInt(9000) + 1000;
-            sb.append(group);
-            if (i < 3) {
-                sb.append("-");
-            }
-        }
-        return sb.toString();
     }
 }

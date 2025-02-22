@@ -19,4 +19,5 @@ public class Card {
     private String cardCompany;
     private Integer paidMoney;
     private LocalDateTime createdAt;
+    private String expiryDate; // 2024/03
 }

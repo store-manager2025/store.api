@@ -6,9 +6,9 @@
 
     <insert id="saveCard">
         INSERT INTO cards
-            (card_company, payment_id, card_number, paid_money)
+            (card_company, payment_id, card_number, paid_money, expiry_date)
         VALUES
-            (#{cardCompany}, #{paymentId}, #{cardNumber}, #{paidMoney})
+            (#{cardCompany}, #{paymentId}, #{cardNumber}, #{paidMoney}, #{expiryDate})
     </insert>
 
 

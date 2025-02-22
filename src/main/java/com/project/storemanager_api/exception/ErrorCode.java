@@ -58,6 +58,7 @@ public enum ErrorCode {
 
     // 결제 관련 에러
     TOO_MUCH_PRICE(HttpStatus.BAD_REQUEST, "필요한 금액을 초과합니다."),
+    DATE_EXPIRATION(HttpStatus.BAD_REQUEST, "날짜가 만료되었습니다.")
     ;
 
     private final HttpStatus status;
