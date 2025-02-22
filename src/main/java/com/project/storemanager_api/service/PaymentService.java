@@ -39,9 +39,9 @@ public class PaymentService {
 
     private final PayValidator payValidator; // 입력값에 대한 검증 전용 클래스
 
-    private final ReceiptService receiptService;
+    private final ReceiptService receiptService; // 영수증 발행용 클래스
 
-    private final PayTransactionService payTransactionService;
+    private final PayTransactionService payTransactionService; // 결제 흐름과 관련한 transaction 처리
 
     /** 카드 결제 데이터 흐름
      * 1. 결제 진행 -> payments 생성 (상태: pending)

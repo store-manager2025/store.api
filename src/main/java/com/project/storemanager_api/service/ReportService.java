@@ -14,6 +14,4 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
 
-
-
 }

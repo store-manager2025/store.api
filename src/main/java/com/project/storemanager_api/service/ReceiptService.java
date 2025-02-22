@@ -29,16 +29,7 @@ public class ReceiptService {
     // 1. 일단 영수증을 DB에 저장
     // 2. 여러 테이블과 join해서 가져온다
     public ReceiptResponseDto saveAndResponseReceipt(CreatePayRequestDto dto) {
-        Long paymentId = dto.getPaymentId();
-        Receipt receipt = Receipt.builder()
-                .paymentId(paymentId)
-                .storeId(dto.getStoreId())
-                .orderId(dto.getOrderId())
-                .placeId(dto.getPlaceId())
-                .receiptDate(formatReceiptDate(paymentId))
-                .approveNumber(makeRandomValue(7))
-                .joinNumber(makeRandomValue(8))
-                .build();
+        Receipt receipt = makeReceipt(dto);
         receiptRepository.saveReceipt(receipt); // 1끝
 
         ReceiptResponseDto receiptResponseDto = receiptRepository.findByOrderId(dto.getOrderId()).orElseThrow(
@@ -47,6 +38,20 @@ public class ReceiptService {
         receiptResponseDto.setMenuList(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
         // 나머지 임의의 값들을 채워서 리턴
         return receiptResponseDto.fillRestValue(receiptResponseDto, dto.getPayList());
+    }
+
+
+    private Receipt makeReceipt(CreatePayRequestDto dto) {
+        Long paymentId = dto.getPaymentId();
+        return Receipt.builder()
+                .paymentId(paymentId)
+                .storeId(dto.getStoreId())
+                .orderId(dto.getOrderId())
+                .placeId(dto.getPlaceId())
+                .receiptDate(formatReceiptDate(paymentId))
+                .approveNumber(makeRandomValue(7))
+                .joinNumber(makeRandomValue(8))
+                .build();
     }
 
     public static String makeRandomValue(int range) {
