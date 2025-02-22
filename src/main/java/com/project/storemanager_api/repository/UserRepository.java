@@ -29,4 +29,7 @@ public interface UserRepository {
     // refresh token 업데이트 (새로운 refresh token 저장)
     void updateRefreshToken(@Param("refreshToken") String refreshToken, @Param("userId") Long userId);
 
+    // 권한을 return하는 메서드
+    User.Role findRoleById(Long userId);
+
 }

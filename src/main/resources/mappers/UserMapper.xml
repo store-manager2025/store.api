@@ -49,4 +49,11 @@
         WHERE user_id = #{userId}
     </update>
 
+    <select id="findRoleById" resultType="string">
+        SELECT
+            role
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
