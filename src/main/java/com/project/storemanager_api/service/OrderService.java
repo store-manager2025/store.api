@@ -21,9 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
-import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.UNPAID;
+import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.*;
 
 @Service
 @Transactional
@@ -35,6 +36,7 @@ public class OrderService {
     private final OrderMenuService orderMenuService;
     private final MenuRepository menuRepository; // 메뉴 가격 조회를 위한 Repository
     private final StoreRepository storeRepository;
+    private final PaymentService paymentService;
 
     /**
      * 주문 요청 처리 비즈니스로직
@@ -150,22 +152,99 @@ public class OrderService {
     public void refundOrder(Long orderId, List<RefundOrderDto> refundInfo) {
 
         Order foundOrder = validateOrder(orderId); // 주문 정보
-        List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId);
-        log.info("originMenuInfos.toString() : {}", originMenuInfos.toString());
-        log.info("requestRefundInfo.toString() : {}", refundInfo.toString());
+        List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
 
-        // 시나리오
         if (foundOrder.getOrderStatus().equals(SUCCESS)) {
             // 1. 선불결제 시나리오
-
-            // 1-1. 전체 주문 취소일시 orders테이블에서 주문 상태 변경
-            // 1-2. 부분 취소 일시
+            // 전체 주문 취소인지 확인
+            boolean flag = checkRefundAll(originMenuInfos, refundInfo);
+            // 1-1. 전체 주문 취소일시 orders테이블에서 주문 상태 변경, payment 테이블도 삭제
+            if (flag) {
+                orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
+                paymentService.updateStatus(orderId, String.valueOf(CANCELLED));// payments 테이블 주문 상태 변경
+                // 주문에 대한 메뉴 디테일 정보도 업데이트
+                for (RefundOrderDto info : originMenuInfos) {
+                    orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
+                }
+            } else {
+                // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
+                updatePartialRefund(orderId, originMenuInfos, refundInfo);
+            }
         } else {
             // 2. 후불결제 시나리오
-            // 2-1. orders테이블에서 상태 변경
 
+            // 전체 주문 취소인지 확인
+            boolean flag = checkRefundAll(originMenuInfos,  refundInfo);
+            if (flag) { // 전체 취소라면
+                // 2-1. orders테이블에서 상태 변경
+                orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
+                // 2-2. order_menus 테이블에서도 상태 변경
+                for (RefundOrderDto info : originMenuInfos) {
+                    orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
+                }
+            } else {
+                // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
+                updatePartialRefund(orderId, originMenuInfos, refundInfo);
+            }
         }
     }
+
+    /**
+     * 환불 요청이 들어왔을 때, 전체 주문 취소인지 확인하는 메서드
+     *
+     * @param originMenuInfos   기존 주문 메뉴 원본 데이터
+     * @param requestRefundInfo 환불 요청이 들어온 데이터
+     * @return 전체 취소면 true, 아니면 false
+     */
+    private boolean checkRefundAll(List<RefundOrderDto> originMenuInfos, List<RefundOrderDto> requestRefundInfo) {
+        // 기존 주문 정보를 Map<menuId, quantity>로 변환
+        Map<Long, Integer> originOrderMap = originMenuInfos.stream()
+                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
+        log.info("originOrderMap: {}", originOrderMap);
+
+        // 요청된 환불 정보를 Map<menuId, quantity>로 변환
+        Map<Long, Integer> refundRequestMap = requestRefundInfo.stream()
+                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
+        log.info("refundRequestMap: {}", refundRequestMap);
+
+        // 두 개의 Map을 비교하여 모든 menuId와 quantity가 일치하는지 확인
+        return originOrderMap.equals(refundRequestMap);
+    }
+
+    /**
+     * 부분 환불 처리 - 기존 수량과 요청된 환불 수량 비교 후 처리
+     */
+    private void updatePartialRefund(Long orderId, List<RefundOrderDto> originMenuInfos, List<RefundOrderDto> refundInfo) {
+        // 기존 주문 정보를 Map<menuId, quantity>로 변환
+        Map<Long, Integer> originOrderMap = originMenuInfos.stream()
+                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
+
+        // 요청된 환불 정보를 Map<menuId, quantity>로 변환
+        Map<Long, Integer> refundRequestMap = refundInfo.stream()
+                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
+
+        for (Map.Entry<Long, Integer> entry : refundRequestMap.entrySet()) {
+            Long menuId = entry.getKey();
+            Integer refundQuantity = entry.getValue();
+            Integer originQuantity = originOrderMap.get(menuId);
+
+            if (originQuantity == null) {
+                throw new MenuException(ErrorCode.INVALID_ID, "해당 메뉴가 존재하지 않습니다: " + menuId);
+            }
+
+            if (refundQuantity.equals(originQuantity)) {
+                // 기존 주문 수량과 환불 수량이 동일하면, 주문 상태를 CANCELLED로 변경
+                orderMenuService.updateOrderStatus(orderId, menuId, String.valueOf(CANCELLED));
+            } else if (refundQuantity < originQuantity) {
+                // 기존 주문 수량보다 환불 수량이 적다면, 수량만 감소
+                int updatedQuantity = originQuantity - refundQuantity;
+                orderMenuService.updateMenuQuantity(orderId, menuId, updatedQuantity);
+            } else {
+                throw new OrderException(ErrorCode.DONT_OVER_QUANTITY, "환불 요청 수량이 주문 수량을 초과할 수 없습니다.");
+            }
+        }
+    }
+
 
     // orderId 유효성 검증
     @Transactional

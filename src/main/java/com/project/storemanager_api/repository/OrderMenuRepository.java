@@ -25,4 +25,12 @@ public interface OrderMenuRepository {
 
     // 메뉴 환불 요청이 들어왔을때, 원본과 대조하기 위한 데이터를 반환
     List<RefundOrderDto> findOriginMenus(Long orderId);
+
+    void updateStatus(@Param("orderId") Long orderId,
+                      @Param("menuId") Long menuId,
+                      @Param("orderStatus") String orderStatus);
+
+    void updateOrderMenuQuantity(@Param("orderId") Long orderId,
+                                 @Param("menuId") Long menuId,
+                                 @Param("quantity") int quantity);
 }

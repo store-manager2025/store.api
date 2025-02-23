@@ -25,5 +25,10 @@ public interface PaymentRepository {
     Optional<PaymentDetailResponseDto> findPaymentDetail(Long paymentId);
 
     // 결제 성공시 상태값 변경
-    void changeStatus(@Param("status") Payment.Status status, @Param("paymentId") Long paymentId);
+    void changeStatus(@Param("status") Payment.Status status,
+                      @Param("paymentId") Long paymentId);
+
+    // orderId 로 상태값 변경
+    void updateStatus(@Param("orderId") Long orderId,
+                      @Param("status") String status);
 }

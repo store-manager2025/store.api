@@ -100,7 +100,8 @@
     <update id="updateOrderStatus">
         UPDATE orders
         SET
-            order_status = #{success}
+            order_status = #{orderStatus}
         WHERE order_id = #{orderId}
     </update>
+
 </mapper>

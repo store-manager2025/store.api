@@ -164,4 +164,7 @@ public class PaymentService {
         return menuList;
     }
 
+    public void updateStatus(Long orderId, String status) {
+        paymentRepository.updateStatus(orderId, status);
+    }
 }

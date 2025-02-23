@@ -39,4 +39,18 @@
         WHERE order_id = #{orderId}
     </select>
 
+    <!--  주문 메뉴 상태 변경  -->
+    <update id="updateStatus">
+        UPDATE order_menus
+            SET order_status = #{orderStatus}
+        WHERE order_id = #{orderId} AND menu_id = #{menuId}
+    </update>
+
+    <!-- 주문 메뉴 수량 감소 -->
+    <update id="updateOrderMenuQuantity">
+        UPDATE order_menus
+            SET order_item_quantity = #{quantity}
+        WHERE order_id = #{orderId} AND menu_id = #{menuId}
+    </update>
+
 </mapper>
