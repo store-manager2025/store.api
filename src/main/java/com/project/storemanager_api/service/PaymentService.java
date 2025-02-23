@@ -50,7 +50,6 @@ public class PaymentService {
      * 4. 영수증 발행 -> receipts 생성
      */
     public ReceiptResponseDto requestPayment(CreatePayRequestDto dto) {
-        log.info("requestPayment의 DTO : {} ", dto.toString());
 
         // 모든 입력값 검증
         payValidator.validateValues(dto);
@@ -60,7 +59,6 @@ public class PaymentService {
 
         // 저장 후 생성된 id 받아와서 결제디테일 테이블에 저장
         Long generatedPaymentId = dto.getPaymentId();
-        log.info("생성된 결제ID : {}", generatedPaymentId);
 
         // 주문 상세정보 저장
         for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
@@ -93,6 +91,8 @@ public class PaymentService {
 
     }
 
+    // 결제 단일 정보 조회
+    @Transactional(readOnly = true)
     public PaymentDetailResponseDto getPaymentDetail(Long paymentId) {
         PaymentDetailResponseDto result = paymentRepository.findPaymentDetail(paymentId).orElseThrow(
                 () -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾을 수 없습니다.")
