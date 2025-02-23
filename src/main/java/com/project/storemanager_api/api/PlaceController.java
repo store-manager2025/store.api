@@ -6,6 +6,9 @@ import com.project.storemanager_api.domain.place.dto.response.PlaceResponseDto;
 import com.project.storemanager_api.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +33,7 @@ public class PlaceController {
     }
 
     @GetMapping("/all/{storeId}")
+    @Cacheable(value = "places", key = "#storeId")
     public ResponseEntity<List<PlaceResponseDto>> getAllPlaces(@PathVariable Long storeId) {
         log.info("get all places : {}", storeId);
         List<PlaceResponseDto> result = placeService.getPlaces(storeId);
@@ -44,7 +48,8 @@ public class PlaceController {
     }
 
     // 좌석 이름, ui 수정
-    @PatchMapping
+    @PatchMapping           // storeId를 DB에서 조회한 후 @CacheEvict의 key로 사용하면 됨.
+    @CachePut(value = "places", key = "#placeService.getStoreIdByPlaceId(dto.placeId)")
     public ResponseEntity<Map<String, Object>> updatePlace(@RequestBody ModifyPlaceRequestDto dto) {
         log.info("update place dto : {}", dto);
         placeService.modifyPlace(dto);
@@ -54,6 +59,7 @@ public class PlaceController {
     }
 
     @DeleteMapping("/{placeId}")
+    @CacheEvict(value = "places", key = "#placeService.getStoreIdByPlaceId(placeId)")
     public ResponseEntity<Map<String, Object>> deletePlace(@PathVariable Long placeId) {
         log.info("delete place : {}", placeId);
         placeService.deletePlace(placeId);

@@ -139,4 +139,12 @@ public class PlaceService {
         log.info("방금 save된 ui id - {} ", generatedUiId);
         return generatedUiId;
     }
+
+    // 캐시 삭제 처리를 위해서 id를 가져오는 메서드
+    public Long getStoreIdByPlaceId(Long placeId) {
+        return placeRepository.findStoreIdByPlaceId(placeId)
+                .orElseThrow(() -> new PlaceException(
+                        ErrorCode.PLACE_NOT_FOUND,
+                        "해당 placeId에 대한 storeId를 찾을 수 없습니다."));
+    }
 }
