@@ -3,6 +3,7 @@ package com.project.storemanager_api.service;
 import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
+import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
@@ -21,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
+import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.UNPAID;
+
 @Service
 @Transactional
 @Slf4j
@@ -33,7 +37,8 @@ public class OrderService {
     private final StoreRepository storeRepository;
 
     /**
-     * 결제 요청 처리 비즈니스로직
+     * 주문 요청 처리 비즈니스로직
+     *
      * @param dto 가게id, 주문 장소id, 총 금액, 주문항목 리스트가 담긴 dto
      */
     public void createOrder(OrderRequestDto dto) {
@@ -45,7 +50,7 @@ public class OrderService {
                 .storeId(dto.getStoreId())
                 .price(totalPrice)
                 .placeId(dto.getPlaceId())
-                .orderStatus(Order.OrderStatus.UNPAID) // 기본값
+                .orderStatus(UNPAID) // 기본값
                 .build();
 
         // 3. orders 테이블에 주문 저장 (INSERT 후 auto-generated key 반영)
@@ -62,9 +67,7 @@ public class OrderService {
     public void addOrder(OrderRequestDto dto, Long orderId) {
 
         // 1. 우선 기존 주문 내역이 있는지 조회
-        Order exist = orderRepository.findById(orderId).orElseThrow(
-                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
-        );
+        Order exist = validateOrder(orderId);
 
         // 2. 각 주문 항목의 가격 계산 및 총 주문 금액 합산
         int updatedPrice = getTotalPrice(dto) + exist.getPrice();
@@ -140,6 +143,35 @@ public class OrderService {
     public void validateStoreId(Long storeId) {
         storeRepository.findPasswordById(storeId).orElseThrow(
                 () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
+        );
+    }
+
+    // 메뉴들에 대한 환불요청 (부분 환불도 가능하도록 설계해야 함)
+    public void refundOrder(Long orderId, List<RefundOrderDto> refundInfo) {
+
+        Order foundOrder = validateOrder(orderId); // 주문 정보
+        List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId);
+        log.info("originMenuInfos.toString() : {}", originMenuInfos.toString());
+        log.info("requestRefundInfo.toString() : {}", refundInfo.toString());
+
+        // 시나리오
+        if (foundOrder.getOrderStatus().equals(SUCCESS)) {
+            // 1. 선불결제 시나리오
+
+            // 1-1. 전체 주문 취소일시 orders테이블에서 주문 상태 변경
+            // 1-2. 부분 취소 일시
+        } else {
+            // 2. 후불결제 시나리오
+            // 2-1. orders테이블에서 상태 변경
+
+        }
+    }
+
+    // orderId 유효성 검증
+    @Transactional
+    public Order validateOrder(Long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
         );
     }
 

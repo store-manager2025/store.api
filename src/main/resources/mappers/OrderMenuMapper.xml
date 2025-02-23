@@ -10,9 +10,9 @@
             keyProperty="item.orderMenuId"
             keyColumn="order_menu_id">
         INSERT INTO order_menus
-        (order_id, menu_id, order_item_quantity, order_price)
+        (order_id, menu_id, order_item_quantity, order_price, order_status)
         VALUES
-        (#{orderId}, #{item.menuId}, #{item.quantity}, #{item.orderPrice})
+        (#{orderId}, #{item.menuId}, #{item.quantity}, #{item.orderPrice}, 'UNPAID')
     </insert>
 
     <!-- 주문 항목 조회: 특정 주문(orderId)에서 특정 메뉴(menuId)를 찾음 -->
@@ -30,5 +30,13 @@
         order_price = order_price + #{price}
         WHERE order_id = #{orderId} AND menu_id = #{menuId}
     </update>
+
+    <select id="findOriginMenus" resultType="com.project.storemanager_api.domain.order.dto.request.RefundOrderDto">
+        SELECT
+            menu_id,
+            order_item_quantity AS quantity
+        FROM order_menus
+        WHERE order_id = #{orderId}
+    </select>
 
 </mapper>

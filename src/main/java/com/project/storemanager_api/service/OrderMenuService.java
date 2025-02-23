@@ -1,6 +1,7 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
+import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
 import com.project.storemanager_api.domain.order.entity.OrderMenu;
 import com.project.storemanager_api.repository.OrderMenuRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,5 +40,9 @@ public class OrderMenuService {
             orderMenuRepository.saveOrderMenu(orderId, item);
             log.info("신규 주문 항목 저장: orderId={}, item={}", orderId, item);
         }
+    }
+
+    public List<RefundOrderDto> findOriginOrderMenus(Long orderId) {
+        return orderMenuRepository.findOriginMenus(orderId);
     }
 }
