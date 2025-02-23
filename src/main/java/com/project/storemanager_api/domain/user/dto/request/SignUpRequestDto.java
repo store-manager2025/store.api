@@ -24,10 +24,11 @@ public class SignUpRequestDto {
     private String name;
 
 
-    public User toEntity() {
+    public User toEntity(User.Role role) {
         return User.builder()
                 .email(email)
                 .name(this.name)
+                .role(role)
                 .password(this.password)
                 .build();
     }

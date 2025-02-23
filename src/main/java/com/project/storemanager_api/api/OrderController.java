@@ -1,4 +1,4 @@
-package com.project.storemanager_api.controller;
+package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
@@ -6,6 +6,7 @@ import com.project.storemanager_api.domain.order.dto.response.OrderDetailRespons
 import com.project.storemanager_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,7 @@ public class OrderController {
 
     // 모든 오더 기록을 조회하는 API
     @GetMapping("/all/{storeId}")
+    @Cacheable(value = "orderList", key = "#storeId")
     public ResponseEntity<List<OrderAllResponseDto>> getAllOrders(@PathVariable Long storeId) {
         log.info("모든 오더 기록 조회 요청 - {}", storeId);
         List<OrderAllResponseDto> result = orderService.getAllOrders(storeId);

@@ -1,4 +1,4 @@
-package com.project.storemanager_api.controller;
+package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
+    @Transactional(rollbackFor = Exception.class) // Exception이 발생하면 롤백
     public ResponseEntity<ReceiptResponseDto> createPayment(@RequestBody CreatePayRequestDto dto) {
         log.info("Create payment request: {}", dto);
         ReceiptResponseDto receiptResponseDto = paymentService.requestPayment(dto);
@@ -45,9 +47,5 @@ public class PaymentController {
         PaymentDetailResponseDto result = paymentService.getPaymentDetail(paymentId);
         return ResponseEntity.ok().body(result);
     }
-
-
-
-
 
 }

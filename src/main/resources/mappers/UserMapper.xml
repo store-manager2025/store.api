@@ -4,11 +4,12 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.UserRepository">
 
-    <insert id="saveUser">
+    <insert id="saveUser"
+            useGeneratedKeys="true" keyProperty="userId" keyColumn="user_Id">
         INSERT INTO users
-        (password, email, name)
+        (password, email, name, role)
         VALUES
-        (#{password}, #{email}, #{name})
+        (#{password}, #{email}, #{name}, #{role})
     </insert>
 
     <select id="findByEmail" resultType="com.project.storemanager_api.domain.user.entity.User">
@@ -48,5 +49,12 @@
         SET refresh_token = #{refreshToken}
         WHERE user_id = #{userId}
     </update>
+
+    <select id="findRoleById" resultType="string">
+        SELECT
+            role
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
 
 </mapper>

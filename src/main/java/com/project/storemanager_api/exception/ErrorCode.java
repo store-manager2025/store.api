@@ -29,6 +29,7 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
     EMPTY_EMAIL(HttpStatus.BAD_REQUEST, "email값이 누락되었습니다."),
+    NOT_CORRECT_ROLE(HttpStatus.BAD_REQUEST, "권한은 OWNER, EMPLOYEE 두가지의 값만 있습니다."),
 
     // 인증 관련
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),

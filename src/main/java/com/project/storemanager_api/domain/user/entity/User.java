@@ -17,8 +17,14 @@ public class User {
     private String password;
     private String email;
     private String name;
-    private String role;
+    private Role role;
     private String refreshToken;
     private LocalDateTime createdAt;
+
+    public enum Role {
+        OWNER, // 사장
+        EMPLOYEE // 알바
+    }
+
 
 }

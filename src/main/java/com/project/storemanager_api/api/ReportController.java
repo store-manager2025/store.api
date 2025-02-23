@@ -1,4 +1,4 @@
-package com.project.storemanager_api.controller;
+package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.service.ReportService;
 import lombok.RequiredArgsConstructor;

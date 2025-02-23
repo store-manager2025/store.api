@@ -7,6 +7,7 @@ import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto
 import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
+import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.jwt.JwtTokenProvider;
@@ -39,7 +40,6 @@ public class StoreService {
      * 매장 생성
      * 입력값 검증 후, 비밀번호 인코딩 및 DB 저장
      */
-    // 문제가 있다. 매장 생성 후, 다시 로그인 하기 전까지 토큰에 storeIds에 포함되지 않는다
     public Map<String, Object> saveStore(SaveStoreRequestDto dto, Long userId) {
         log.info("매장 생성 요청 : userId={}", userId);
         // 입력값 검증
@@ -54,11 +54,12 @@ public class StoreService {
         storeRepository.saveStore(dto);
         Long generatedStoreId = dto.getStoreId();
         log.info("생성된 storeId: {}", generatedStoreId);
+        User.Role role = userRepository.findRoleById(userId);
 
         // 토큰 재발급에 사용될 데이터
         List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
-        String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId, role);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId, role);
         userRepository.updateRefreshToken(refreshToken, userId);
 
         // 기본 카테고리 하나 생성

@@ -1,5 +1,6 @@
 package com.project.storemanager_api.jwt;
 
+import com.project.storemanager_api.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -37,18 +38,18 @@ public class JwtTokenProvider {
 
     // 토큰 발급 로직
     // 엑세스 토큰 생성 (사용자가 들고다닐 신분증) : 유효기간이 짧다.
-    public String createAccessToken(Long userId, List<Long> storeIdList) {
-        return createToken(userId, storeIdList, jwtProperties.getAccessTokenValidityTime());
+    public String createAccessToken(Long userId, List<Long> storeIdList, User.Role role) {
+        return createToken(userId, storeIdList, jwtProperties.getAccessTokenValidityTime(), role);
     }
     // 리프레시 토큰 생성 (서버가 보관할 신분증을 재발급하기 위한 정보) : 유효기간이 비교적 길다.
-    public String createRefreshToken(Long userId, List<Long> storeIdList) {
+    public String createRefreshToken(Long userId, List<Long> storeIdList, User.Role role) {
 
-        return createToken(userId, storeIdList, jwtProperties.getRefreshTokenValidityTime());
+        return createToken(userId, storeIdList, jwtProperties.getRefreshTokenValidityTime(), role);
     }
 
     // 공통 토큰 생성 로직
     // 엑세스,리프레시 생성 로직은 똑같고, 시간만 다르다
-    private String createToken(Long userId, List<Long> storeIdList, long validityTime) {
+    private String createToken(Long userId, List<Long> storeIdList, long validityTime, User.Role role) {
 
         // 현재 시간
         Date now = new Date();
@@ -56,10 +57,11 @@ public class JwtTokenProvider {
         // 만료 시간
         Date validity = new Date(now.getTime() + validityTime);
 
-        // claims에 userId와 storeIdList를 담는다.
+        // claims에 userId와 storeIdList, 권한을 담는다.
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("storeIdList", storeIdList);
+        claims.put("role", String.valueOf(role));
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -107,6 +109,15 @@ public class JwtTokenProvider {
         return storeIds.stream()
                 .map(id -> ((Number) id).longValue())
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 검증된 토큰에서 사용자의 소유 매장id리스트를 추출하는 메서드
+     * @param token - 인증 토큰
+     * @return 토큰에서 추출한 사용자의 권한
+     */
+    public String getCurrentUserRole(String token) {
+        return parseClaims(token).get("role", String.class);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.project.storemanager_api.controller;
+package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.store.dto.request.DeleteStoreRequestDto;
@@ -12,7 +12,10 @@ import com.project.storemanager_api.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,11 +62,14 @@ public class StoreController {
      * @param dto - storePlace, storeName, password를 수정할 수 있는 DTO
      * @return updatedStoreDto - 수정된 store 객체
      */
-    @StoreAuthCheck
     @PatchMapping
+    @StoreAuthCheck
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, String>> modifyStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
                                                            @RequestBody ModifyStoreRequestDto dto) {
-         storeService.modifyStoreInfo(dto);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("User role: {}", authentication.getAuthorities());
+        storeService.modifyStoreInfo(dto);
         return ResponseEntity.ok().body(Map.of(
                 "message", "매장이 성공적으로 수정 되었습니다."
         ));
@@ -72,6 +78,7 @@ public class StoreController {
     // 매장 삭제 API
     @StoreAuthCheck
     @DeleteMapping
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, Object>> deleteStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
                                                            @RequestBody DeleteStoreRequestDto dto) {
         log.info("DeleteStoreRequestDto : {}", dto);

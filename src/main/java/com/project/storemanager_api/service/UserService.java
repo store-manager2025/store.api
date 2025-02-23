@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.project.storemanager_api.domain.user.entity.User.*;
+
 @Service
 @Slf4j
 @Transactional
@@ -29,8 +31,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final StoreRepository storeRepository;
+    private final EmployeeService employeeService;
 
-    public void signUp(SignUpRequestDto signUpRequest) {
+    public void signUp(SignUpRequestDto signUpRequest, Role role, Long storeId) {
 
 
         userRepository.findByEmail(signUpRequest.getEmail())
@@ -41,10 +44,14 @@ public class UserService {
         // 암호화 작업
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        User newUser = signUpRequest.toEntity();
+        User newUser = signUpRequest.toEntity(role);
         newUser.setPassword(encodedPassword);
         userRepository.saveUser(newUser);
 
+        if (role.equals(Role.EMPLOYEE)) {
+            Long userId = newUser.getUserId();
+            employeeService.saveEmp(userId, storeId);
+        }
     }
 
     // 로그인 처리 (인증 처리)
@@ -76,10 +83,16 @@ public class UserService {
         }
 
         // 로그인이 성공했을 때, 해당 유저가 가진 store의 Id list를 조회, token생성시 포함
-        List<Long> storeIdList = storeRepository.findStoreIdsByUserId(foundUser.getUserId());
+        List<Long> storeIdList;
+        if (foundUser.getRole().equals(Role.OWNER)) { // 점주라면
+            storeIdList = storeRepository.findStoreIdsByUserId(foundUser.getUserId());
+        } else { // 알바생이라면
+            storeIdList = employeeService.findStoreIdByUserId(foundUser.getUserId());
+        }
+        log.info("found store id: {}", storeIdList);
 
         // 액세스/리프레시 토큰을 전송
-        String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), storeIdList);
+        String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), storeIdList, foundUser.getRole());
         log.info("new refresh token: {}", refreshToken);
 
         userRepository.updateRefreshToken(refreshToken, foundUser.getUserId());
@@ -87,7 +100,7 @@ public class UserService {
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "name", foundUser.getName(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), storeIdList),
+                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), storeIdList, foundUser.getRole()),
                 "refreshToken", refreshToken
         );
     }
@@ -148,9 +161,9 @@ public class UserService {
 
         List<Long> storeIdList = storeRepository.findStoreIdsByUserId(user.getUserId());
         // 5. 새로운 access token 생성
-        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), storeIdList);
+        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), storeIdList, user.getRole());
         // 6. 새로운 refresh token 생성 (리프레시 토큰 회전)
-        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), storeIdList);
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), storeIdList, user.getRole());
 
         // 7. DB에 새로운 refresh token 저장
         user.setRefreshToken(newRefreshToken);

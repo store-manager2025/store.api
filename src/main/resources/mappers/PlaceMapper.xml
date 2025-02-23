@@ -60,5 +60,12 @@
         WHERE place_id = #{placeId}
     </delete>
 
+    <select id="findStoreIdByPlaceId" resultType="java.lang.Long">
+        SELECT
+            store_id
+        FROM places
+        WHERE place_id = #{placeId}
+    </select>
+
 
 </mapper>
