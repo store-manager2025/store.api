@@ -33,4 +33,7 @@ public interface OrderMenuRepository {
     void updateOrderMenuQuantity(@Param("orderId") Long orderId,
                                  @Param("menuId") Long menuId,
                                  @Param("quantity") int quantity);
+
+    void updateOrderStatusWithoutMenuId(@Param("orderId") Long orderId,
+                                        @Param("orderStatus") String orderStatus);
 }

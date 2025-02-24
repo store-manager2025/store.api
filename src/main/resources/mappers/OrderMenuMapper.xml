@@ -53,4 +53,10 @@
         WHERE order_id = #{orderId} AND menu_id = #{menuId}
     </update>
 
+    <update id="updateOrderStatusWithoutMenuId">
+        UPDATE order_menus
+            SET order_status = #{orderStatus}
+        WHERE order_id = #{orderId}
+    </update>
+
 </mapper>
