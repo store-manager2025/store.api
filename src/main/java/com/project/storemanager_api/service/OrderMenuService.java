@@ -3,6 +3,8 @@ package com.project.storemanager_api.service;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
 import com.project.storemanager_api.domain.order.entity.OrderMenu;
+import com.project.storemanager_api.exception.ErrorCode;
+import com.project.storemanager_api.exception.OrderException;
 import com.project.storemanager_api.repository.OrderMenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +55,15 @@ public class OrderMenuService {
 
     // 주문 메뉴 수량만 감소 (부분 취소인 경우)
     public void updateMenuQuantity(Long orderId, Long menuId, int quantity) {
-        orderMenuRepository.updateOrderMenuQuantity(orderId, menuId, quantity);
+        // 메뉴 원가 구해와서 연산 후 집어넣어야 함
+        OrderMenu originOrderInfo = orderMenuRepository.findByOrderIdAndMenuId(orderId, menuId).orElseThrow(
+                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
+        );
+        // 원래 주문된 가격 - 1개당 원가 * quantity
+        Integer currentOrderAmount = originOrderInfo.getOrderPrice();
+        Integer orderPrice = currentOrderAmount - (currentOrderAmount / originOrderInfo.getOrderItemQuantity()) * quantity;
+
+        orderMenuRepository.updateOrderMenuQuantity(orderId, menuId, quantity, orderPrice);
     }
 
     public void updateOrderStatusWithoutMenu(Long orderId, String orderStatus) {
