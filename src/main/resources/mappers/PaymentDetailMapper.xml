@@ -6,9 +6,9 @@
 
     <insert id="savePayInfo">
         INSERT INTO payment_detail
-            (payment_id, paid_money, payment_type)
+            (payment_id, paid_money, payment_type, order_status)
         VALUES
-            (#{paymentId}, #{paidMoney}, #{paymentType})
+            (#{paymentId}, #{paidMoney}, #{paymentType}, #{status})
     </insert>
 
 </mapper>

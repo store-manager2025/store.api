@@ -183,7 +183,7 @@ public class OrderService {
                     orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
                 }
             } else {
-                // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
+                // 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
                 updatePartialRefund(orderId, originMenuInfos, refundInfo);
             }
         }

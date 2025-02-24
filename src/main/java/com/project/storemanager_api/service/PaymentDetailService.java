@@ -17,7 +17,7 @@ public class PaymentDetailService {
 
 
     // 결제 세부 정보 저장
-    public void savePayInfo(CreatePaymentDetailDto detailDto, Long paymentId) {
-        paymentDetailRepository.savePayInfo(detailDto.getPaidMoney(), detailDto.getPaymentType(), paymentId);
+    public void savePayInfo(CreatePaymentDetailDto detailDto, Long paymentId, String status) {
+        paymentDetailRepository.savePayInfo(detailDto.getPaidMoney(), detailDto.getPaymentType(), paymentId, status);
     }
 }
