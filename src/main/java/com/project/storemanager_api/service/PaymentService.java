@@ -42,9 +42,11 @@ public class PaymentService {
     private final ReceiptService receiptService; // 영수증 발행용 클래스
 
     private final PayTransactionService payTransactionService; // 결제 흐름과 관련한 transaction 처리
+
     private final OrderMenuService orderMenuService;
 
-    /** 카드 결제 데이터 흐름
+    /**
+     * 카드 결제 데이터 흐름
      * 1. 결제 진행 -> payments 생성 (상태: pending)
      * 2. 카드 결제 요청 -> PG사 API 호출 (생략)
      * 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
@@ -79,7 +81,11 @@ public class PaymentService {
         paymentRepository.changeStatus(Status.SUCCESS, dto.getPaymentId());
 
         // 4. 영수증 발행 -> receipts 생성
-        return receiptService.saveAndResponseReceipt(dto);
+        try {
+            return receiptService.saveAndResponseReceipt(dto);
+        } catch (Exception e) {
+            throw new PaymentException(ErrorCode.ALREADY_PAYMENT, ErrorCode.ALREADY_PAYMENT.getMessage());
+        }
     }
 
 
@@ -106,7 +112,6 @@ public class PaymentService {
 
         return result;
     }
-
 
 
     public List<Map<String, Object>> parseMenuList(String data) {
