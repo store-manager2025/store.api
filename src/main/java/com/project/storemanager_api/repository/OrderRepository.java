@@ -26,17 +26,20 @@ public interface OrderRepository {
     Optional<OrderDetailResponseDto> findDetailById(Long orderId);
 
     // 한 매장에 대한 전체 기록 조회
-    List<OrderAllResponseDto> findAllListByStoreId(Long storeId);
+    List<OrderAllResponseDto> findAllListByStoreId(@Param("storeId") Long storeId,
+                                                   @Param("status") String status);
 
     // 특정 기간에 대한 기록 조회
     List<OrderAllResponseDto> findPeriodOrderListByStoreId(
             @Param("storeId") Long storeId,
             @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate);
+            @Param("endDate") LocalDate endDate,
+            @Param("status") String status);
 
     // 하루별 기록 상세 조회
     List<OrderDetailResponseDto> findDailyListByStoreId(@Param("storeId") Long storeId,
-                                                        @Param("date") LocalDate date);
+                                                        @Param("date") LocalDate date,
+                                                        @Param("status") String status);
 
     // 결제 상태 변경
     void updateOrderStatus(@Param("orderId") Long orderId,

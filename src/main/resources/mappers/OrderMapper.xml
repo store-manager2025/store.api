@@ -66,6 +66,7 @@
             , SUM(price) AS totalPrice
         FROM orders
         WHERE store_id = #{storeId}
+        AND order_status = 'SUCCESS' OR #{status}
         GROUP BY  DATE_FORMAT(ordered_at, '%Y%m%d')
     </select>
 
@@ -75,6 +76,7 @@
             , SUM(price) AS totalPrice
         FROM orders
         WHERE store_id = #{storeId}
+        AND order_status = 'SUCCESS' OR #{status}
         AND DATE_FORMAT(ordered_at, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
         GROUP BY DATE_FORMAT(ordered_at, '%Y-%m-%d');
     </select>
@@ -94,6 +96,7 @@
         JOIN places P ON O.place_id = P.place_id
         JOIN menus M ON OM.menu_id = M.menu_id
         WHERE O.store_id = #{storeId}
+        AND O.order_status = 'SUCCESS' OR #{status}
         AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
     </select>
 

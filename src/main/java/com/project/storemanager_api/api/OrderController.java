@@ -2,17 +2,13 @@ package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
-import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -47,35 +43,6 @@ public class OrderController {
         log.info("오더 단일 상세 조회 : {} ", orderId);
         OrderDetailResponseDto result = orderService.getDetail(orderId);
         return ResponseEntity.ok().body(result);
-    }
-
-    // 모든 오더 기록을 조회하는 API
-    @GetMapping("/all/{storeId}")
-    @Cacheable(value = "orderList", key = "#storeId")
-    public ResponseEntity<List<OrderAllResponseDto>> getAllOrders(@PathVariable Long storeId) {
-        log.info("모든 오더 기록 조회 요청 - {}", storeId);
-        List<OrderAllResponseDto> result = orderService.getAllOrders(storeId);
-        return ResponseEntity.ok().body(result);
-    }
-
-    // 특정 기간에 대한 주문 목록 조회
-    @GetMapping
-    public ResponseEntity<List<OrderAllResponseDto>> getPeriodOrderList(
-            @RequestParam Long storeId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        log.info("시작일 : {} , 종료일 : {}", startDate, endDate);
-        List<OrderAllResponseDto> result = orderService.getPeriodOrderList(storeId, startDate, endDate);
-        return ResponseEntity.ok().body(result);
-    }
-
-    // 하루에 대한 주문 리스트
-    @GetMapping("/daily")
-    public ResponseEntity<List<OrderDetailResponseDto>> getDailyOrderList(
-            @RequestParam Long storeId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-            List<OrderDetailResponseDto> result = orderService.getDailyOrderList(storeId, date);
-            return ResponseEntity.ok().body(result);
     }
 
     // 환불 요청

@@ -4,13 +4,11 @@ import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
-import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.MenuException;
 import com.project.storemanager_api.exception.OrderException;
-import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.OrderRepository;
 import com.project.storemanager_api.repository.StoreRepository;
@@ -19,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -116,36 +113,6 @@ public class OrderService {
 
         return result;
 
-    }
-
-    @Transactional // 한 매장에 대한 모든 주문 목록 조회
-    public List<OrderAllResponseDto> getAllOrders(Long storeId) {
-        validateStoreId(storeId);
-        return orderRepository.findAllListByStoreId(storeId);
-    }
-
-
-    @Transactional // 특정 기간에 대한 주문 목록 조회
-    public List<OrderAllResponseDto> getPeriodOrderList(Long storeId, LocalDate startDate, LocalDate endDate) {
-        validateStoreId(storeId);
-        return orderRepository.findPeriodOrderListByStoreId(storeId, startDate, endDate);
-    }
-
-    @Transactional // 특정 하루에 대한 주문 목록 조회
-    public List<OrderDetailResponseDto> getDailyOrderList(Long storeId, LocalDate date) {
-        validateStoreId(storeId);
-        List<OrderDetailResponseDto> result = orderRepository.findDailyListByStoreId(storeId, date);
-        for (OrderDetailResponseDto dto : result) {
-            dto.setMenuDetail(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
-        }
-        return result;
-    }
-
-    @Transactional
-    public void validateStoreId(Long storeId) {
-        storeRepository.findPasswordById(storeId).orElseThrow(
-                () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
-        );
     }
 
     // 메뉴들에 대한 환불요청 (부분 환불도 가능하도록 설계해야 함)
