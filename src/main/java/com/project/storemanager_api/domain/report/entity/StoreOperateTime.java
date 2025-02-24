@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Report {
+public class StoreOperateTime {
 
-    private Long reportId;
+    private Long storeOpTimeID;
     private Long storeId;
-    private Integer dayOrderCount; // 해당 날짜의 총 주문 수
-    private Integer dayAmount;
-    private LocalDateTime createdAt;
+    private LocalDateTime openedAt;
+    private LocalDateTime closedAt;
+    private LocalDateTime date;
 
 }

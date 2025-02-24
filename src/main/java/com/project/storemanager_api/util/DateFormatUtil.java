@@ -16,6 +16,6 @@ public class DateFormatUtil {
 
     // 기본 포맷 ("yyyy-MM-dd HH:mm")
     public static String formatLocalDateTimeDefault(LocalDateTime dateTime) {
-        return formatLocalDateTime(dateTime, "yyyy-MM-dd HH:mm");
+        return formatLocalDateTime(dateTime, "yyyy-MM-dd HH:mm:ss");
     }
 }
