@@ -1,6 +1,5 @@
 package com.project.storemanager_api.jwt;
 
-import com.project.storemanager_api.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -38,18 +37,18 @@ public class JwtTokenProvider {
 
     // 토큰 발급 로직
     // 엑세스 토큰 생성 (사용자가 들고다닐 신분증) : 유효기간이 짧다.
-    public String createAccessToken(Long userId, List<Long> storeIdList, User.Role role) {
+    public String createAccessToken(Long userId, List<Long> storeIdList, String role) {
         return createToken(userId, storeIdList, jwtProperties.getAccessTokenValidityTime(), role);
     }
     // 리프레시 토큰 생성 (서버가 보관할 신분증을 재발급하기 위한 정보) : 유효기간이 비교적 길다.
-    public String createRefreshToken(Long userId, List<Long> storeIdList, User.Role role) {
+    public String createRefreshToken(Long userId, List<Long> storeIdList, String role) {
 
         return createToken(userId, storeIdList, jwtProperties.getRefreshTokenValidityTime(), role);
     }
 
     // 공통 토큰 생성 로직
     // 엑세스,리프레시 생성 로직은 똑같고, 시간만 다르다
-    private String createToken(Long userId, List<Long> storeIdList, long validityTime, User.Role role) {
+    private String createToken(Long userId, List<Long> storeIdList, long validityTime, String role) {
 
         // 현재 시간
         Date now = new Date();

@@ -11,7 +11,6 @@ import com.project.storemanager_api.exception.MenuException;
 import com.project.storemanager_api.exception.OrderException;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.OrderRepository;
-import com.project.storemanager_api.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMenuService orderMenuService;
     private final MenuRepository menuRepository; // 메뉴 가격 조회를 위한 Repository
-    private final StoreRepository storeRepository;
     private final PaymentService paymentService;
 
     /**
