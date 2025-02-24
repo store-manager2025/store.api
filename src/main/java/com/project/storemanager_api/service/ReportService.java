@@ -2,6 +2,7 @@ package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
+import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.repository.MenuRepository;
@@ -59,4 +60,10 @@ public class ReportService {
         );
     }
 
+    @Transactional
+    public AverageValueDto findAverageValueById(Long storeId) {
+        return orderRepository.findAverageValueById(storeId).orElseThrow(
+                () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
+        );
+    }
 }

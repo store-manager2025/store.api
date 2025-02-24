@@ -107,4 +107,13 @@
         WHERE order_id = #{orderId}
     </update>
 
+    <select id="findAverageValueById" resultType="com.project.storemanager_api.domain.report.dto.response.AverageValueDto">
+        SELECT
+            ROUND((SUM(price) / COUNT(*)), 2) AS averageValue
+        FROM orders
+        WHERE store_id = #{storeId}
+        AND order_status = 'SUCCESS'
+    </select>
+
+
 </mapper>

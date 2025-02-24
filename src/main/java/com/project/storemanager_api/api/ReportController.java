@@ -3,6 +3,7 @@ package com.project.storemanager_api.api;
 import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
+import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +71,17 @@ public class ReportController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<OrderDetailResponseDto> result = reportService.getDailyOrderList(storeId, date, status);
         return ResponseEntity.ok().body(result);
+    }
+
+    // 매장의 총 평균 객단가 분석
+    @GetMapping("/average")
+    @StoreAuthCheck
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<AverageValueDto> getAverageValue(
+            @AuthenticationPrincipal CustomUserPrincipal info,
+            @RequestParam Long storeId) {
+        AverageValueDto averageValue = reportService.findAverageValueById(storeId);
+        return ResponseEntity.ok().body(averageValue);
     }
 
 

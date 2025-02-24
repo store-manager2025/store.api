@@ -3,6 +3,7 @@ package com.project.storemanager_api.repository;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
+import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -44,6 +45,9 @@ public interface OrderRepository {
     // 결제 상태 변경
     void updateOrderStatus(@Param("orderId") Long orderId,
                            @Param("orderStatus") String status);
+
+    Optional<AverageValueDto> findAverageValueById(Long storeId);
+
 
 }
 
