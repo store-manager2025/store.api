@@ -1,6 +1,7 @@
 package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
+import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.service.OrderService;
@@ -75,5 +76,15 @@ public class OrderController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
             List<OrderDetailResponseDto> result = orderService.getDailyOrderList(storeId, date);
             return ResponseEntity.ok().body(result);
+    }
+
+    // 환불 요청
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Map<String, Object>> deleteOrder(@PathVariable Long orderId, @RequestBody List<RefundOrderDto> refundInfo) {
+        boolean flag = orderService.refundOrder(orderId, refundInfo);
+        String responseMsg = flag ? "취소가 완료 되었습니다." : "부분 취소가 완료되었습니다.";
+        return ResponseEntity.ok().body(Map.of(
+           "message", responseMsg
+        ));
     }
 }

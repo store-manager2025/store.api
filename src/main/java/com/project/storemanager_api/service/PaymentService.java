@@ -63,7 +63,7 @@ public class PaymentService {
         // 주문 상세정보 저장
         for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
             // payDetail.getExpiryDate() 날짜 확인
-            paymentDetailService.savePayInfo(payDetail, generatedPaymentId);
+            paymentDetailService.savePayInfo(payDetail, generatedPaymentId, String.valueOf(SUCCESS));
         }
         // 결제에 사용된 카드정보 저장
         cardService.saveCard(generatedPaymentId, dto.getPayList());
@@ -86,8 +86,7 @@ public class PaymentService {
         payValidator.validateStoreId(storeId);
 
         // 2. db에 전달 후 데이터 받아옴
-        List<PaymentResponseDto> result = paymentRepository.findAllByStoreId(storeId);
-        return result;
+        return paymentRepository.findAllByStoreId(storeId);
 
     }
 
@@ -164,4 +163,7 @@ public class PaymentService {
         return menuList;
     }
 
+    public void updateStatus(Long orderId, String status) {
+        paymentRepository.updateStatus(orderId, status);
+    }
 }

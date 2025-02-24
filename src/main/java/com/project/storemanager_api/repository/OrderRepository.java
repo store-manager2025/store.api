@@ -19,7 +19,8 @@ public interface OrderRepository {
 
     Optional<Order> findById(Long orderId);
 
-    void updatePrice(@Param("orderId") Long orderId, @Param("updatedPrice") int updatedPrice);
+    void updatePrice(@Param("orderId") Long orderId,
+                     @Param("updatedPrice") int updatedPrice);
 
     // 단일 조회
     Optional<OrderDetailResponseDto> findDetailById(Long orderId);
@@ -34,10 +35,13 @@ public interface OrderRepository {
             @Param("endDate") LocalDate endDate);
 
     // 하루별 기록 상세 조회
-    List<OrderDetailResponseDto> findDailyListByStoreId(@Param("storeId") Long storeId, @Param("date") LocalDate date);
+    List<OrderDetailResponseDto> findDailyListByStoreId(@Param("storeId") Long storeId,
+                                                        @Param("date") LocalDate date);
 
     // 결제 상태 변경
-    void updateOrderStatus(Long orderId, String success);
+    void updateOrderStatus(@Param("orderId") Long orderId,
+                           @Param("orderStatus") String status);
+
 }
 
 

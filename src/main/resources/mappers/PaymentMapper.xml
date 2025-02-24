@@ -98,4 +98,10 @@
         WHERE payment_id = #{paymentId}
     </update>
 
+    <update id="updateStatus">
+        UPDATE payments
+        SET status = #{status}
+        WHERE order_id = #{orderId}
+    </update>
+
 </mapper>

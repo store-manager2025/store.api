@@ -21,6 +21,6 @@ public class Order {
     private LocalDateTime orderedAt;
 
     public enum OrderStatus {
-        SUCCESS, UNPAID
+        SUCCESS, UNPAID, CANCELLED
     }
 }
