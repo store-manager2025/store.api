@@ -149,15 +149,15 @@ public class OrderService {
     }
 
     // 메뉴들에 대한 환불요청 (부분 환불도 가능하도록 설계해야 함)
-    public void refundOrder(Long orderId, List<RefundOrderDto> refundInfo) {
+    public boolean refundOrder(Long orderId, List<RefundOrderDto> refundInfo) {
 
         Order foundOrder = validateOrder(orderId); // 주문 정보
         List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
+        boolean flag = checkRefundAll(originMenuInfos, refundInfo);
 
         if (foundOrder.getOrderStatus().equals(SUCCESS)) {
             // 1. 선불결제 시나리오
             // 전체 주문 취소인지 확인
-            boolean flag = checkRefundAll(originMenuInfos, refundInfo);
             // 1-1. 전체 주문 취소일시 orders테이블에서 주문 상태 변경, payment 테이블도 삭제
             if (flag) {
                 orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
@@ -172,9 +172,7 @@ public class OrderService {
             }
         } else {
             // 2. 후불결제 시나리오
-
             // 전체 주문 취소인지 확인
-            boolean flag = checkRefundAll(originMenuInfos,  refundInfo);
             if (flag) { // 전체 취소라면
                 // 2-1. orders테이블에서 상태 변경
                 orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
@@ -187,6 +185,7 @@ public class OrderService {
                 updatePartialRefund(orderId, originMenuInfos, refundInfo);
             }
         }
+        return flag;
     }
 
     /**
