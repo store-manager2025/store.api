@@ -29,4 +29,6 @@ public interface MenuRepository {
 
     // order쪽에서 내보낼 정보만 담은 Dto
     List<MenuDetailResponseDto> findMenuInOrderDtoById(Long menuId);
+
+    Integer findPriceById(Long menuId);
 }

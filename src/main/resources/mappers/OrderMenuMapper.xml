@@ -49,8 +49,15 @@
     <!-- 주문 메뉴 수량 감소 -->
     <update id="updateOrderMenuQuantity">
         UPDATE order_menus
-            SET order_item_quantity = #{quantity}
+            SET order_item_quantity = #{quantity},
+                order_price = #{orderPrice}
         WHERE order_id = #{orderId} AND menu_id = #{menuId}
+    </update>
+
+    <update id="updateOrderStatusWithoutMenuId">
+        UPDATE order_menus
+            SET order_status = #{orderStatus}
+        WHERE order_id = #{orderId}
     </update>
 
 </mapper>

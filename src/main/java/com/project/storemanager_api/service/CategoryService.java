@@ -135,7 +135,7 @@ public class CategoryService {
     private Long createUi(SaveCategoryDto dto) {
         Integer positionX = dto.getPositionX() != null ? dto.getPositionX() : 0;
         Integer positionY = dto.getPositionY() != null ? dto.getPositionY() : 0;
-        String sizeType = dto.getSizeType() != null ? dto.getSizeType() : "";
+        String sizeType = dto.getSizeType() != null ? dto.getSizeType() : "FULL";
         String colorCode = dto.getColorCode() != null ? dto.getColorCode() : "#FAFAFA";
 
         UiLayout newUi = UiLayout.builder()

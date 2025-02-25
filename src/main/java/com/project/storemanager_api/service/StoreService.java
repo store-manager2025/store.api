@@ -7,7 +7,6 @@ import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto
 import com.project.storemanager_api.domain.store.dto.request.StoreLoginRequestDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreDetailResponseDto;
 import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
-import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.jwt.JwtTokenProvider;
@@ -54,7 +53,7 @@ public class StoreService {
         storeRepository.saveStore(dto);
         Long generatedStoreId = dto.getStoreId();
         log.info("생성된 storeId: {}", generatedStoreId);
-        User.Role role = userRepository.findRoleById(userId);
+        String role = userRepository.findRoleById(userId);
 
         // 토큰 재발급에 사용될 데이터
         List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
@@ -67,6 +66,7 @@ public class StoreService {
                 SaveCategoryDto.builder()
                         .storeId(generatedStoreId)
                         .categoryName("category_1")
+                        .sizeType("FULL")
                         .build()
         );
         return Map.of(

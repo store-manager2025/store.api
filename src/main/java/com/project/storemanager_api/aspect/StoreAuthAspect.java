@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -29,35 +31,51 @@ public class StoreAuthAspect {
     @Before("@annotation(storeAuthCheck)")
     public void checkStoreAuth(JoinPoint joinPoint, StoreAuthCheck storeAuthCheck) {
         log.info("joinPoint: {}", joinPoint);
-        Object[] args = joinPoint.getArgs();
 
-        // 첫 번째 인자는 CustomUserPrincipal라고 가정
-        CustomUserPrincipal userInfo = (CustomUserPrincipal) args[0];
-        // 두 번째 인자는 storeId를 포함하는 DTO라고 가정 (예: ModifyStoreRequestDto)
-        Object dto = args[1];
+        // SecurityContext에서 현재 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserPrincipal)) {
+            throw new StoreException(ErrorCode.EMPTY_DATA, "User 정보가 없습니다.");
+        }
+
+        CustomUserPrincipal userInfo = (CustomUserPrincipal) authentication.getPrincipal();
+
+        // joinPoint에서 storeId 가져오기
+        Object[] args = joinPoint.getArgs();
+        Object dto = args.length > 0 ? args[0] : null;
         Long storeId = getStoreIdInDto(dto);
 
         if (storeId == null) {
             throw new StoreException(ErrorCode.EMPTY_DATA, "Store Id가 없습니다.");
         }
+
         log.info("StoreAuthAspect: userInfo = {}, storeId = {}", userInfo, storeId);
-        // 검증 로직 호출 (검증 실패 시 예외 발생)
         storeValidator.checkStoreAuth(userInfo, storeId);
     }
 
     private static Long getStoreIdInDto(Object dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        // dto가 Long 타입이면 그대로 반환
+        if (dto instanceof Long) {
+            return (Long) dto;
+        }
+
         Long storeId = null;
         try {
-            // 우선 DTO에 getStoreId() 메서드가 있으면 호출
+            // DTO 객체에 getStoreId() 메서드가 존재하면 호출
             storeId = (Long) dto.getClass().getMethod("getStoreId").invoke(dto);
         } catch (Exception e) {
             log.warn("DTO에서 storeId 추출 실패: {}", e.getMessage());
         }
+
         // DTO에서 storeId를 추출하지 못했으면, 요청 객체에서 추출 시도
         if (storeId == null) {
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attr != null) {
-
                 return getStoreIdInPathVariable(attr);
             }
         }

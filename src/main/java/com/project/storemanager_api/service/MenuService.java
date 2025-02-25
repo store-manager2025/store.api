@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -106,8 +107,12 @@ public class MenuService {
         // storeId가 있어야 ui에 insert를 하고 생성된 uiId를 받을 수 있다.
         Integer positionX = dto.getPositionX() != null ? dto.getPositionX() : 0;
         Integer positionY = dto.getPositionY() != null ? dto.getPositionY() : 0;
-        String sizeType = dto.getSizeType() != null ? dto.getSizeType() : "";
-        String colorCode = dto.getColorCode() != null ? dto.getColorCode() : "#FAFAFA";
+        String sizeType = Optional.ofNullable(dto.getSizeType())
+                .filter(value -> !value.trim().isEmpty()) // 빈 값 체크
+                .orElse("FULL");
+        String colorCode = Optional.ofNullable(dto.getColorCode())
+                .filter(value -> !value.trim().isEmpty()) // 빈 값 체크
+                .orElse("#FAFAFA");
 
         UiLayout newUi = UiLayout.builder()
                 .storeId(dto.getStoreId())
@@ -116,6 +121,7 @@ public class MenuService {
                 .positionY(positionY)
                 .sizeType(sizeType)
                 .build();
+        log.info("newUi : {}", newUi.toString());
 
         // 1. ui 객체를 저장 후 생성된 id를 받아온다
         uiRepository.saveUi(newUi);

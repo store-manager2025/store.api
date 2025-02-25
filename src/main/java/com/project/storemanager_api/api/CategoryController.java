@@ -46,7 +46,6 @@ public class CategoryController {
 
     // category 단일 조회
     @GetMapping("/{categoryId}")
-    @StoreAuthCheck
     public ResponseEntity<CategoryResponseDto> getCategory(@PathVariable Long categoryId) {
         log.info("Getting category: {}", categoryId);
         CategoryResponseDto result = categoryService.getCategory(categoryId);

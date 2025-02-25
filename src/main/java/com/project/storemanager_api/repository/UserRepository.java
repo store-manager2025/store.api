@@ -30,6 +30,6 @@ public interface UserRepository {
     void updateRefreshToken(@Param("refreshToken") String refreshToken, @Param("userId") Long userId);
 
     // 권한을 return하는 메서드
-    User.Role findRoleById(Long userId);
+    String findRoleById(Long userId);
 
 }

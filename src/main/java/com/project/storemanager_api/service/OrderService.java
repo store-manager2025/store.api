@@ -4,22 +4,18 @@ import com.project.storemanager_api.domain.menu.dto.response.MenuResponseDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.OrderRequestDto;
 import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
-import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.order.entity.Order;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.MenuException;
 import com.project.storemanager_api.exception.OrderException;
-import com.project.storemanager_api.exception.StoreException;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.OrderRepository;
-import com.project.storemanager_api.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +31,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMenuService orderMenuService;
     private final MenuRepository menuRepository; // 메뉴 가격 조회를 위한 Repository
-    private final StoreRepository storeRepository;
     private final PaymentService paymentService;
 
     /**
@@ -118,36 +113,6 @@ public class OrderService {
 
     }
 
-    @Transactional // 한 매장에 대한 모든 주문 목록 조회
-    public List<OrderAllResponseDto> getAllOrders(Long storeId) {
-        validateStoreId(storeId);
-        return orderRepository.findAllListByStoreId(storeId);
-    }
-
-
-    @Transactional // 특정 기간에 대한 주문 목록 조회
-    public List<OrderAllResponseDto> getPeriodOrderList(Long storeId, LocalDate startDate, LocalDate endDate) {
-        validateStoreId(storeId);
-        return orderRepository.findPeriodOrderListByStoreId(storeId, startDate, endDate);
-    }
-
-    @Transactional // 특정 하루에 대한 주문 목록 조회
-    public List<OrderDetailResponseDto> getDailyOrderList(Long storeId, LocalDate date) {
-        validateStoreId(storeId);
-        List<OrderDetailResponseDto> result = orderRepository.findDailyListByStoreId(storeId, date);
-        for (OrderDetailResponseDto dto : result) {
-            dto.setMenuDetail(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
-        }
-        return result;
-    }
-
-    @Transactional
-    public void validateStoreId(Long storeId) {
-        storeRepository.findPasswordById(storeId).orElseThrow(
-                () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
-        );
-    }
-
     // 메뉴들에 대한 환불요청 (부분 환불도 가능하도록 설계해야 함)
     public boolean refundOrder(Long orderId, List<RefundOrderDto> refundInfo) {
 
@@ -155,35 +120,19 @@ public class OrderService {
         List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
         boolean flag = checkRefundAll(originMenuInfos, refundInfo);
 
-        if (foundOrder.getOrderStatus().equals(SUCCESS)) {
-            // 1. 선불결제 시나리오
-            // 전체 주문 취소인지 확인
-            // 1-1. 전체 주문 취소일시 orders테이블에서 주문 상태 변경, payment 테이블도 삭제
-            if (flag) {
-                orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
+        if (flag) {
+            // 전체 취소 일시 시나리오
+            orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
+            if (foundOrder.getOrderStatus().equals(SUCCESS)) { // 만약 선불결제했다면
                 paymentService.updateStatus(orderId, String.valueOf(CANCELLED));// payments 테이블 주문 상태 변경
-                // 주문에 대한 메뉴 디테일 정보도 업데이트
-                for (RefundOrderDto info : originMenuInfos) {
-                    orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
-                }
-            } else {
-                // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
-                updatePartialRefund(orderId, originMenuInfos, refundInfo);
+            }
+            // 주문에 대한 메뉴 디테일 정보도 업데이트
+            for (RefundOrderDto info : originMenuInfos) {
+                orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
             }
         } else {
-            // 2. 후불결제 시나리오
-            // 전체 주문 취소인지 확인
-            if (flag) { // 전체 취소라면
-                // 2-1. orders테이블에서 상태 변경
-                orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
-                // 2-2. order_menus 테이블에서도 상태 변경
-                for (RefundOrderDto info : originMenuInfos) {
-                    orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
-                }
-            } else {
-                // 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
-                updatePartialRefund(orderId, originMenuInfos, refundInfo);
-            }
+            // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
+            updatePartialRefund(orderId, originMenuInfos, refundInfo);
         }
         return flag;
     }
@@ -222,6 +171,11 @@ public class OrderService {
         Map<Long, Integer> refundRequestMap = refundInfo.stream()
                 .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
 
+        Integer totalRefundMoney = 0; // 전체 차감 금액
+        Integer price = orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
+        ).getPrice(); // 원금
+
         for (Map.Entry<Long, Integer> entry : refundRequestMap.entrySet()) {
             Long menuId = entry.getKey();
             Integer refundQuantity = entry.getValue();
@@ -236,12 +190,21 @@ public class OrderService {
                 orderMenuService.updateOrderStatus(orderId, menuId, String.valueOf(CANCELLED));
             } else if (refundQuantity < originQuantity) {
                 // 기존 주문 수량보다 환불 수량이 적다면, 수량만 감소
-                int updatedQuantity = originQuantity - refundQuantity;
-                orderMenuService.updateMenuQuantity(orderId, menuId, updatedQuantity);
+                // 여기서 order_menu.order_price 업데이트
+                int updatedQuantity = originQuantity - refundQuantity; // 업데이트된 수량
+                // 현재 메뉴 1개 가격 * 업데이트된 수량 = 지불해야할 금액
+                Integer updatePrice = menuRepository.findPriceById(menuId) * updatedQuantity;
+                log.info("updatedPrice - {}", updatePrice);
+                totalRefundMoney += updatePrice;
+                orderMenuService.updateMenuQuantity(orderId, menuId, updatedQuantity, updatePrice);
             } else {
                 throw new OrderException(ErrorCode.DONT_OVER_QUANTITY, "환불 요청 수량이 주문 수량을 초과할 수 없습니다.");
             }
         }
+        log.info("totalRefundMoney - {}", totalRefundMoney);
+            // 여기서 order.price업데이트
+        orderRepository.updatePrice(orderId, price - totalRefundMoney);
+
     }
 
 

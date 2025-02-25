@@ -92,7 +92,7 @@ public class UserService {
         log.info("found store id: {}", storeIdList);
 
         // 액세스/리프레시 토큰을 전송
-        String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), storeIdList, foundUser.getRole());
+        String refreshToken = jwtTokenProvider.createRefreshToken(foundUser.getUserId(), storeIdList, String.valueOf(foundUser.getRole()));
         log.info("new refresh token: {}", refreshToken);
 
         userRepository.updateRefreshToken(refreshToken, foundUser.getUserId());
@@ -100,7 +100,7 @@ public class UserService {
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "name", foundUser.getName(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), storeIdList, foundUser.getRole()),
+                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), storeIdList, String.valueOf(foundUser.getRole())),
                 "refreshToken", refreshToken
         );
     }
@@ -161,9 +161,9 @@ public class UserService {
 
         List<Long> storeIdList = storeRepository.findStoreIdsByUserId(user.getUserId());
         // 5. 새로운 access token 생성
-        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), storeIdList, user.getRole());
+        String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), storeIdList, String.valueOf(user.getRole()));
         // 6. 새로운 refresh token 생성 (리프레시 토큰 회전)
-        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), storeIdList, user.getRole());
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId(), storeIdList, String.valueOf(user.getRole()));
 
         // 7. DB에 새로운 refresh token 저장
         user.setRefreshToken(newRefreshToken);

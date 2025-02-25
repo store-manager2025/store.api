@@ -14,8 +14,7 @@ public interface PaymentDetailRepository {
     void savePayInfo(
             @Param("paidMoney") Integer paidMoney,
             @Param("paymentType") PaymentType paymentType,
-            @Param("paymentId") Long paymentId,
-            @Param("status") String status
+            @Param("paymentId") Long paymentId
     );
 
 }

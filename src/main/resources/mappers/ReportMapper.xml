@@ -4,4 +4,122 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.ReportRepository">
 
+    <!-- 날짜 조건을 동적으로 적용 -->
+    <sql id="selectDate">
+        AND DATE(ordered_at) BETWEEN
+        <if test="startDate != null"> #{startDate} </if>
+        <if test="startDate == null"> CURDATE() </if>
+        AND
+        <if test="endDate != null"> #{endDate} </if>
+        <if test="endDate == null">
+            #{startDate}  <!-- startDate가 지정되었으면, endDate는 startDate부터 시작 -->
+        </if>
+    </sql>
+
+    <resultMap id="orderDetailResultMap" type="com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto">
+        <!-- 주문 기본 정보 매핑 -->
+        <id property="orderId" column="order_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="placeId" column="place_id"/>
+        <result property="price" column="price"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="placeName" column="place_name"/>
+
+        <!-- 여러 메뉴 ID를 List<Long>로 매핑 -->
+        <collection property="menuId" ofType="java.lang.Long">
+            <result column="menu_id"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="findAllListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
+        SELECT
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
+        FROM orders
+        WHERE store_id = #{storeId}
+        AND order_status IN ('SUCCESS', #{status})
+        GROUP BY  DATE_FORMAT(ordered_at, '%Y%m%d')
+    </select>
+
+    <select id="findPeriodOrderListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
+        SELECT
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
+        FROM orders
+        WHERE store_id = #{storeId}
+        AND order_status IN ('SUCCESS', #{status})
+        AND DATE_FORMAT(ordered_at, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
+        GROUP BY DATE_FORMAT(ordered_at, '%Y-%m-%d');
+    </select>
+
+    <select id="findDailyListByStoreId" resultMap="orderDetailResultMap">
+        SELECT
+            O.order_id,
+            O.store_id,
+            O.price,
+            O.order_status,
+            O.ordered_at,
+            P.place_name,
+            P.place_id,
+            M.menu_id
+        FROM orders O
+        JOIN order_menus OM ON O.order_id = OM.order_id
+        JOIN places P ON O.place_id = P.place_id
+        JOIN menus M ON OM.menu_id = M.menu_id
+        WHERE O.store_id = #{storeId}
+        AND O.order_status IN ('SUCCESS', #{status})
+        AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
+    </select>
+
+    <select id="findAverageValueById" resultType="com.project.storemanager_api.domain.report.dto.response.AverageValueDto">
+        SELECT
+            ROUND((SUM(price) / COUNT(*)), 2) AS averageValue
+        FROM orders
+        WHERE store_id = #{storeId}
+        AND order_status = 'SUCCESS'
+    </select>
+
+    <select id="findSalesCategoryByStoreId" resultType="com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto">
+        SELECT
+            C.category_name,
+            SUM(OM.order_price) AS total_sales
+        FROM order_menus OM
+        INNER JOIN menus M ON OM.menu_id = M.menu_id
+        INNER JOIN categories C ON M.category_id = C.category_id
+        WHERE OM.order_status = 'SUCCESS'
+        AND C.store_id = #{storeID}
+        GROUP BY C.category_name
+        ORDER BY total_sales DESC
+    </select>
+
+    <!-- 피크타임 분석 -->
+    <select id="findPeakTime" resultType="com.project.storemanager_api.domain.report.dto.response.PeakTimeRawDto">
+        SELECT
+            DATE(ordered_at) AS date,  <!-- DATE_FORMAT에서 DATE로 변경 -->
+            CONCAT(DATE_FORMAT(ordered_at, '%H'), ':00-', DATE_FORMAT(ordered_at + INTERVAL 1 HOUR, '%H'), ':00')
+            AS timeRange,
+            SUM(price) AS amount
+        FROM orders
+        WHERE order_status = 'SUCCESS'
+        <include refid="selectDate"/>
+        AND store_id = #{storeId}
+        GROUP BY DATE(ordered_at), DATE_FORMAT(ordered_at, '%H')  <!-- DATE(ordered_at)로 그룹화 -->
+        ORDER BY date, timeRange
+    </select>
+
+    <select id="findCardAndCash" resultType="com.project.storemanager_api.domain.report.dto.response.SalesByPaymentType">
+        SELECT
+            PD.payment_type AS type,
+            SUM(PD.paid_money) AS amount
+        FROM stores S
+        INNER JOIN payments P ON S.store_id = P.store_id
+        INNER JOIN payment_detail PD ON P.payment_id = PD.payment_id
+        WHERE S.store_id = #{storeId}
+        GROUP BY PD.payment_type
+    </select>
+
+
+
 </mapper>

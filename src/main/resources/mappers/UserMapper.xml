@@ -50,7 +50,7 @@
         WHERE user_id = #{userId}
     </update>
 
-    <select id="findRoleById" resultType="string">
+    <select id="findRoleById" resultType="java.lang.String">
         SELECT
             role
         FROM users

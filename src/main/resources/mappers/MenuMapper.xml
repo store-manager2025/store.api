@@ -83,4 +83,11 @@
         WHERE OM.order_id = #{orderId}
     </select>
 
+    <select id="findPriceById" resultType="java.lang.Integer">
+        SELECT
+            price
+        FROM menus
+        WHERE menu_id = #{menuId}
+    </select>
+
 </mapper>

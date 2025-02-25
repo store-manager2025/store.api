@@ -64,6 +64,7 @@ public enum ErrorCode {
     DATE_EXPIRATION(HttpStatus.BAD_REQUEST, "날짜가 만료되었습니다."),
     NOT_CORRECT_EXPIRATION(HttpStatus.BAD_REQUEST, "카드만료일은 YYYY/MM의 형식이여야 합니다."),
     NOT_CORRECT_MONTH(HttpStatus.BAD_REQUEST, "카드 만료 월은 12월 이하여야 합니다."),
+    ALREADY_PAYMENT(HttpStatus.BAD_REQUEST, "이미 결제 완료되었습니다.")
 
     ;
 

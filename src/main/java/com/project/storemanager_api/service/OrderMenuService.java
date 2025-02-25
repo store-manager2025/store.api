@@ -49,11 +49,15 @@ public class OrderMenuService {
     // 주문 메뉴 상태를 취소로 변경 (완전 취소인 경우)
     public void updateOrderStatus(Long orderId, Long menuId, String orderStatus) {
         orderMenuRepository.updateStatus(orderId, menuId, orderStatus);
-
     }
 
     // 주문 메뉴 수량만 감소 (부분 취소인 경우)
-    public void updateMenuQuantity(Long orderId, Long menuId, int quantity) {
-        orderMenuRepository.updateOrderMenuQuantity(orderId, menuId, quantity);
+    public void updateMenuQuantity(Long orderId, Long menuId, int quantity, Integer updatePrice) {
+
+        orderMenuRepository.updateOrderMenuQuantity(orderId, menuId, quantity, updatePrice);
+    }
+
+    public void updateOrderStatusWithoutMenu(Long orderId, String orderStatus) {
+        orderMenuRepository.updateOrderStatusWithoutMenuId(orderId, orderStatus);
     }
 }
