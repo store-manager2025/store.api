@@ -3,6 +3,7 @@ package com.project.storemanager_api.repository;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
+import com.project.storemanager_api.domain.report.dto.response.PeakTimeRawDto;
 import com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -38,5 +39,10 @@ public interface ReportRepository {
 
     // 매장 카테고리별 매출 분석
     List<SalesByCategoryDto> findSalesCategoryByStoreId(Long storeId);
+
+    // 피크타임 분석
+    List<PeakTimeRawDto> findPeakTime(@Param("storeId") Long storeId,
+                                      @Param("startDate") String startDate,
+                                      @Param("endDate") String endDate);
 
 }

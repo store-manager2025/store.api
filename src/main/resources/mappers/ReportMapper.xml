@@ -4,6 +4,17 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.ReportRepository">
 
+    <!-- 날짜 조건을 동적으로 적용 -->
+    <sql id="selectDate">
+        AND DATE(ordered_at) BETWEEN
+        <if test="startDate != null"> #{startDate} </if>
+        <if test="startDate == null"> CURDATE() </if>
+        AND
+        <if test="endDate != null"> #{endDate} </if>
+        <if test="endDate == null">
+            #{startDate}  <!-- startDate가 지정되었으면, endDate는 startDate부터 시작 -->
+        </if>
+    </sql>
 
     <resultMap id="orderDetailResultMap" type="com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto">
         <!-- 주문 기본 정보 매핑 -->
@@ -81,6 +92,21 @@
         AND C.store_id = #{storeID}
         GROUP BY C.category_name
         ORDER BY total_sales DESC
+    </select>
+
+
+    <select id="findPeakTime" resultType="com.project.storemanager_api.domain.report.dto.response.PeakTimeRawDto">
+        SELECT
+            DATE(ordered_at) AS date,  <!-- DATE_FORMAT에서 DATE로 변경 -->
+            CONCAT(DATE_FORMAT(ordered_at, '%H'), ':00-', DATE_FORMAT(ordered_at + INTERVAL 1 HOUR, '%H'), ':00')
+            AS timeRange,
+            SUM(price) AS amount
+        FROM orders
+        WHERE order_status = 'SUCCESS'
+        <include refid="selectDate"/>
+        AND store_id = #{storeId}
+        GROUP BY DATE(ordered_at), DATE_FORMAT(ordered_at, '%H')  <!-- DATE(ordered_at)로 그룹화 -->
+        ORDER BY date, timeRange
     </select>
 
 </mapper>

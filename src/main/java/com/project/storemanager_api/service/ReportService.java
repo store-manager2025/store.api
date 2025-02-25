@@ -2,11 +2,12 @@ package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
-import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
-import com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto;
+import com.project.storemanager_api.domain.report.dto.response.*;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.StoreException;
-import com.project.storemanager_api.repository.*;
+import com.project.storemanager_api.repository.MenuRepository;
+import com.project.storemanager_api.repository.ReportRepository;
+import com.project.storemanager_api.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -64,6 +67,29 @@ public class ReportService {
         List<SalesByCategoryDto> result = reportRepository.findSalesCategoryByStoreId(storeId);
         // 퍼센테이지 연산 후 set
         return calcRatio(result);
+    }
+
+    // 피크타임 조회
+    public List<PeakTimeGroupedResponseDto> getPeakTime(Long storeId, LocalDate startDate, LocalDate endDate) {
+        String start = (startDate != null) ? startDate.toString() : null;
+        String end = (endDate != null) ? endDate.toString() : null;
+
+        List<PeakTimeRawDto> peakTimeList = reportRepository.findPeakTime(storeId, start, end);
+
+        // 날짜별로 그룹핑
+        Map<LocalDate, List<PeakTimeDetailDto>> groupedData = peakTimeList.stream()
+                .collect(Collectors.groupingBy(
+                        PeakTimeRawDto::getDate,  // ✅ 올바른 date 필드 사용
+                        Collectors.mapping(dto -> new PeakTimeDetailDto(dto.getTimeRange(), dto.getAmount()), Collectors.toList())
+                ));
+
+        // 변환된 리스트 반환
+        List<PeakTimeGroupedResponseDto> result = groupedData.entrySet().stream()
+                .map(entry -> new PeakTimeGroupedResponseDto(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        log.info("Grouped Peak Time List: {} ", result);
+        return result;
     }
 
 

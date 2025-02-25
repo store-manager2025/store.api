@@ -4,6 +4,7 @@ import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
+import com.project.storemanager_api.domain.report.dto.response.PeakTimeGroupedResponseDto;
 import com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.ReportService;
@@ -94,6 +95,35 @@ public class ReportController {
         List<SalesByCategoryDto> result = reportService.findSalesCategoryByStoreId(storeId);
         return ResponseEntity.ok().body(result);
     }
+
+    /**
+     * 피크타임 계산 API
+     * @param info 소유주 검증을 위한 데이터
+     * @param storeId 조회를 원하는 매장의 PK
+     * @param startDate require=false
+     * @param endDate require=false
+     * @return 1시간 별로 매출이 담긴 Dto List
+     */
+    @GetMapping("/peak-time")
+    @StoreAuthCheck
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<List<PeakTimeGroupedResponseDto>> getPeakTime(
+            @AuthenticationPrincipal CustomUserPrincipal info,
+            @RequestParam Long storeId,
+            @RequestParam (required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam (required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        LocalDate today = LocalDate.now();
+        startDate = (startDate == null) ? today : startDate;
+        endDate = (endDate == null) ? today : endDate;
+
+        List<PeakTimeGroupedResponseDto> peakTimes = reportService.getPeakTime(storeId, startDate, endDate);
+        return ResponseEntity.ok(peakTimes);
+    }
+
+
 
 
 
