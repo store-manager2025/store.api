@@ -120,35 +120,19 @@ public class OrderService {
         List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
         boolean flag = checkRefundAll(originMenuInfos, refundInfo);
 
-        if (foundOrder.getOrderStatus().equals(SUCCESS)) {
-            // 1. 선불결제 시나리오
-            // 전체 주문 취소인지 확인
-            // 1-1. 전체 주문 취소일시 orders테이블에서 주문 상태 변경, payment 테이블도 삭제
-            if (flag) {
-                orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
+        if (flag) {
+            // 전체 취소 일시 시나리오
+            orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
+            if (foundOrder.getOrderStatus().equals(SUCCESS)) { // 만약 선불결제했다면
                 paymentService.updateStatus(orderId, String.valueOf(CANCELLED));// payments 테이블 주문 상태 변경
-                // 주문에 대한 메뉴 디테일 정보도 업데이트
-                for (RefundOrderDto info : originMenuInfos) {
-                    orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
-                }
-            } else {
-                // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
-                updatePartialRefund(orderId, originMenuInfos, refundInfo);
+            }
+            // 주문에 대한 메뉴 디테일 정보도 업데이트
+            for (RefundOrderDto info : originMenuInfos) {
+                orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
             }
         } else {
-            // 2. 후불결제 시나리오
-            // 전체 주문 취소인지 확인
-            if (flag) { // 전체 취소라면
-                // 2-1. orders테이블에서 상태 변경
-                orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
-                // 2-2. order_menus 테이블에서도 상태 변경
-                for (RefundOrderDto info : originMenuInfos) {
-                    orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
-                }
-            } else {
-                // 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
-                updatePartialRefund(orderId, originMenuInfos, refundInfo);
-            }
+            // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
+            updatePartialRefund(orderId, originMenuInfos, refundInfo);
         }
         return flag;
     }
@@ -187,6 +171,11 @@ public class OrderService {
         Map<Long, Integer> refundRequestMap = refundInfo.stream()
                 .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
 
+        Integer totalRefundMoney = 0; // 전체 차감 금액
+        Integer price = orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
+        ).getPrice(); // 원금
+
         for (Map.Entry<Long, Integer> entry : refundRequestMap.entrySet()) {
             Long menuId = entry.getKey();
             Integer refundQuantity = entry.getValue();
@@ -201,12 +190,21 @@ public class OrderService {
                 orderMenuService.updateOrderStatus(orderId, menuId, String.valueOf(CANCELLED));
             } else if (refundQuantity < originQuantity) {
                 // 기존 주문 수량보다 환불 수량이 적다면, 수량만 감소
-                int updatedQuantity = originQuantity - refundQuantity;
-                orderMenuService.updateMenuQuantity(orderId, menuId, updatedQuantity);
+                // 여기서 order_menu.order_price 업데이트
+                int updatedQuantity = originQuantity - refundQuantity; // 업데이트된 수량
+                // 현재 메뉴 1개 가격 * 업데이트된 수량 = 지불해야할 금액
+                Integer updatePrice = menuRepository.findPriceById(menuId) * updatedQuantity;
+                log.info("updatedPrice - {}", updatePrice);
+                totalRefundMoney += updatePrice;
+                orderMenuService.updateMenuQuantity(orderId, menuId, updatedQuantity, updatePrice);
             } else {
                 throw new OrderException(ErrorCode.DONT_OVER_QUANTITY, "환불 요청 수량이 주문 수량을 초과할 수 없습니다.");
             }
         }
+        log.info("totalRefundMoney - {}", totalRefundMoney);
+            // 여기서 order.price업데이트
+        orderRepository.updatePrice(orderId, price - totalRefundMoney);
+
     }
 
 
