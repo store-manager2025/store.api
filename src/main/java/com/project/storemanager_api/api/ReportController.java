@@ -4,6 +4,7 @@ import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
 import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
+import com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,16 @@ public class ReportController {
             @RequestParam Long storeId) {
         AverageValueDto averageValue = reportService.findAverageValueById(storeId);
         return ResponseEntity.ok().body(averageValue);
+    }
+
+    @GetMapping("/categories")
+    @StoreAuthCheck
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<List<SalesByCategoryDto>> getSalesCategory(
+            @AuthenticationPrincipal CustomUserPrincipal info,
+            @RequestParam Long storeId) {
+        List<SalesByCategoryDto> result = reportService.findSalesCategoryByStoreId(storeId);
+        return ResponseEntity.ok().body(result);
     }
 
 

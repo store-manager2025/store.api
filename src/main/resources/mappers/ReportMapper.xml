@@ -24,8 +24,8 @@
 
     <select id="findAllListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
         SELECT
-        DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
-        , SUM(price) AS totalPrice
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
         FROM orders
         WHERE store_id = #{storeId}
         AND order_status IN ('SUCCESS', #{status})
@@ -34,8 +34,8 @@
 
     <select id="findPeriodOrderListByStoreId" resultType="com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto">
         SELECT
-        DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
-        , SUM(price) AS totalPrice
+            DATE_FORMAT(ordered_at, '%Y-%m-%d') AS date
+            , SUM(price) AS totalPrice
         FROM orders
         WHERE store_id = #{storeId}
         AND order_status IN ('SUCCESS', #{status})
@@ -45,14 +45,14 @@
 
     <select id="findDailyListByStoreId" resultMap="orderDetailResultMap">
         SELECT
-        O.order_id,
-        O.store_id,
-        O.price,
-        O.order_status,
-        O.ordered_at,
-        P.place_name,
-        P.place_id,
-        M.menu_id
+            O.order_id,
+            O.store_id,
+            O.price,
+            O.order_status,
+            O.ordered_at,
+            P.place_name,
+            P.place_id,
+            M.menu_id
         FROM orders O
         JOIN order_menus OM ON O.order_id = OM.order_id
         JOIN places P ON O.place_id = P.place_id
@@ -64,10 +64,23 @@
 
     <select id="findAverageValueById" resultType="com.project.storemanager_api.domain.report.dto.response.AverageValueDto">
         SELECT
-        ROUND((SUM(price) / COUNT(*)), 2) AS averageValue
+            ROUND((SUM(price) / COUNT(*)), 2) AS averageValue
         FROM orders
         WHERE store_id = #{storeId}
         AND order_status = 'SUCCESS'
+    </select>
+
+    <select id="findSalesCategoryByStoreId" resultType="com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto">
+        SELECT
+            C.category_name,
+            SUM(OM.order_price) AS total_sales
+        FROM order_menus OM
+        INNER JOIN menus M ON OM.menu_id = M.menu_id
+        INNER JOIN categories C ON M.category_id = C.category_id
+        WHERE OM.order_status = 'SUCCESS'
+        AND C.store_id = #{storeID}
+        GROUP BY C.category_name
+        ORDER BY total_sales DESC
     </select>
 
 </mapper>
