@@ -3,9 +3,7 @@ package com.project.storemanager_api.api;
 import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
-import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
-import com.project.storemanager_api.domain.report.dto.response.PeakTimeGroupedResponseDto;
-import com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto;
+import com.project.storemanager_api.domain.report.dto.response.*;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -123,6 +121,15 @@ public class ReportController {
         return ResponseEntity.ok(peakTimes);
     }
 
+    @GetMapping("/payment-type")
+    @StoreAuthCheck
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<SalesByPaymentTypeResponseDto> getSalesByPaymentType(
+            @AuthenticationPrincipal CustomUserPrincipal info,
+            @RequestParam Long storeId) {
+        SalesByPaymentTypeResponseDto result = reportService.findSalesByPaymentType(storeId);
+        return ResponseEntity.ok().body(result);
+    }
 
 
 

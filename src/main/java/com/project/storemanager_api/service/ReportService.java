@@ -69,7 +69,9 @@ public class ReportService {
         return calcRatio(result);
     }
 
+
     // 피크타임 조회
+    @Transactional
     public List<PeakTimeGroupedResponseDto> getPeakTime(Long storeId, LocalDate startDate, LocalDate endDate) {
         String start = (startDate != null) ? startDate.toString() : null;
         String end = (endDate != null) ? endDate.toString() : null;
@@ -91,6 +93,31 @@ public class ReportService {
         log.info("Grouped Peak Time List: {} ", result);
         return result;
     }
+
+    @Transactional
+    public SalesByPaymentTypeResponseDto findSalesByPaymentType(Long storeId) {
+        List<SalesByPaymentType> paymentList = reportRepository.findCardAndCash(storeId);
+
+        // 전체 매출 합계
+        Integer totalSales = paymentList.stream()
+                .mapToInt(SalesByPaymentType::getAmount)
+                .sum();
+
+        // 비율 계산 후 DTO 변환
+        List<SalesByPaymentType> detailList = paymentList.stream()
+                .map(payment -> SalesByPaymentType.builder()
+                        .type(payment.getType())
+                        .amount(payment.getAmount())
+                        .ratio(String.format("%.1f%%", (payment.getAmount() / (double) totalSales) * 100))
+                        .build())
+                .collect(Collectors.toList());
+
+        return SalesByPaymentTypeResponseDto.builder()
+                .totalAmount(totalSales)
+                .typeAndDetail(detailList)
+                .build();
+    }
+
 
 
     @Transactional

@@ -94,7 +94,7 @@
         ORDER BY total_sales DESC
     </select>
 
-
+    <!-- 피크타임 분석 -->
     <select id="findPeakTime" resultType="com.project.storemanager_api.domain.report.dto.response.PeakTimeRawDto">
         SELECT
             DATE(ordered_at) AS date,  <!-- DATE_FORMAT에서 DATE로 변경 -->
@@ -108,5 +108,18 @@
         GROUP BY DATE(ordered_at), DATE_FORMAT(ordered_at, '%H')  <!-- DATE(ordered_at)로 그룹화 -->
         ORDER BY date, timeRange
     </select>
+
+    <select id="findCardAndCash" resultType="com.project.storemanager_api.domain.report.dto.response.SalesByPaymentType">
+        SELECT
+            PD.payment_type AS type,
+            SUM(PD.paid_money) AS amount
+        FROM stores S
+        INNER JOIN payments P ON S.store_id = P.store_id
+        INNER JOIN payment_detail PD ON P.payment_id = PD.payment_id
+        WHERE S.store_id = #{storeId}
+        GROUP BY PD.payment_type
+    </select>
+
+
 
 </mapper>

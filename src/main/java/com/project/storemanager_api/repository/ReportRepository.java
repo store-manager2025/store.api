@@ -5,6 +5,7 @@ import com.project.storemanager_api.domain.order.dto.response.OrderDetailRespons
 import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
 import com.project.storemanager_api.domain.report.dto.response.PeakTimeRawDto;
 import com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto;
+import com.project.storemanager_api.domain.report.dto.response.SalesByPaymentType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -44,5 +45,8 @@ public interface ReportRepository {
     List<PeakTimeRawDto> findPeakTime(@Param("storeId") Long storeId,
                                       @Param("startDate") String startDate,
                                       @Param("endDate") String endDate);
+
+    // 결제방식(카드,현금)에 따른 수입 분석
+    List<SalesByPaymentType> findCardAndCash(Long storeId);
 
 }
