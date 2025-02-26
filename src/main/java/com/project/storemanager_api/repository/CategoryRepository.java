@@ -27,4 +27,6 @@ public interface CategoryRepository {
 
     // 수정
     void modifyCategory(@Param("categoryName") String categoryName, @Param("categoryId") Long categoryId);
+
+    boolean existsById(Long categoryId);
 }
