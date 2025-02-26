@@ -1,6 +1,5 @@
 package com.project.storemanager_api.api;
 
-import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.store.dto.request.DeleteStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.ModifyStoreRequestDto;
 import com.project.storemanager_api.domain.store.dto.request.SaveStoreRequestDto;
@@ -20,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @RestController
 @Slf4j
@@ -63,7 +64,6 @@ public class StoreController {
      * @return updatedStoreDto - 수정된 store 객체
      */
     @PatchMapping
-    @StoreAuthCheck
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, String>> modifyStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
                                                            @RequestBody ModifyStoreRequestDto dto) {
@@ -71,12 +71,11 @@ public class StoreController {
         log.info("User role: {}", authentication.getAuthorities());
         storeService.modifyStoreInfo(dto);
         return ResponseEntity.ok().body(Map.of(
-                "message", "매장이 성공적으로 수정 되었습니다."
+                MESSAGE, "매장이 성공적으로 수정 되었습니다."
         ));
     }
 
     // 매장 삭제 API
-    @StoreAuthCheck
     @DeleteMapping
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Map<String, Object>> deleteStore(@AuthenticationPrincipal CustomUserPrincipal userInfo,
@@ -84,7 +83,7 @@ public class StoreController {
         log.info("DeleteStoreRequestDto : {}", dto);
         storeService.deleteStore(dto);
         return ResponseEntity.ok().body(Map.of(
-                "message", "매장이 성공적으로 삭제 되었습니다."
+                MESSAGE, "매장이 성공적으로 삭제 되었습니다."
         ));
     }
 

@@ -118,7 +118,7 @@ public class OrderService {
 
         Order foundOrder = validateOrder(orderId); // 주문 정보
         List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
-        boolean flag = checkRefundAll(originMenuInfos, refundInfo);
+        boolean flag = checkRefundAll(originMenuInfos, refundInfo); // 전체 / 부분 취소 체크
 
         if (flag) {
             // 전체 취소 일시 시나리오

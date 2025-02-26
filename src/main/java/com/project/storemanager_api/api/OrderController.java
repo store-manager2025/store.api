@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.project.storemanager_api.util.Constants.MESSAGE;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/orders")
@@ -25,7 +27,7 @@ public class OrderController {
     public ResponseEntity<Map<String, Object>> createOrder(@RequestBody OrderRequestDto dto) {
         log.info("주문 생성 요청: {}", dto);
         orderService.createOrder(dto);
-        return ResponseEntity.ok(Map.of("message", "주문이 성공적으로 생성되었습니다."));
+        return ResponseEntity.ok(Map.of(MESSAGE, "주문이 성공적으로 생성되었습니다."));
     }
 
     // 추가 주문
@@ -33,7 +35,7 @@ public class OrderController {
     public ResponseEntity<Map<String, Object>> addOrder(@RequestBody OrderRequestDto dto, @PathVariable Long orderId) {
         log.info("주문 누적 요청: {}", dto);
         orderService.addOrder(dto, orderId);
-        return ResponseEntity.ok(Map.of("message", "주문추가가 완료되었습니다."));
+        return ResponseEntity.ok(Map.of(MESSAGE, "주문추가가 완료되었습니다."));
     }
 
 
@@ -51,7 +53,7 @@ public class OrderController {
         boolean flag = orderService.refundOrder(orderId, refundInfo);
         String responseMsg = flag ? "취소가 완료 되었습니다." : "부분 취소가 완료되었습니다.";
         return ResponseEntity.ok().body(Map.of(
-           "message", responseMsg
+                MESSAGE, responseMsg
         ));
     }
 }

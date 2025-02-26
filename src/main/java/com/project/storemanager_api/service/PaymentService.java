@@ -19,6 +19,7 @@ import java.util.*;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
 import static com.project.storemanager_api.domain.pay.entity.Payment.Status;
+import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @Service
 @Slf4j
@@ -169,7 +170,7 @@ public class PaymentService {
             return map;
         }
 
-        return Map.of("message", "올바르지 못한 데이터입니다."); // 제대로 파싱되지 않았으면 null 반환
+        return Map.of(MESSAGE, "올바르지 못한 데이터입니다."); // 제대로 파싱되지 않았으면 null 반환
     }
 
     public void updateStatus(Long orderId, String status) {

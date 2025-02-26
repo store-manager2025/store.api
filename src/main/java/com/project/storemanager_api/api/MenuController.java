@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.project.storemanager_api.util.Constants.MESSAGE;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class MenuController {
         log.info("Creating menu dto: {}", dto);
         menuService.saveMenu(dto);
         return ResponseEntity.ok().body(Map.of(
-                "message", "성공적으로 메뉴가 등록되었습니다."
+                MESSAGE, "성공적으로 메뉴가 등록되었습니다."
         ));
     }
 
@@ -50,7 +52,7 @@ public class MenuController {
         log.info("Updating menu for {}", dto);
         menuService.modifyMenu(dto);
         return ResponseEntity.ok().body(Map.of(
-                "message", "성공적으로 수정되었습니다."
+                MESSAGE, "성공적으로 수정되었습니다."
         ));
     }
 
@@ -59,7 +61,7 @@ public class MenuController {
         log.info("Deleting category: {}", menuId);
         menuService.deleteMenu(menuId);
         return ResponseEntity.ok().body(Map.of(
-                "message", "성공적으로 삭제되었습니다."
+                MESSAGE, "성공적으로 삭제되었습니다."
         ));
     }
 

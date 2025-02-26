@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
+import static com.project.storemanager_api.util.Constants.*;
+
 @Service
 @Transactional
 @Slf4j
@@ -59,9 +61,9 @@ public class StoreService {
         makeInitCategory(id);
 
         return Map.of(
-                "message", "매장이 성공적으로 생성 되었습니다.",
-                "accessToken", tokenInfo.get("access"),
-                "refreshToken", tokenInfo.get("refresh")
+                MESSAGE, "매장이 성공적으로 생성 되었습니다.",
+                ACCESS_TOKEN, tokenInfo.get(ACCESS_TOKEN),
+                REFRESH_TOKEN, tokenInfo.get(REFRESH_TOKEN)
         );
     }
 
@@ -88,8 +90,8 @@ public class StoreService {
         String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId, role);
         userRepository.updateRefreshToken(refreshToken, userId);
         return Map.of(
-                "access", accessToken,
-                "refresh", refreshToken
+                ACCESS_TOKEN, accessToken,
+                REFRESH_TOKEN, refreshToken
         );
     }
 
