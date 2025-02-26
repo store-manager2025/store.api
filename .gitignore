@@ -6,7 +6,10 @@ build/
 
 .idea/
 application.yml
+application-dev.yml
 ddl.sql
+Dockerfile
+docker-compose.yml
 
 ### STS ###
 .apt_generated
