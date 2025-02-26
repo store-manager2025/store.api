@@ -50,18 +50,27 @@ public class StoreService {
         dto.setUserId(userId);
 
         // 매장 생성
-        storeRepository.saveStore(dto);
-        Long generatedStoreId = dto.getStoreId();
-        log.info("생성된 storeId: {}", generatedStoreId);
-        String role = userRepository.findRoleById(userId);
+        Long id = saveStoreAndGetId(dto);
 
         // 토큰 재발급에 사용될 데이터
-        List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
-        String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId, role);
-        userRepository.updateRefreshToken(refreshToken, userId);
+        Map<String, String> tokenInfo = createTokenAndSave(userId);
 
         // 기본 카테고리 하나 생성
+        makeInitCategory(id);
+
+        return Map.of(
+                "message", "매장이 성공적으로 생성 되었습니다.",
+                "accessToken", tokenInfo.get("access"),
+                "refreshToken", tokenInfo.get("refresh")
+        );
+    }
+
+    private Long saveStoreAndGetId(SaveStoreRequestDto dto) {
+        storeRepository.saveStore(dto);
+        return dto.getStoreId();
+    }
+
+    private void makeInitCategory(Long generatedStoreId) {
         categoryService.saveCategory(
                 SaveCategoryDto.builder()
                         .storeId(generatedStoreId)
@@ -69,10 +78,18 @@ public class StoreService {
                         .sizeType("FULL")
                         .build()
         );
+    }
+
+    // 매장 생성 시 새로운 토큰을 발급하는 코드
+    private Map<String, String> createTokenAndSave(Long userId) {
+        String role = userRepository.findRoleById(userId);
+        List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId, role);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId, role);
+        userRepository.updateRefreshToken(refreshToken, userId);
         return Map.of(
-                "message", "매장이 성공적으로 생성 되었습니다.",
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
+                "access", accessToken,
+                "refresh", refreshToken
         );
     }
 
