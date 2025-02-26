@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
 import static com.project.storemanager_api.domain.pay.entity.Payment.Status;
@@ -116,59 +113,63 @@ public class PaymentService {
 
     public List<Map<String, Object>> parseMenuList(String data) {
         if (data == null || data.isBlank()) {
-            return null;
+            return Collections.emptyList(); // 빈 리스트 반환
         }
 
-        // 쉼표로 구분된 세그먼트 split
-        // "메뉴: 간장치킨 수량: 1 가격: 16000", " 메뉴: 사이다 수량: 4 가격: 2000", " 메뉴: 휠렛버거 수량: 2 가격: 5600"
         String[] segments = data.split(",");
-
         List<Map<String, Object>> menuList = new ArrayList<>();
 
         for (String seg : segments) {
-            seg = seg.trim(); // 앞뒤 공백 제거
+            seg = seg.trim();
+            Map<String, Object> menu = parseSegment(seg);
 
-            // 공백 기준으로 토큰화
-            // ex: ["메뉴:", "간장치킨", "수량:", "1", "가격:", "16000"]
-            String[] tokens = seg.split("\\s+");
-
-            String menuName = null;
-            Integer quantity = null;
-            Integer price = null;
-
-            for (int i = 0; i < tokens.length; i++) {
-                switch (tokens[i]) {
-                    case "메뉴:":
-                        if (i + 1 < tokens.length) {
-                            menuName = tokens[i + 1];
-                        }
-                        break;
-                    case "수량:":
-                        if (i + 1 < tokens.length) {
-                            quantity = Integer.valueOf(tokens[i + 1]);
-                        }
-                        break;
-                    case "가격:":
-                        if (i + 1 < tokens.length) {
-                            price = Integer.valueOf(tokens[i + 1]);
-                        }
-                        break;
-                    default:
-                        // 무시
-                }
-            }
-
-            // 제대로 파싱되었다면 Map에 담아서 List에 추가
-            if (menuName != null && quantity != null && price != null) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("menuName", menuName);
-                map.put("quantity", quantity);
-                map.put("price", price);
-                menuList.add(map);
+            if (menu != null) {
+                menuList.add(menu); // 올바르게 파싱된 메뉴만 추가
             }
         }
 
         return menuList;
+    }
+
+    private Map<String, Object> parseSegment(String segment) {
+        String[] tokens = segment.split("\\s+");
+
+        String menuName = null;  // null로 초기화
+        Integer quantity = null; // null로 초기화
+        Integer price = null;
+
+        for (int i = 0; i < tokens.length; i++) {
+            switch (tokens[i]) {
+                case "메뉴:":
+                    if (i + 1 < tokens.length) {
+                        menuName = tokens[i + 1];
+                    }
+                    break;
+                case "수량:":
+                    if (i + 1 < tokens.length) {
+                        quantity = Integer.valueOf(tokens[i + 1]);
+                    }
+                    break;
+                case "가격:":
+                    if (i + 1 < tokens.length) {
+                        price = Integer.valueOf(tokens[i + 1]);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // 메뉴 이름, 수량, 가격이 모두 존재할 경우에만 Map에 담아 반환
+        if (menuName != null && quantity != null && price != null) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("menuName", menuName);
+            map.put("quantity", quantity);
+            map.put("price", price);
+            return map;
+        }
+
+        return Map.of("message", "올바르지 못한 데이터입니다."); // 제대로 파싱되지 않았으면 null 반환
     }
 
     public void updateStatus(Long orderId, String status) {

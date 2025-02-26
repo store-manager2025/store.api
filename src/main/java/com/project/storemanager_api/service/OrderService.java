@@ -209,7 +209,6 @@ public class OrderService {
 
 
     // orderId 유효성 검증
-    @Transactional
     public Order validateOrder(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())

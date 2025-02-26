@@ -68,7 +68,7 @@ public class UserService {
         // 1
         User foundUser = userRepository.findByEmail(username)
                 .orElseThrow(
-                        () -> new UserException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 회원입니다.")
+                        () -> new UserException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage())
                 );// 조회가 실패했다면 예외 발생
 
 

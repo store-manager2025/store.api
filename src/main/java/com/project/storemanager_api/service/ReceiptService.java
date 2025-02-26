@@ -22,6 +22,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class ReceiptService {
 
+    // Random 객체를 클래스 수준에서 재사용하기 위해 static으로 선언
+    private static final Random random = new Random();
     private final ReceiptRepository receiptRepository;
     private final MenuRepository menuRepository;
 
@@ -55,7 +57,6 @@ public class ReceiptService {
     }
 
     public static String makeRandomValue(int range) {
-        Random random = new Random();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < range; i++) {
             int group = random.nextInt(10);

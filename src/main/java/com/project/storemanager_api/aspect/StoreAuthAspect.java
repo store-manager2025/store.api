@@ -89,9 +89,10 @@ public class StoreAuthAspect {
         // PathVariable 추출
         @SuppressWarnings("unchecked")
         Map<String, String> pathVars = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        if (pathVars != null && pathVars.containsKey("storeId")) {
+        String id = "storeId";
+        if (pathVars != null && pathVars.containsKey(id)) {
             try {
-                storeId = Long.valueOf(pathVars.get("storeId"));
+                storeId = Long.valueOf(pathVars.get(id));
                 log.info("PathVariable에서 storeId 추출: {}", storeId);
             } catch (NumberFormatException e) {
                 log.warn("PathVariable storeId 변환 실패: {}", e.getMessage());
@@ -100,7 +101,7 @@ public class StoreAuthAspect {
 
         // Query Parameter에서 추출
         if (storeId == null) {
-            String storeIdStr = request.getParameter("storeId");
+            String storeIdStr = request.getParameter(id);
             if (storeIdStr != null && !storeIdStr.isEmpty()) {
                 try {
                     storeId = Long.valueOf(storeIdStr);

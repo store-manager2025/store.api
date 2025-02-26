@@ -95,7 +95,7 @@ public class StoreService {
         storeValidator.validateStoreLoginInput(dto);
         // DB에서 인코딩된 비밀번호 조회 (없으면 예외 발생)
         String originPassword = storeRepository.findPasswordById(dto.getStoreId())
-                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage()));
         log.info("originPassword: {}", originPassword);
         // 비밀번호 비교 검증
         storeValidator.validatePassword(dto.getPassword(), originPassword);
@@ -117,7 +117,7 @@ public class StoreService {
         // 기존 매장 상세 정보 조회
         StoreDetailResponseDto currentStore = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
         if (currentStore == null) {
-            throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다.");
+            throw new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage());
         }
         // DB에서 현재 인코딩된 비밀번호 조회
         String currentEncodedPassword = storeRepository.findPasswordById(dto.getStoreId())
@@ -136,7 +136,7 @@ public class StoreService {
     public void deleteStore(DeleteStoreRequestDto dto) {
         // DB에서 인코딩된 비밀번호 조회 (없으면 예외 발생)
         String originPassword = storeRepository.findPasswordById(dto.getStoreId())
-                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage()));
         // 비밀번호 비교
         if (!passwordEncoder.matches(dto.getPassword(), originPassword)) {
             throw new StoreException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASSWORD.getMessage());
