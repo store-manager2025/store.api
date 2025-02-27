@@ -47,6 +47,13 @@ public class OrderController {
         return ResponseEntity.ok().body(result);
     }
 
+    @GetMapping("/places/{placeId}")
+    public ResponseEntity<OrderDetailResponseDto> getOrderInfoByPlaceId(@PathVariable Long placeId) {
+        log.info("getOrderIdByPlaceId: {}", placeId);
+        OrderDetailResponseDto result = orderService.getOrderInfoByPlaceId(placeId);
+        return ResponseEntity.ok().body(result);
+    }
+
     // 환불 요청
     @DeleteMapping("/{orderId}")
     public ResponseEntity<Map<String, Object>> deleteOrder(@PathVariable Long orderId, @RequestBody List<RefundOrderDto> refundInfo) {

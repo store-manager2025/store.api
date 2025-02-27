@@ -28,7 +28,7 @@ public interface MenuRepository {
     void deleteMenuById(Long menuId);
 
     // order쪽에서 내보낼 정보만 담은 Dto
-    List<MenuDetailResponseDto> findMenuInOrderDtoById(Long menuId);
+    List<MenuDetailResponseDto> findMenuInOrderDtoById(Long orderId);
 
     Integer findPriceById(Long menuId);
 }

@@ -59,6 +59,24 @@
         WHERE O.order_id = #{orderId}
     </select>
 
+    <select id="findDetailByPlaceId" resultMap="orderDetailResultMap" parameterType="long">
+        SELECT
+        O.order_id,
+        O.store_id,
+        O.price,
+        O.order_status,
+        O.ordered_at,
+        P.place_name,
+        P.place_id,
+        M.menu_id
+        FROM orders O
+        JOIN order_menus OM ON O.order_id = OM.order_id
+        JOIN places P ON O.place_id = P.place_id
+        JOIN menus M ON OM.menu_id = M.menu_id
+        WHERE P.place_id = #{placeId}
+        AND O.order_status = 'UNPAID'
+    </select>
+
     <update id="updateOrderStatus">
         UPDATE orders
         SET

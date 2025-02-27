@@ -28,6 +28,8 @@ public interface OrderRepository {
                            @Param("orderStatus") String status);
 
 
+    // 주문 장소로 단일 조회
+    Optional<OrderDetailResponseDto> findDetailByPlaceId(Long placeId);
 }
 
 

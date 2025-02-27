@@ -207,6 +207,18 @@ public class OrderService {
 
     }
 
+    // 주문 단일 상세조회
+    public OrderDetailResponseDto getOrderInfoByPlaceId(Long placeId) {
+
+        OrderDetailResponseDto result = orderRepository.findDetailByPlaceId(placeId).orElseThrow(
+                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
+        );
+        result.setMenuDetail(menuRepository.findMenuInOrderDtoById(result.getOrderId()));
+
+        return result;
+
+    }
+
 
     // orderId 유효성 검증
     public Order validateOrder(Long orderId) {
