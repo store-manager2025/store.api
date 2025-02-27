@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.project.storemanager_api.util.Constants.MESSAGE;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class CategoryController {
         log.info("Saving category: {}", dto);
         categoryService.saveCategory(dto);
         return ResponseEntity.ok().body(Map.of(
-                "message", "카테고리가 생성되었습니다."
+                MESSAGE, "카테고리가 생성되었습니다."
         ));
     }
 
@@ -59,7 +61,7 @@ public class CategoryController {
         categoryService.modifyCategory(dto);
 
         return ResponseEntity.ok().body(Map.of(
-                "message", "수정이 완료되었습니다."
+                MESSAGE, "수정이 완료되었습니다."
         ));
     }
 
@@ -69,7 +71,7 @@ public class CategoryController {
         log.info("Deleting category: {}", categoryId);
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok().body(Map.of(
-           "message", "성공적으로 삭제되었습니다."
+                MESSAGE, "성공적으로 삭제되었습니다."
         ));
     }
 }

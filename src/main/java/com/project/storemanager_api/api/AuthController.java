@@ -6,7 +6,6 @@ import com.project.storemanager_api.domain.user.dto.request.RefreshTokenRequestD
 import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.domain.user.entity.User;
-import com.project.storemanager_api.service.EmployeeService;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Map;
 
+import static com.project.storemanager_api.util.Constants.*;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -27,15 +28,14 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
-    private final EmployeeService employeeService;
 
     @PostMapping("/auth/register")
     public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpRequestDto signUpRequest) {
         userService.signUp(signUpRequest, User.Role.OWNER, null);
 
         return ResponseEntity.ok().body(Map.of(
-                "message", "회원가입이 완료되었습니다.",
-                "username", signUpRequest.getName()
+                MESSAGE, "회원가입이 완료되었습니다.",
+                USERNAME, signUpRequest.getName()
         ));
     }
 
@@ -48,8 +48,8 @@ public class AuthController {
         userService.signUp(signUpRequest, User.Role.EMPLOYEE, storeId);
 
         return ResponseEntity.ok().body(Map.of(
-                "message", "가입이 완료되었습니다.",
-                "username", signUpRequest.getName()
+                MESSAGE, "가입이 완료되었습니다.",
+                USERNAME, signUpRequest.getName()
         ));
     }
 
@@ -65,7 +65,7 @@ public class AuthController {
          1. API 요청을 위한 토큰정보를 JSON에 담아 전달하고
          2. 페이지 라우팅 요청을 위한 쿠키로 전달해야 함.
         */
-        Cookie cookie = new Cookie("accessToken", responseMap.get("accessToken").toString() );
+        Cookie cookie = new Cookie(ACCESS_TOKEN, responseMap.get(ACCESS_TOKEN).toString() );
         // 쿠키의 수명, 사용 경로, 보안 등을 설정
         cookie.setMaxAge(60 * 60); // 단위: 초
         cookie.setPath("/"); // 어디서 들고다닐거냐
@@ -85,7 +85,7 @@ public class AuthController {
         userService.modifyUserInfo(modifyUserRequestDto, userInfo.getUserId());
 
         return ResponseEntity.ok().body(Map.of(
-                "message", "회원정보 수정이 완료되었습니다."
+                MESSAGE, "회원정보 수정이 완료되었습니다."
         ));
     }
 
@@ -95,7 +95,7 @@ public class AuthController {
         userService.deleteUser(userInfo.getUserId());
 
         return ResponseEntity.ok().body(Map.of(
-                "message", "성공적으로 탈퇴 되었습니다."
+                MESSAGE, "성공적으로 탈퇴 되었습니다."
         ));
     }
 
@@ -103,11 +103,11 @@ public class AuthController {
 
     // 로그아웃 처리 API
     @PostMapping("/auth/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> logout(HttpServletResponse response) {
 
         log.info("요청 들어옴 - {} ", response);
         // 쿠키 무효화
-        Cookie cookie = new Cookie("accessToken", null);
+        Cookie cookie = new Cookie(ACCESS_TOKEN, null);
         // 쿠키 생성과 반대로
         cookie.setMaxAge(0);
         cookie.setPath("/");
@@ -117,7 +117,7 @@ public class AuthController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok().body(Map.of(
-                "message", "로그아웃이 처리되었습니다."
+                MESSAGE, "로그아웃이 처리되었습니다."
         ));
     }
 

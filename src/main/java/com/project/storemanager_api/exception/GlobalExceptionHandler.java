@@ -1,6 +1,7 @@
 package com.project.storemanager_api.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +16,7 @@ public class GlobalExceptionHandler {
 
     // 알 수 없는 기타 등등 에러를 일괄 처리
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGlobalException(Exception e, HttpServletRequest request) {
+    public HttpEntity<ErrorResponse> handleGlobalException(Exception e, HttpServletRequest request) {
         log.error("Unexpected error occurred: {}", e.getMessage(), e);
 
         // 에러 응답 객체 생성

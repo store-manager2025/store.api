@@ -118,7 +118,7 @@ public class OrderService {
 
         Order foundOrder = validateOrder(orderId); // 주문 정보
         List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
-        boolean flag = checkRefundAll(originMenuInfos, refundInfo);
+        boolean flag = checkRefundAll(originMenuInfos, refundInfo); // 전체 / 부분 취소 체크
 
         if (flag) {
             // 전체 취소 일시 시나리오
@@ -207,9 +207,20 @@ public class OrderService {
 
     }
 
+    // 주문 단일 상세조회
+    public OrderDetailResponseDto getOrderInfoByPlaceId(Long placeId) {
+
+        OrderDetailResponseDto result = orderRepository.findDetailByPlaceId(placeId).orElseThrow(
+                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
+        );
+        result.setMenuDetail(menuRepository.findMenuInOrderDtoById(result.getOrderId()));
+
+        return result;
+
+    }
+
 
     // orderId 유효성 검증
-    @Transactional
     public Order validateOrder(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())

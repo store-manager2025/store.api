@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
+import static com.project.storemanager_api.util.Constants.*;
+
 @Service
 @Transactional
 @Slf4j
@@ -50,18 +52,27 @@ public class StoreService {
         dto.setUserId(userId);
 
         // 매장 생성
-        storeRepository.saveStore(dto);
-        Long generatedStoreId = dto.getStoreId();
-        log.info("생성된 storeId: {}", generatedStoreId);
-        String role = userRepository.findRoleById(userId);
+        Long id = saveStoreAndGetId(dto);
 
         // 토큰 재발급에 사용될 데이터
-        List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
-        String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId, role);
-        userRepository.updateRefreshToken(refreshToken, userId);
+        Map<String, String> tokenInfo = createTokenAndSave(userId);
 
         // 기본 카테고리 하나 생성
+        makeInitCategory(id);
+
+        return Map.of(
+                MESSAGE, "매장이 성공적으로 생성 되었습니다.",
+                ACCESS_TOKEN, tokenInfo.get(ACCESS_TOKEN),
+                REFRESH_TOKEN, tokenInfo.get(REFRESH_TOKEN)
+        );
+    }
+
+    private Long saveStoreAndGetId(SaveStoreRequestDto dto) {
+        storeRepository.saveStore(dto);
+        return dto.getStoreId();
+    }
+
+    private void makeInitCategory(Long generatedStoreId) {
         categoryService.saveCategory(
                 SaveCategoryDto.builder()
                         .storeId(generatedStoreId)
@@ -69,10 +80,18 @@ public class StoreService {
                         .sizeType("FULL")
                         .build()
         );
+    }
+
+    // 매장 생성 시 새로운 토큰을 발급하는 코드
+    private Map<String, String> createTokenAndSave(Long userId) {
+        String role = userRepository.findRoleById(userId);
+        List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId, role);
+        String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId, role);
+        userRepository.updateRefreshToken(refreshToken, userId);
         return Map.of(
-                "message", "매장이 성공적으로 생성 되었습니다.",
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
+                ACCESS_TOKEN, accessToken,
+                REFRESH_TOKEN, refreshToken
         );
     }
 
@@ -95,7 +114,7 @@ public class StoreService {
         storeValidator.validateStoreLoginInput(dto);
         // DB에서 인코딩된 비밀번호 조회 (없으면 예외 발생)
         String originPassword = storeRepository.findPasswordById(dto.getStoreId())
-                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage()));
         log.info("originPassword: {}", originPassword);
         // 비밀번호 비교 검증
         storeValidator.validatePassword(dto.getPassword(), originPassword);
@@ -117,7 +136,7 @@ public class StoreService {
         // 기존 매장 상세 정보 조회
         StoreDetailResponseDto currentStore = storeRepository.findStoreDetailByStoreId(dto.getStoreId());
         if (currentStore == null) {
-            throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다.");
+            throw new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage());
         }
         // DB에서 현재 인코딩된 비밀번호 조회
         String currentEncodedPassword = storeRepository.findPasswordById(dto.getStoreId())
@@ -136,7 +155,7 @@ public class StoreService {
     public void deleteStore(DeleteStoreRequestDto dto) {
         // DB에서 인코딩된 비밀번호 조회 (없으면 예외 발생)
         String originPassword = storeRepository.findPasswordById(dto.getStoreId())
-                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, "매장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage()));
         // 비밀번호 비교
         if (!passwordEncoder.matches(dto.getPassword(), originPassword)) {
             throw new StoreException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASSWORD.getMessage());

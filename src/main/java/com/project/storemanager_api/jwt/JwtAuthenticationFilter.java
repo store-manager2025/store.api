@@ -81,23 +81,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return null;
     }
-
-
-    private String resolveTokenFromCookie(HttpServletRequest request) {
-        // 2. 페이지 요청: 쿠키 체크
-        if (request.getCookies() != null) {
-            return Arrays.stream(request.getCookies())
-                    .filter(c -> "accessToken".equals(c.getName()))
-                    .findFirst()
-                    .map(Cookie::getValue)
-                    .orElse(null);
-        }
-
-        return null;
-    }
-
-    // 현재 요청이 API요청인지 라우팅 요청인지를 확인
-    private boolean isApiRequest(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/api/");
-    }
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.project.storemanager_api.domain.user.entity.User.*;
+import static com.project.storemanager_api.util.Constants.*;
 
 @Service
 @Slf4j
@@ -68,7 +69,7 @@ public class UserService {
         // 1
         User foundUser = userRepository.findByEmail(username)
                 .orElseThrow(
-                        () -> new UserException(ErrorCode.USER_NOT_FOUND, "존재하지 않는 회원입니다.")
+                        () -> new UserException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage())
                 );// 조회가 실패했다면 예외 발생
 
 
@@ -98,10 +99,10 @@ public class UserService {
         userRepository.updateRefreshToken(refreshToken, foundUser.getUserId());
 
         return Map.of(
-                "message", "로그인에 성공했습니다.",
-                "name", foundUser.getName(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundUser.getUserId(), storeIdList, String.valueOf(foundUser.getRole())),
-                "refreshToken", refreshToken
+                MESSAGE, "로그인에 성공했습니다.",
+                USERNAME, foundUser.getName(),
+                ACCESS_TOKEN, jwtTokenProvider.createAccessToken(foundUser.getUserId(), storeIdList, String.valueOf(foundUser.getRole())),
+                REFRESH_TOKEN, refreshToken
         );
     }
 
@@ -173,9 +174,9 @@ public class UserService {
                 user.getUserId(), newAccessToken, newRefreshToken);
 
         return Map.of(
-                "message", "토큰 재발급에 성공했습니다.",
-                "accessToken", newAccessToken,
-                "refreshToken", newRefreshToken
+                MESSAGE, "토큰 재발급에 성공했습니다.",
+                ACCESS_TOKEN, newAccessToken,
+                REFRESH_TOKEN, newRefreshToken
         );
     }
 

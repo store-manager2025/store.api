@@ -41,8 +41,6 @@ public class PlaceService {
                 }
             }
         }
-
-
         Long generatedUiId = createUi(dto);
 
         dto.setUiId(generatedUiId);

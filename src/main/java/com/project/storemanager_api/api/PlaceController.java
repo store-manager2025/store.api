@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.project.storemanager_api.util.Constants.MESSAGE;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/places")
@@ -28,7 +30,7 @@ public class PlaceController {
         log.info("save place dto : {} ", dto);
         placeService.savePlace(dto);
         return ResponseEntity.ok().body(Map.of(
-                "message", "장소가 성공적으로 등록되었습니다."
+                MESSAGE, "장소가 성공적으로 등록되었습니다."
         ));
     }
 
@@ -54,7 +56,7 @@ public class PlaceController {
         log.info("update place dto : {}", dto);
         placeService.modifyPlace(dto);
         return ResponseEntity.ok().body(Map.of(
-                "message", "성공적으로 수정되었습니다."
+                MESSAGE, "성공적으로 수정되었습니다."
         ));
     }
 
@@ -64,7 +66,7 @@ public class PlaceController {
         log.info("delete place : {}", placeId);
         placeService.deletePlace(placeId);
         return ResponseEntity.ok().body(Map.of(
-                "message", "좌석이 성공적으로 삭제되었습니다."
+                MESSAGE, "좌석이 성공적으로 삭제되었습니다."
         ));
     }
 

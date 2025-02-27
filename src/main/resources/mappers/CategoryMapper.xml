@@ -59,4 +59,11 @@
         WHERE category_id = #{categoryId}
     </update>
 
+    <select id="existsById" resultType="java.lang.Boolean">
+        SELECT
+            COUNT(*)
+        FROM categories
+        WHERE category_id = #{categoryId}
+    </select>
+
 </mapper>

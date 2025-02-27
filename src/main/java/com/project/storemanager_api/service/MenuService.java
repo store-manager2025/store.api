@@ -37,6 +37,11 @@ public class MenuService {
         Long generatedUiId = createUi(dto);
         // 2. 받아온 id를 dto에 저장
         dto.setUiId(generatedUiId);
+
+        // 카테고리 존재 여부 체크
+        if (!categoryRepository.existsById(dto.getCategoryId())) {
+            throw new CategoryException(ErrorCode.CATEGORY_NOT_FOUND, ErrorCode.CATEGORY_NOT_FOUND.getMessage());
+        }
         menuRepository.saveMenu(dto);
     }
 
@@ -125,8 +130,6 @@ public class MenuService {
 
         // 1. ui 객체를 저장 후 생성된 id를 받아온다
         uiRepository.saveUi(newUi);
-        Long generatedUiId = newUi.getUiId();
-        log.info("방금 save된 ui id - {} ", generatedUiId);
-        return generatedUiId;
+        return newUi.getUiId();
     }
 }
