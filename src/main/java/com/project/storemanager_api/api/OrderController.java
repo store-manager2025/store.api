@@ -57,7 +57,7 @@ public class OrderController {
     // 환불 요청
     @DeleteMapping("/{orderId}")
     public ResponseEntity<Map<String, Object>> deleteOrder(@PathVariable Long orderId, @RequestBody List<RefundOrderDto> refundInfo) {
-        boolean flag = orderService.refundOrder(orderId, refundInfo);
+        boolean flag = orderService.refundAndPartialCancelOrder(orderId, refundInfo);
         String responseMsg = flag ? "취소가 완료 되었습니다." : "부분 취소가 완료되었습니다.";
         return ResponseEntity.ok().body(Map.of(
                 MESSAGE, responseMsg

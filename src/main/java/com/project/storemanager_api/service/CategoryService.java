@@ -33,7 +33,7 @@ public class CategoryService {
     public void saveCategory(SaveCategoryDto dto) {
 
         // storeId가 유효한지 검사
-        extracted(dto.getStoreId());
+        validStoreId(dto.getStoreId());
 
         // 입력값 검증
         if (dto.getCategoryName().isEmpty()) {
@@ -51,7 +51,7 @@ public class CategoryService {
     @Transactional
     public List<CategoryResponseDto> getAllCategories(Long storeId) {
         // storeId가 유효한지 검사
-        extracted(storeId);
+        validStoreId(storeId);
         List<CategoryResponseDto> categoryResponseDtos = categoryRepository.findListByStoreId(storeId);
 
         if (categoryResponseDtos.isEmpty()) {
@@ -84,14 +84,12 @@ public class CategoryService {
     }
 
     // 매장 정보가 조회되는지 안되는지 검사
-    private StoreDetailResponseDto extracted(Long storeId) {
+    private void validStoreId(Long storeId) {
 
         StoreDetailResponseDto exist = storeRepository.findStoreDetailByStoreId(storeId);
-
         if (exist == null) {
             throw new StoreException(ErrorCode.STORE_NOT_FOUND, "매장 정보를 찾을 수 없습니다.");
         }
-        return exist;
     }
 
 

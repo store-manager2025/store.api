@@ -86,7 +86,7 @@ public class UserService {
         // 로그인이 성공했을 때, 해당 유저가 가진 store의 Id list를 조회, token생성시 포함
         List<Long> storeIdList;
         if (foundUser.getRole().equals(Role.OWNER)) { // 점주라면
-            storeIdList = storeRepository.findStoreIdsByUserId(foundUser.getUserId());
+            storeIdList = storeRepository.findStoreIdListByUserId(foundUser.getUserId());
         } else { // 알바생이라면
             storeIdList = employeeService.findStoreIdByUserId(foundUser.getUserId());
         }
@@ -143,7 +143,7 @@ public class UserService {
      * @param refreshToken 클라이언트가 보유한 refresh token
      * @return 새로운 access token과 refresh token을 포함한 Map
      */
-    public Map<String, Object> refreshToken(String refreshToken) {
+    public Map<String, Object> getNewRefreshToken(String refreshToken) {
         // 1. 클라이언트가 보낸 refresh token의 유효성 검사
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new UserException(ErrorCode.INVALID_TOKEN, "리프레시 토큰이 유효하지 않습니다.");
@@ -160,7 +160,7 @@ public class UserService {
             throw new UserException(ErrorCode.INVALID_TOKEN, "리프레시 토큰이 일치하지 않습니다.");
         }
 
-        List<Long> storeIdList = storeRepository.findStoreIdsByUserId(user.getUserId());
+        List<Long> storeIdList = storeRepository.findStoreIdListByUserId(user.getUserId());
         // 5. 새로운 access token 생성
         String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), storeIdList, String.valueOf(user.getRole()));
         // 6. 새로운 refresh token 생성 (리프레시 토큰 회전)

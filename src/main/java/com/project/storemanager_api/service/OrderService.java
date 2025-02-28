@@ -114,11 +114,11 @@ public class OrderService {
     }
 
     // 메뉴들에 대한 환불요청 (부분 환불도 가능하도록 설계해야 함)
-    public boolean refundOrder(Long orderId, List<RefundOrderDto> refundInfo) {
+    public boolean refundAndPartialCancelOrder(Long orderId, List<RefundOrderDto> refundInfo) {
 
         Order foundOrder = validateOrder(orderId); // 주문 정보
         List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
-        boolean flag = checkRefundAll(originMenuInfos, refundInfo); // 전체 / 부분 취소 체크
+        boolean flag = isRefund(originMenuInfos, refundInfo); // 전체 / 부분 취소 체크
 
         if (flag) {
             // 전체 취소 일시 시나리오
@@ -144,7 +144,7 @@ public class OrderService {
      * @param requestRefundInfo 환불 요청이 들어온 데이터
      * @return 전체 취소면 true, 아니면 false
      */
-    private boolean checkRefundAll(List<RefundOrderDto> originMenuInfos, List<RefundOrderDto> requestRefundInfo) {
+    private boolean isRefund(List<RefundOrderDto> originMenuInfos, List<RefundOrderDto> requestRefundInfo) {
         // 기존 주문 정보를 Map<menuId, quantity>로 변환
         Map<Long, Integer> originOrderMap = originMenuInfos.stream()
                 .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
