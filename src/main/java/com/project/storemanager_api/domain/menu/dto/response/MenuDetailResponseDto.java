@@ -9,6 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class MenuDetailResponseDto {
+
+    private Long orderMenuId;
+
     private String menuName;
     private Integer discountRate;
     private Integer totalPrice; // 메뉴 가격

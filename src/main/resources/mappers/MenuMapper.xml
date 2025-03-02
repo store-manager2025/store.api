@@ -74,6 +74,7 @@
 
     <select id="findMenuInOrderDtoById" resultType="com.project.storemanager_api.domain.menu.dto.response.MenuDetailResponseDto">
         SELECT
+        OM.order_menu_id,
         M.menu_name,
         M.discount_rate,
         M.price * om.order_item_quantity AS totalPrice,
