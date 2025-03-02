@@ -60,4 +60,24 @@
         WHERE order_id = #{orderId}
     </update>
 
+    <select id="findQuantityById" resultType="java.lang.Integer">
+        SELECT
+            order_item_quantity AS quantity
+        FROM order_menus
+        WHERE order_menu_id = #{orderMenuId}
+    </select>
+
+    <delete id="deleteOrderMenu">
+        DELETE FROM
+        order_menus
+        WHERE order_menu_id = #{orderMenuId}
+    </delete>
+
+    <update id="updateQuantityAndPriceByOrderMenuId">
+        UPDATE order_menus
+            SET order_item_quantity = #{quantity},
+                order_price = #{price}
+        WHERE order_menu_id = #{orderMenuId}
+    </update>
+
 </mapper>

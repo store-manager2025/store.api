@@ -85,7 +85,7 @@ public class StoreService {
     // 매장 생성 시 새로운 토큰을 발급하는 코드
     private Map<String, String> createTokenAndSave(Long userId) {
         String role = userRepository.findRoleById(userId);
-        List<Long> storeIdsByUserId = storeRepository.findStoreIdsByUserId(userId);
+        List<Long> storeIdsByUserId = storeRepository.findStoreIdListByUserId(userId);
         String accessToken = jwtTokenProvider.createAccessToken(userId, storeIdsByUserId, role);
         String refreshToken = jwtTokenProvider.createRefreshToken(userId, storeIdsByUserId, role);
         userRepository.updateRefreshToken(refreshToken, userId);

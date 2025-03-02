@@ -64,6 +64,7 @@ public class ReportController {
     @GetMapping("/daily")
     @StoreAuthCheck
     @PreAuthorize("hasRole('OWNER')")
+    // paymentId 까지 넣어야함
     public ResponseEntity<List<OrderDetailResponseDto>> getDailyOrderList(
             @AuthenticationPrincipal CustomUserPrincipal info,
             @RequestParam Long storeId,

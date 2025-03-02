@@ -130,7 +130,7 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> refreshToken(@RequestBody RefreshTokenRequestDto dto) {
         String refreshToken = dto.getRefreshToken();
         log.info("리프레시 토큰 요청: {}", refreshToken);
-        Map<String, Object> responseMap = userService.refreshToken(refreshToken);
+        Map<String, Object> responseMap = userService.getNewRefreshToken(refreshToken);
         return ResponseEntity.ok(responseMap);
     }
 

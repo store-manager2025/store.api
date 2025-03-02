@@ -59,7 +59,7 @@
         WHERE store_id = #{storeId}
     </delete>
 
-    <select id="findStoreIdsByUserId" resultType="java.lang.Long">
+    <select id="findStoreIdListByUserId" resultType="java.lang.Long">
         SELECT
             store_id
         FROM stores

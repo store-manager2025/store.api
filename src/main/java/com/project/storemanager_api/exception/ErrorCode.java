@@ -53,7 +53,7 @@ public enum ErrorCode {
 
     // 주문 관련 에러
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 정보를 찾을 수 없습니다."),
-    DONT_OVER_QUANTITY(HttpStatus.BAD_REQUEST, "환불 요청 수량이 주문 수량을 초과할 수 없습니다."),
+    CANT_OVER_QUANTITY(HttpStatus.BAD_REQUEST, "환불 요청 수량이 주문 수량을 초과할 수 없습니다."),
 
     // 장소 관련 에러
     DUPLICATE_PLACE(HttpStatus.CONFLICT, "이미 존재하는 테이블입니다."),
