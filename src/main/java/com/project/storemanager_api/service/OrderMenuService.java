@@ -1,8 +1,12 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.order.dto.request.OrderItemRequestDto;
+import com.project.storemanager_api.domain.order.dto.request.OrderMenuCancelDto;
 import com.project.storemanager_api.domain.order.dto.request.RefundOrderDto;
 import com.project.storemanager_api.domain.order.entity.OrderMenu;
+import com.project.storemanager_api.exception.ErrorCode;
+import com.project.storemanager_api.exception.OrderException;
+import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.OrderMenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +23,7 @@ import java.util.Optional;
 public class OrderMenuService {
 
     private final OrderMenuRepository orderMenuRepository;
+    private final MenuRepository menuRepository;
 
     /**
      * 추가 주문 시, 이미 주문한 메뉴가 있다면 수량 및 가격 업데이트, 없으면 신규 저장
@@ -59,5 +64,29 @@ public class OrderMenuService {
 
     public void updateOrderStatusWithoutMenu(Long orderId, String orderStatus) {
         orderMenuRepository.updateOrderStatusWithoutMenuId(orderId, orderStatus);
+    }
+
+    public void cancelMenu(Long orderMenuId, OrderMenuCancelDto dto) {
+
+        Integer quantity = dto.getQuantity();
+
+        // 원본과 조회
+        Integer originQuantity = orderMenuRepository.findQuantityById(orderMenuId).orElseThrow(
+                () -> new OrderException(ErrorCode.INVALID_ID, "주문 정보를 찾지 못하였습니다.")
+        );
+        if (quantity.equals(originQuantity)) {
+            orderMenuRepository.deleteOrderMenu(orderMenuId);
+        } else if (quantity < originQuantity) { // 부분 취소
+            Integer newQuantity = originQuantity - quantity;
+            Integer price = getNewPrice(newQuantity, dto.getMenuId());
+            orderMenuRepository.updateQuantityAndPriceByOrderMenuId(orderMenuId, newQuantity, price);
+        } else { // 잘못된 요청
+            throw new OrderException(ErrorCode.CANT_OVER_QUANTITY, ErrorCode.CANT_OVER_QUANTITY.getMessage());
+        }
+    }
+
+    private Integer getNewPrice(Integer quantity, Long menuId) {
+        Integer priceById = menuRepository.findPriceById(menuId);
+        return quantity * priceById;
     }
 }

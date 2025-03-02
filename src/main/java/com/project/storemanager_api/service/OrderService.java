@@ -198,7 +198,7 @@ public class OrderService {
                 totalRefundMoney += updatePrice;
                 orderMenuService.updateMenuQuantity(orderId, menuId, updatedQuantity, updatePrice);
             } else {
-                throw new OrderException(ErrorCode.DONT_OVER_QUANTITY, "환불 요청 수량이 주문 수량을 초과할 수 없습니다.");
+                throw new OrderException(ErrorCode.CANT_OVER_QUANTITY, "환불 요청 수량이 주문 수량을 초과할 수 없습니다.");
             }
         }
         log.info("totalRefundMoney - {}", totalRefundMoney);
