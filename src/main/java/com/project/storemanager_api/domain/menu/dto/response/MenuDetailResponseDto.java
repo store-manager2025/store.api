@@ -11,6 +11,7 @@ import lombok.*;
 public class MenuDetailResponseDto {
 
     private Long orderMenuId;
+    private Long menuId;
 
     private String menuName;
     private Integer discountRate;
