@@ -3,6 +3,7 @@ package com.project.storemanager_api.repository;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
+import com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto;
 import com.project.storemanager_api.domain.pay.entity.Payment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,7 +29,11 @@ public interface PaymentRepository {
     void changeStatus(@Param("status") Payment.Status status,
                       @Param("paymentId") Long paymentId);
 
-    // orderId 로 상태값 변경
-    void updateStatus(@Param("orderId") Long orderId,
-                      @Param("status") String status);
+    // paymentId 로 상태값 변경
+    void updateStatusByPaymentId(@Param("paymentId") Long paymentId,
+                               @Param("status") String status);
+
+    // 환불 요청이 들어왔을 때, id에 해당하는 정보를 가져올 메서드
+    Optional<RefundInfoDto> findRefundOriginDataByPaymentId(Long paymentId);
+
 }

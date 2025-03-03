@@ -5,6 +5,7 @@ import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDt
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto;
+import com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PaymentException;
 import com.project.storemanager_api.repository.OrderRepository;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.CANCELLED;
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
 import static com.project.storemanager_api.domain.pay.entity.Payment.Status;
 import static com.project.storemanager_api.util.Constants.MESSAGE;
@@ -42,6 +44,8 @@ public class PaymentService {
     private final PayTransactionService payTransactionService; // 결제 흐름과 관련한 transaction 처리
 
     private final OrderMenuService orderMenuService;
+
+    private final OrderService orderService;
 
     /**
      * 카드 결제 데이터 흐름
@@ -173,7 +177,24 @@ public class PaymentService {
         return Map.of(MESSAGE, "올바르지 못한 데이터입니다."); // 제대로 파싱되지 않았으면 null 반환
     }
 
-    public void updateStatus(Long orderId, String status) {
-        paymentRepository.updateStatus(orderId, status);
+    // 카드 정보도 담아볼까 싶음
+    public Integer cancelAndUpdateStatus(Long paymentId) {
+        RefundInfoDto originPayment = paymentRepository.findRefundOriginDataByPaymentId(paymentId).orElseThrow(
+                () -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾을 수 없습니다.")
+        );
+        log.info("originPayment: {}", originPayment.toString());
+
+        if (originPayment.getStatus().equals(Status.PENDING)) {
+            throw new PaymentException(ErrorCode.CANT_REFUND, ErrorCode.CANT_REFUND.getMessage());
+        }
+
+        if (originPayment.getStatus().equals(Status.CANCELLED)) {
+            throw new PaymentException(ErrorCode.ALREADY_PAYMENT, ErrorCode.ALREADY_PAYMENT.getMessage());
+        }
+        // 오더테이블 데이터도 상태값 변경
+        orderService.updateStatus(originPayment.getOrderId(), String.valueOf(Status.CANCELLED));
+
+        paymentRepository.updateStatusByPaymentId(paymentId, String.valueOf(CANCELLED));
+        return originPayment.getPaymentAmount();
     }
 }

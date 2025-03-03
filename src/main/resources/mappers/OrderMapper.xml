@@ -5,14 +5,18 @@
 <mapper namespace="com.project.storemanager_api.repository.OrderRepository">
 
     <resultMap id="orderDetailResultMap" type="com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto">
-        <!-- 주문 기본 정보 매핑 -->
         <id property="orderId" column="order_id"/>
         <result property="storeId" column="store_id"/>
-        <result property="placeId" column="place_id"/>
         <result property="price" column="price"/>
         <result property="orderStatus" column="order_status"/>
         <result property="orderedAt" column="ordered_at"/>
         <result property="placeName" column="place_name"/>
+        <result property="placeId" column="place_id"/>
+
+        <!-- menuIdList를 다중 결과로 매핑 -->
+        <collection property="menuIdList" ofType="java.lang.Long">
+            <result column="menu_id"/>
+        </collection>
     </resultMap>
 
     <insert id="saveOrder" parameterType="com.project.storemanager_api.domain.order.entity.Order"
