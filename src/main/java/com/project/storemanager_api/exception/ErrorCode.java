@@ -60,8 +60,6 @@ public enum ErrorCode {
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 정보가 없습니다."),
 
     // 결제 관련 에러
-    TOO_MUCH_PRICE(HttpStatus.BAD_REQUEST, "필요한 금액을 초과합니다, 결제에 실패하였습니다."),
-    NOT_ENOUGH_PRICE(HttpStatus.BAD_REQUEST, "금액이 모자랍니다, 결제에 실패하였습니다."),
     DATE_EXPIRATION(HttpStatus.BAD_REQUEST, "날짜가 만료되었습니다."),
     NOT_CORRECT_EXPIRATION(HttpStatus.BAD_REQUEST, "카드만료일은 YYYY/MM의 형식이여야 합니다."),
     NOT_CORRECT_MONTH(HttpStatus.BAD_REQUEST, "카드 만료 월은 12월 이하여야 합니다."),

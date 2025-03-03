@@ -35,7 +35,6 @@ public class PayValidator {
         // place id가 유효한지 검증
         validatePlaceId(dto.getPlaceId());
 
-        checkAmount(dto, foundOrder);
         for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
             // payDetail.getExpiryDate() 날짜 확인
             checkExpiryDate(payDetail.getExpiryDate(), payDetail.getPaymentType());
@@ -99,23 +98,6 @@ public class PayValidator {
         int month = Integer.parseInt(parts[1]); // "03" → 3
         if (month < 1 || month > 12) {
             throw new PaymentException(ErrorCode.NOT_CORRECT_MONTH, ErrorCode.NOT_CORRECT_MONTH.getMessage());
-        }
-    }
-
-    private void checkAmount(CreatePayRequestDto dto, Order foundOrder) {
-        Integer sumAmount = 0;
-        for (CreatePaymentDetailDto info : dto.getPayList()) {
-            sumAmount += info.getPaidMoney();
-        }
-
-        // 금액 미달 경우
-        if (foundOrder.getPrice() > sumAmount) {
-            throw new PaymentException(ErrorCode.NOT_ENOUGH_PRICE, ErrorCode.NOT_ENOUGH_PRICE.getMessage());
-        }
-
-        // 금액 초과 경우
-        if (foundOrder.getPrice() < sumAmount) {
-            throw new PaymentException(ErrorCode.TOO_MUCH_PRICE, ErrorCode.TOO_MUCH_PRICE.getMessage());
         }
     }
 
