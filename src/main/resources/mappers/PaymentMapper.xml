@@ -114,7 +114,8 @@
     <select id="findRefundOriginDataByPaymentId" resultType="com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto">
         SELECT
             status,
-            payment_amount
+            payment_amount,
+            order_id
         FROM payments
         WHERE payment_id = #{paymentId}
     </select>

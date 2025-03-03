@@ -15,5 +15,6 @@ public class RefundInfoDto {
 
     private Status status;
     private Integer paymentAmount;
+    private Long orderId;
 
 }

@@ -45,6 +45,8 @@ public class PaymentService {
 
     private final OrderMenuService orderMenuService;
 
+    private final OrderService orderService;
+
     /**
      * 카드 결제 데이터 흐름
      * 1. 결제 진행 -> payments 생성 (상태: pending)
@@ -189,6 +191,8 @@ public class PaymentService {
         if (originPayment.getStatus().equals(Status.CANCELLED)) {
             throw new PaymentException(ErrorCode.ALREADY_PAYMENT, ErrorCode.ALREADY_PAYMENT.getMessage());
         }
+        // 오더테이블 데이터도 상태값 변경
+        orderService.updateStatus(originPayment.getOrderId(), String.valueOf(Status.CANCELLED));
 
         paymentRepository.updateStatusByPaymentId(paymentId, String.valueOf(CANCELLED));
         return originPayment.getPaymentAmount();

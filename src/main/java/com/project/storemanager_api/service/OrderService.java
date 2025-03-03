@@ -26,7 +26,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMenuService orderMenuService;
     private final MenuRepository menuRepository; // 메뉴 가격 조회를 위한 Repository
-    private final PaymentService paymentService;
+
 
     /**
      * 주문 요청 처리 비즈니스로직
@@ -222,4 +222,10 @@ public class OrderService {
         );
     }
 
+    public void updateStatus(Long orderId, String status) {
+
+        orderRepository.updateOrderStatus(orderId, status);
+        orderMenuService.updateOrderStatusWithoutMenu(orderId, status);
+
+    }
 }
