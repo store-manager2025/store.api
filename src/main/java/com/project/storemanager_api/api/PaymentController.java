@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
+import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,6 +49,16 @@ public class PaymentController {
         log.info("Get payment details request: {}", paymentId);
         PaymentDetailResponseDto result = paymentService.getPaymentDetail(paymentId);
         return ResponseEntity.ok().body(result);
+    }
+
+    // 이제 이미 결제된 건에 대해 환불 처리 해야함
+    @PostMapping("/cancel/{paymentId}")
+    public ResponseEntity<Map<String, Object>> cancelPayment(@PathVariable Long paymentId) {
+        log.info("Cancel payment request: {}", paymentId);
+        Integer refundAmount = paymentService.cancelAndUpdateStatus(paymentId);
+        return ResponseEntity.ok().body(Map.of(
+                MESSAGE, "" + refundAmount + "원이 환불 되었습니다."
+        ));
     }
 
 }
