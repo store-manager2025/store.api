@@ -208,7 +208,10 @@ public class OrderService {
         OrderDetailResponseDto result = orderRepository.findDetailByPlaceId(placeId).orElseThrow(
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
         );
+        log.info("result aa : {}", result);
+
         result.setMenuDetail(menuRepository.findMenuInOrderDtoById(result.getOrderId()));
+        log.info("result  bb : {}", result);
 
         return result;
 
