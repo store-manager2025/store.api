@@ -25,6 +25,9 @@
         <result property="orderStatus" column="order_status"/>
         <result property="orderedAt" column="ordered_at"/>
         <result property="placeName" column="place_name"/>
+        <collection property="menuIdList" ofType="java.lang.Long">
+            <result column="menu_id"/>
+        </collection>
     </resultMap>
 
 
