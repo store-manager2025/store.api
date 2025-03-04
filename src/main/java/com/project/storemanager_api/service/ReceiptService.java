@@ -42,6 +42,8 @@ public class ReceiptService {
         return receiptResponseDto.fillRestValue(receiptResponseDto, dto.getPayList());
     }
 
+    // 영수증 조회 로직 생성하자
+
 
     private Receipt makeReceipt(CreatePayRequestDto dto) {
         Long paymentId = dto.getPaymentId();
