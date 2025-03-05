@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: store-manager.api  # 리포지토리 루트로 체크아웃
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -25,11 +27,11 @@ jobs:
 
 
       ## springboot 도커 이미지 빌드 후 도커허브에 push하기
-      - name: web springboot docker build and push
+      - name: Build and Push Docker Image
+        working-directory: store-manager.api  # 작업 디렉토리를 리포지토리 루트로 설정
         run: |
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker build --no-cache -t hankibeom/store-manager-api:latest .
-          docker push hankibeom/store-manager-api:latest
+            echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            docker buildx build --platform linux/amd64,linux/arm64 -t hankibeom/store-manager-api:latest . --push
 
       # 도커 허브에서 jar파일 및 pull
       - name: Deploy to Dev
