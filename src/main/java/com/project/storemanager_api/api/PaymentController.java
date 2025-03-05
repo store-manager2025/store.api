@@ -4,7 +4,6 @@ import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
-import com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +28,13 @@ public class PaymentController {
 
     @PostMapping
     @Transactional(rollbackFor = Exception.class) // Exception이 발생하면 롤백
-    public ResponseEntity<ReceiptResponseDto> createPayment(@RequestBody CreatePayRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> createPayment(@RequestBody CreatePayRequestDto dto) {
         log.info("Create payment request: {}", dto);
-        ReceiptResponseDto receiptResponseDto = paymentService.requestPayment(dto);
+        paymentService.requestPayment(dto);
         // 결제 성공시, 영수증 반환
-        return ResponseEntity.ok().body(receiptResponseDto);
+        return ResponseEntity.ok().body(Map.of(
+                MESSAGE, "결제가 완료되었습니다."
+        ));
     }
 
     @GetMapping("/all/{storeId}")

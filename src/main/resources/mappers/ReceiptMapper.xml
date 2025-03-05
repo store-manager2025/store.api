@@ -12,7 +12,7 @@
             #{receiptDate}, #{approveNumber}, #{joinNumber})
     </insert>
 
-    <select id="findByOrderId" resultType="com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto">
+    <select id="findByPaymentId" resultType="com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto">
         SELECT
         DISTINCT
             S.store_name,
@@ -30,8 +30,21 @@
         INNER JOIN stores S ON R.store_id = S.store_id
         INNER JOIN orders O ON R.order_id = O.order_id
         INNER JOIN users U ON S.user_id = U.user_id
+        INNER JOIN payments P ON O.order_id = P.order_id
         INNER JOIN places PLACE ON R.place_id = PLACE.place_id
-        WHERE O.order_id = #{orderId};
+        WHERE P.payment_id = #{paymentId}
+    </select>
+
+    <select id="getCardInfosByPaymentId" resultType="com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto">
+        SELECT
+        C.paid_money,
+        P.payment_type,
+        CASE WHEN P.payment_type = 'CASH' THEN NULL ELSE C.card_company END AS card_company,
+        CASE WHEN P.payment_type = 'CASH' THEN NULL ELSE C.card_number END AS card_number,
+        CASE WHEN P.payment_type = 'CASH' THEN NULL ELSE C.expiry_date END AS expiry_date
+        FROM payment_detail P
+        LEFT JOIN cards C ON P.payment_id = C.payment_id
+        WHERE P.payment_id = #{paymentId}
     </select>
 
 </mapper>
