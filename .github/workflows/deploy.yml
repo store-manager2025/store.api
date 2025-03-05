@@ -32,6 +32,11 @@ jobs:
           mkdir -p src/main/resources  # 디렉토리가 없으면 생성
           echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
 
+      - name: Create Dockerfile
+        working-directory: store-manager.api
+        run: |
+          echo "${{ secrets.DOCKERFILE_CONTENT }}" > Dockerfile
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
