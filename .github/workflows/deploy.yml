@@ -16,7 +16,8 @@ jobs:
           path: store-manager.api  # 리포지토리 루트로 체크아웃
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        working-directory: store-manager.api
+        run: chmod +x gradlew || echo "gradlew not found, skipping permission change"
 
       - name: Make directory for deliver
         run: mkdir deploy
