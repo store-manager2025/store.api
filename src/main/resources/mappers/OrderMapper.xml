@@ -50,10 +50,12 @@
             O.order_status,
             O.ordered_at,
             P.place_name,
-            P.place_id
+            P.place_id,
+            M.menu_id
         FROM orders O
         JOIN order_menus OM ON O.order_id = OM.order_id
         JOIN places P ON O.place_id = P.place_id
+        JOIN menus M ON OM.menu_id = M.menu_id
         WHERE O.order_id = #{orderId}
     </select>
 

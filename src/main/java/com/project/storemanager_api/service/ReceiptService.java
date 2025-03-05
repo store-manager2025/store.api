@@ -1,6 +1,7 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
+import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
 import com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto;
 import com.project.storemanager_api.domain.pay.entity.Receipt;
 import com.project.storemanager_api.exception.ErrorCode;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -27,19 +29,29 @@ public class ReceiptService {
     private final ReceiptRepository receiptRepository;
     private final MenuRepository menuRepository;
 
-    // 영수증 리스폰 과정.
-    // 1. 일단 영수증을 DB에 저장
-    // 2. 여러 테이블과 join해서 가져온다
-    public ReceiptResponseDto saveAndResponseReceipt(CreatePayRequestDto dto) {
+    // 영수증을 DB에 저장
+    public void saveAndResponseReceipt(CreatePayRequestDto dto) {
         Receipt receipt = makeReceipt(dto);
         receiptRepository.saveReceipt(receipt); // 1끝
+    }
 
-        ReceiptResponseDto receiptResponseDto = receiptRepository.findByOrderId(dto.getOrderId()).orElseThrow(
-                () -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾지 못하였습니다.")
-        );
-        receiptResponseDto.setMenuList(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
-        // 나머지 임의의 값들을 채워서 리턴
-        return receiptResponseDto.fillRestValue(receiptResponseDto, dto.getPayList());
+    // 영수증 발급하는 로직
+    public ReceiptResponseDto printReceipt(Long paymentId) {
+        ReceiptResponseDto receiptResponseDto = receiptRepository.findByPaymentId(paymentId)
+                .orElseThrow(() -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾지 못하였습니다."));
+
+
+        receiptResponseDto.setMenuList(menuRepository.findMenuInOrderDtoById(receiptResponseDto.getOrderId()));
+
+        log.info("receiptResponseDto : {}", receiptResponseDto);
+
+        List<CreatePaymentDetailDto> payList = receiptRepository.getCardInfosByPaymentId(paymentId);
+
+        log.info("payList size: {}", payList == null ? "null" : payList.size());
+
+        receiptResponseDto.fillRestValue(payList);
+
+        return receiptResponseDto;
     }
 
     // 영수증 조회 로직 생성하자

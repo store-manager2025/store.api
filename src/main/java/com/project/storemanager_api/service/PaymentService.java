@@ -4,7 +4,6 @@ import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
-import com.project.storemanager_api.domain.pay.dto.response.ReceiptResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PaymentException;
@@ -54,7 +53,7 @@ public class PaymentService {
      * 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
      * 4. 영수증 발행 -> receipts 생성
      */
-    public ReceiptResponseDto requestPayment(CreatePayRequestDto dto) {
+    public void requestPayment(CreatePayRequestDto dto) {
 
         // 모든 입력값 검증
         payValidator.validateValues(dto);
@@ -83,11 +82,7 @@ public class PaymentService {
         paymentRepository.changeStatus(Status.SUCCESS, dto.getPaymentId());
 
         // 4. 영수증 발행 -> receipts 생성
-        try {
-            return receiptService.saveAndResponseReceipt(dto);
-        } catch (Exception e) {
-            throw new PaymentException(ErrorCode.ALREADY_PAYMENT, ErrorCode.ALREADY_PAYMENT.getMessage());
-        }
+        receiptService.saveAndResponseReceipt(dto);
     }
 
 

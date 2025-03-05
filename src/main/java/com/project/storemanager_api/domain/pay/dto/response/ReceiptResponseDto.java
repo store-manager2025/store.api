@@ -45,41 +45,42 @@ public class ReceiptResponseDto {
 
 
 
-    public ReceiptResponseDto fillRestValue(ReceiptResponseDto dto,
-                                            List<CreatePaymentDetailDto> payList) {
-        dto.setBusinessNum(makeRandomValue(9));
-        // 리스트에 값 채워서 보내야함!
+    public void fillRestValue(List<CreatePaymentDetailDto> payList) {
+        this.setBusinessNum(makeRandomValue(9));
+
         List<CardInfoAboutPayDto> infoList = new ArrayList<>();
-        for (CreatePaymentDetailDto info : payList) {
-            if (info.getPaymentType().equals(CASH)) {
-                CardInfoAboutPayDto build = CardInfoAboutPayDto.builder()
-                        .paymentType(CASH)
-                        .cardCompany("")
-                        .cardNumber("")
-                        .inputMethod("")
-                        .approveDate("")
-                        .approveNumber("")
-                        .paidMoney(info.getPaidMoney())
-                        .installmentPeriod("")
-                        .build();
-                infoList.add(build);
-            } else {
-                CardInfoAboutPayDto build = CardInfoAboutPayDto.builder()
-                        .paymentType(CARD)
-                        .cardCompany(info.getCardCompany())
-                        .cardNumber(info.getCardNumber())
-                        .inputMethod("SWIPE")
-                        .approveDate(makeRandomValue(12))
-                        .approveNumber(makeRandomValue(8))
-                        .paidMoney(info.getPaidMoney())
-                        .installmentPeriod("일시불")
-                        .build();
-                infoList.add(build);
+
+        if (payList != null) {
+            for (CreatePaymentDetailDto info : payList) {
+                log.info("Processing payment info: {}", info);
+                if (info.getPaymentType().equals(CASH)) {
+                    infoList.add(CardInfoAboutPayDto.builder()
+                            .paymentType(CASH)
+                            .cardCompany("")
+                            .cardNumber("")
+                            .inputMethod("")
+                            .approveDate("")
+                            .approveNumber("")
+                            .paidMoney(info.getPaidMoney())
+                            .installmentPeriod("")
+                            .build());
+                } else {
+                    infoList.add(CardInfoAboutPayDto.builder()
+                            .paymentType(CARD)
+                            .cardCompany(info.getCardCompany())
+                            .cardNumber(info.getCardNumber())
+                            .inputMethod("SWIPE")
+                            .approveDate(makeRandomValue(12))
+                            .approveNumber(makeRandomValue(8))
+                            .paidMoney(info.getPaidMoney())
+                            .installmentPeriod("일시불")
+                            .build());
+                }
             }
         }
-        dto.setCardInfoList(infoList);
 
-        return dto;
+        log.info("Generated Card Info List: {}", infoList);
+        this.setCardInfoList(infoList);
     }
 
 
