@@ -108,110 +108,14 @@ public class OrderService {
 
     }
 
-//    // 메뉴들에 대한 환불요청 (부분 환불도 가능하도록 설계해야 함)
-//    public boolean refundAndPartialCancelOrder(Long orderId, List<RefundOrderDto> refundInfo) {
-//
-//        Order foundOrder = validateOrder(orderId); // 주문 정보
-//        List<RefundOrderDto> originMenuInfos = orderMenuService.findOriginOrderMenus(orderId); // 기존 주문 정보
-//        boolean flag = isRefund(originMenuInfos, refundInfo); // 전체 / 부분 취소 체크
-//
-//        if (flag) {
-//            // 전체 취소 일시 시나리오
-//            orderRepository.updateOrderStatus(orderId, String.valueOf(CANCELLED)); // orders테이블 주문상태 변경
-//            if (foundOrder.getOrderStatus().equals(SUCCESS)) { // 만약 선불결제했다면
-//                paymentService.cancelAndUpdateStatus(orderId, String.valueOf(CANCELLED));// payments 테이블 주문 상태 변경
-//            }
-//            // 주문에 대한 메뉴 디테일 정보도 업데이트
-//            for (RefundOrderDto info : originMenuInfos) {
-//                orderMenuService.updateOrderStatus(orderId, info.getMenuId(), String.valueOf(CANCELLED));
-//            }
-//        } else {
-//            // 1-2. 부분 취소 일시, 주문은 유효하기 때문에 위와 다르게 결제상태 변경하지 않음. 그대로 UNPAID
-//            updatePartialRefund(orderId, originMenuInfos, refundInfo);
-//        }
-//        return flag;
-//    }
-//
-//    /**
-//     * 환불 요청이 들어왔을 때, 전체 주문 취소인지 확인하는 메서드
-//     *
-//     * @param originMenuInfos   기존 주문 메뉴 원본 데이터
-//     * @param requestRefundInfo 환불 요청이 들어온 데이터
-//     * @return 전체 취소면 true, 아니면 false
-//     */
-//    private boolean isRefund(List<RefundOrderDto> originMenuInfos, List<RefundOrderDto> requestRefundInfo) {
-//        // 기존 주문 정보를 Map<menuId, quantity>로 변환
-//        Map<Long, Integer> originOrderMap = originMenuInfos.stream()
-//                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
-//        log.info("originOrderMap: {}", originOrderMap);
-//
-//        // 요청된 환불 정보를 Map<menuId, quantity>로 변환
-//        Map<Long, Integer> refundRequestMap = requestRefundInfo.stream()
-//                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
-//        log.info("refundRequestMap: {}", refundRequestMap);
-//
-//        // 두 개의 Map을 비교하여 모든 menuId와 quantity가 일치하는지 확인
-//        return originOrderMap.equals(refundRequestMap);
-//    }
-//
-//    /**
-//     * 부분 환불 처리 - 기존 수량과 요청된 환불 수량 비교 후 처리
-//     */
-//    private void updatePartialRefund(Long orderId, List<RefundOrderDto> originMenuInfos, List<RefundOrderDto> refundInfo) {
-//        // 기존 주문 정보를 Map<menuId, quantity>로 변환
-//        Map<Long, Integer> originOrderMap = originMenuInfos.stream()
-//                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
-//
-//        // 요청된 환불 정보를 Map<menuId, quantity>로 변환
-//        Map<Long, Integer> refundRequestMap = refundInfo.stream()
-//                .collect(Collectors.toMap(RefundOrderDto::getMenuId, RefundOrderDto::getQuantity));
-//
-//        Integer totalRefundMoney = 0; // 전체 차감 금액
-//        Integer price = orderRepository.findById(orderId).orElseThrow(
-//                () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
-//        ).getPrice(); // 원금
-//
-//        for (Map.Entry<Long, Integer> entry : refundRequestMap.entrySet()) {
-//            Long menuId = entry.getKey();
-//            Integer refundQuantity = entry.getValue();
-//            Integer originQuantity = originOrderMap.get(menuId);
-//
-//            if (originQuantity == null) {
-//                throw new MenuException(ErrorCode.INVALID_ID, "해당 메뉴가 존재하지 않습니다: " + menuId);
-//            }
-//
-//            if (refundQuantity.equals(originQuantity)) {
-//                // 기존 주문 수량과 환불 수량이 동일하면, 주문 상태를 CANCELLED로 변경
-//                orderMenuService.updateOrderStatus(orderId, menuId, String.valueOf(CANCELLED));
-//            } else if (refundQuantity < originQuantity) {
-//                // 기존 주문 수량보다 환불 수량이 적다면, 수량만 감소
-//                // 여기서 order_menu.order_price 업데이트
-//                int updatedQuantity = originQuantity - refundQuantity; // 업데이트된 수량
-//                // 현재 메뉴 1개 가격 * 업데이트된 수량 = 지불해야할 금액
-//                Integer updatePrice = menuRepository.findPriceById(menuId) * updatedQuantity;
-//                log.info("updatedPrice - {}", updatePrice);
-//                totalRefundMoney += updatePrice;
-//                orderMenuService.updateMenuQuantity(orderId, menuId, updatedQuantity, updatePrice);
-//            } else {
-//                throw new OrderException(ErrorCode.CANT_OVER_QUANTITY, "환불 요청 수량이 주문 수량을 초과할 수 없습니다.");
-//            }
-//        }
-//        log.info("totalRefundMoney - {}", totalRefundMoney);
-//            // 여기서 order.price업데이트
-//        orderRepository.updatePrice(orderId, price - totalRefundMoney);
-//
-//    }
-
     // 주문 단일 상세조회
     public OrderDetailResponseDto getOrderInfoByPlaceId(Long placeId) {
 
         OrderDetailResponseDto result = orderRepository.findDetailByPlaceId(placeId).orElseThrow(
                 () -> new OrderException(ErrorCode.ORDER_NOT_FOUND, ErrorCode.ORDER_NOT_FOUND.getMessage())
         );
-        log.info("result aa : {}", result);
 
         result.setMenuDetail(menuRepository.findMenuInOrderDtoById(result.getOrderId()));
-        log.info("result  bb : {}", result);
 
         return result;
 

@@ -30,16 +30,18 @@ public class ReceiptService {
     // 영수증 리스폰 과정.
     // 1. 일단 영수증을 DB에 저장
     // 2. 여러 테이블과 join해서 가져온다
-    public ReceiptResponseDto saveAndResponseReceipt(CreatePayRequestDto dto) {
+    public void saveAndResponseReceipt(CreatePayRequestDto dto) {
         Receipt receipt = makeReceipt(dto);
         receiptRepository.saveReceipt(receipt); // 1끝
 
+
+        // 영수증 발급하는 로직
         ReceiptResponseDto receiptResponseDto = receiptRepository.findByOrderId(dto.getOrderId()).orElseThrow(
                 () -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾지 못하였습니다.")
         );
         receiptResponseDto.setMenuList(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
         // 나머지 임의의 값들을 채워서 리턴
-        return receiptResponseDto.fillRestValue(receiptResponseDto, dto.getPayList());
+        receiptResponseDto.fillRestValue(receiptResponseDto, dto.getPayList());
     }
 
     // 영수증 조회 로직 생성하자
