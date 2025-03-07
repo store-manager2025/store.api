@@ -25,6 +25,8 @@
         <result property="orderStatus" column="order_status"/>
         <result property="orderedAt" column="ordered_at"/>
         <result property="placeName" column="place_name"/>
+        <result property="paymentId" column="payment_id"/>
+        <result property="paymentType" column="paymentType"/>
         <collection property="menuIdList" ofType="java.lang.Long">
             <result column="menu_id"/>
         </collection>
@@ -61,14 +63,23 @@
             O.ordered_at,
             P.place_name,
             P.place_id,
-            M.menu_id
+            M.menu_id,
+            PAY.payment_id,
+            CASE
+                WHEN COUNT(DISTINCT PD.payment_type) = 2 THEN 'MIX'
+                WHEN MAX(PD.payment_type) = 'CARD' THEN 'CARD'
+                ELSE 'CASH'
+                END AS paymentType
         FROM orders O
-        JOIN order_menus OM ON O.order_id = OM.order_id
-        JOIN places P ON O.place_id = P.place_id
-        JOIN menus M ON OM.menu_id = M.menu_id
+            INNER JOIN order_menus OM ON O.order_id = OM.order_id
+            INNER JOIN places P ON O.place_id = P.place_id
+            INNER JOIN payments PAY ON PAY.order_id = O.order_id
+            INNER JOIN payment_detail PD ON PD.payment_id = PAY.payment_id
+            INNER JOIN menus M ON OM.menu_id = M.menu_id
         WHERE O.store_id = #{storeId}
-        AND O.order_status IN ('SUCCESS', #{status})
-        AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
+            AND O.order_status IN ('SUCCESS', #{status})
+            AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
+        GROUP BY O.order_id
     </select>
 
     <select id="findAverageValueById" resultType="com.project.storemanager_api.domain.report.dto.response.AverageValueDto">

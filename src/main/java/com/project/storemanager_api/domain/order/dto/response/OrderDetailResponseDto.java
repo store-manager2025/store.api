@@ -22,6 +22,8 @@ public class OrderDetailResponseDto {
     private Long orderId;
     private Long storeId;
     private Long placeId;
+    private Long paymentId;
+    private String paymentType;
     private Integer price;
     private OrderStatus orderStatus;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

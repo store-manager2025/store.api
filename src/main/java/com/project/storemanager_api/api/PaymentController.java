@@ -37,6 +37,26 @@ public class PaymentController {
         ));
     }
 
+//    // 카드 결제 1건에 대한 요청
+//    @PostMapping("/card")
+//    public ResponseEntity<Map<String, Object>> requestPaymentToCard() {
+//        log.info("Create payment card request: {}",);
+//        return ResponseEntity.ok().body(Map.of(
+//                MESSAGE, "카드 결제가 완료되었습니다."
+//        ));
+//    }
+//
+//    // 현금 결제 1건에 대한 요청
+//    @PostMapping("/cash")
+//    public ResponseEntity<Map<String, Object>> requestPaymentToCash() {
+//        log.info("Create payment cash request: {}",);
+//        return ResponseEntity.ok().body(Map.of(
+//                MESSAGE, "현금 결제가 완료되었습니다."
+//        ));
+//    }
+
+
+
     @GetMapping("/all/{storeId}")
     @StoreAuthCheck
     public ResponseEntity<List<PaymentResponseDto>> getAllPayments(@AuthenticationPrincipal CustomUserPrincipal userData,
