@@ -84,5 +84,11 @@
         WHERE order_id = #{orderId}
     </update>
 
+    <select id="findTotalAmount" resultType="java.lang.Integer">
+        SELECT
+            price
+        FROM orders
+        WHERE order_id = #{orderId}
+    </select>
 
 </mapper>

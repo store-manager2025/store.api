@@ -1,16 +1,12 @@
 package com.project.storemanager_api.service;
 
-import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
+import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.entity.Card;
 import com.project.storemanager_api.repository.CardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static com.project.storemanager_api.domain.pay.entity.PaymentType.CARD;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -24,15 +20,9 @@ public class CardService {
     /**
      * 결제요청이 들어왔을때, 카드정보를 저장하는 로직
      * @param payId 결제id
-     * @param payList 요청에 있는 카드정보 리스트
+     * @param dto 요청에 있는 카드정보 리스트
      */
-    public void saveCard(Long payId, List<CreatePaymentDetailDto> payList) {
-
-        for (CreatePaymentDetailDto dto : payList) {
-            // card 결제가 아니면 패스
-            if (!dto.getPaymentType().equals(CARD)) {
-                continue;
-            }
+    public void saveCard(Long payId, CreatePayRequestDto dto) {
 
             Card newCard = Card.builder()
                     .paymentId(payId)
@@ -45,4 +35,4 @@ public class CardService {
         }
 
     }
-}
+

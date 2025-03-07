@@ -19,6 +19,7 @@ import java.util.*;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.CANCELLED;
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.CARD;
 import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @Service
@@ -64,21 +65,39 @@ public class PaymentService {
         // 저장 후 생성된 id 받아와서 결제디테일 테이블에 저장
         Long generatedPaymentId = dto.getPaymentId();
 
+        // 총액이 다 채워졌는지 검증에 필요한 데이터
+        Integer totalAmount = orderRepository.findTotalAmount(dto.getOrderId());
+        log.info("Total amount: {}", totalAmount);
+        // 현재까지의 누적 금액
+        Integer currentAmount = paymentRepository.findCurrentMoney(dto.getOrderId());
+        log.info("Current amount: {}", currentAmount);
+
         // 주문 상세정보 저장
-        orderMenuService.updateOrderStatusWithoutMenu(dto.getOrderId(), String.valueOf(SUCCESS));
+        if (isEnoughAmount(totalAmount, currentAmount)) {
+            orderMenuService.updateOrderStatusWithoutMenu(dto.getOrderId(), String.valueOf(SUCCESS));
+        }
 
         // 결제에 사용된 카드정보 저장
-        cardService.saveCard(generatedPaymentId, dto.getPayList());
+        if (dto.getPaymentType().equals(CARD)) {
+            cardService.saveCard(generatedPaymentId, dto);
+        }
 
         // order쪽에서의 orderStatus도 SUCCESS로 변경
-        orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
+        if (isEnoughAmount(totalAmount, currentAmount)) {
+            orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
+        }
 
         // 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
-        payTransactionService.saveTransaction(dto.getPaymentId(), dto.getTotalAmount());
+//        payTransactionService.saveTransaction(dto.getPaymentId(), dto.getTotalAmount());
         paymentRepository.changeStatus(Status.SUCCESS, dto.getPaymentId());
 
         // 4. 영수증 발행 -> receipts 생성
         receiptService.saveAndResponseReceipt(dto);
+    }
+
+    // 총액이 다 채워졌는지 검증하는 로직
+    private boolean isEnoughAmount(Integer totalAmount, Integer currentAmount) {
+        return totalAmount <= currentAmount;
     }
 
 

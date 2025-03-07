@@ -120,4 +120,12 @@
         WHERE payment_id = #{paymentId}
     </select>
 
+    <select id="findCurrentMoney" resultType="java.lang.Integer">
+        SELECT
+            SUM(payment_amount)
+        FROM payments
+        WHERE order_id = #{orderId}
+    </select>
+
+
 </mapper>

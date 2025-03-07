@@ -36,4 +36,5 @@ public interface PaymentRepository {
     // 환불 요청이 들어왔을 때, id에 해당하는 정보를 가져올 메서드
     Optional<RefundInfoDto> findRefundOriginDataByPaymentId(Long paymentId);
 
+    Integer findCurrentMoney(Long orderId);
 }
