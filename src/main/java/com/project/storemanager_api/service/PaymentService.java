@@ -1,10 +1,10 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
-import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto;
+import com.project.storemanager_api.domain.pay.entity.Status;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PaymentException;
 import com.project.storemanager_api.repository.OrderRepository;
@@ -19,7 +19,6 @@ import java.util.*;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.CANCELLED;
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
-import static com.project.storemanager_api.domain.pay.entity.Payment.Status;
 import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @Service
@@ -53,24 +52,21 @@ public class PaymentService {
      * 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
      * 4. 영수증 발행 -> receipts 생성
      */
-    public void requestPayment(CreatePayRequestDto dto) {
+    public void processPayment(CreatePayRequestDto dto) {
 
         // 모든 입력값 검증
         payValidator.validateValues(dto);
 
         // 1. 결제 진행 -> payments 생성 (상태: pending)
+        dto.setStatus(Status.PENDING);
         paymentRepository.savePayment(dto);
 
         // 저장 후 생성된 id 받아와서 결제디테일 테이블에 저장
         Long generatedPaymentId = dto.getPaymentId();
 
         // 주문 상세정보 저장
-        for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
-            // payDetail.getExpiryDate() 날짜 확인
-            paymentDetailService.savePayInfo(payDetail, generatedPaymentId);
+        orderMenuService.updateOrderStatusWithoutMenu(dto.getOrderId(), String.valueOf(SUCCESS));
 
-            orderMenuService.updateOrderStatusWithoutMenu(dto.getOrderId(), String.valueOf(SUCCESS));
-        }
         // 결제에 사용된 카드정보 저장
         cardService.saveCard(generatedPaymentId, dto.getPayList());
 

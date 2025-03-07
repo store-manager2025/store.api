@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CARD;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.CARD;
 
 @RequiredArgsConstructor
 @Slf4j

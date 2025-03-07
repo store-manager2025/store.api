@@ -1,6 +1,6 @@
 package com.project.storemanager_api.service;
 
-import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
+import com.project.storemanager_api.domain.pay.entity.PaymentType;
 import com.project.storemanager_api.repository.PaymentDetailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class PaymentDetailService {
 
 
     // 결제 세부 정보 저장
-    public void savePayInfo(CreatePaymentDetailDto detailDto, Long paymentId) {
-        paymentDetailRepository.savePayInfo(detailDto.getPaidMoney(), detailDto.getPaymentType(), paymentId);
+    public void savePayInfo(Integer paidMoney, PaymentType paymentType, Long paymentId) {
+        paymentDetailRepository.savePayInfo(paidMoney, paymentType, paymentId);
     }
 }

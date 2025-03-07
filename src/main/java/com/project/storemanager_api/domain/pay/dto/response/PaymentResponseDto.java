@@ -1,11 +1,10 @@
 package com.project.storemanager_api.domain.pay.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.storemanager_api.domain.pay.entity.PaymentType;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
-import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType;
 
 @Getter
 @ToString

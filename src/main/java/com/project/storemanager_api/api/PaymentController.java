@@ -30,31 +30,12 @@ public class PaymentController {
     @Transactional(rollbackFor = Exception.class) // Exception이 발생하면 롤백
     public ResponseEntity<Map<String, Object>> createPayment(@RequestBody CreatePayRequestDto dto) {
         log.info("Create payment request: {}", dto);
-        paymentService.requestPayment(dto);
+        paymentService.processPayment(dto);
         // 결제 성공시, 영수증 반환
         return ResponseEntity.ok().body(Map.of(
                 MESSAGE, "결제가 완료되었습니다."
         ));
     }
-
-//    // 카드 결제 1건에 대한 요청
-//    @PostMapping("/card")
-//    public ResponseEntity<Map<String, Object>> requestPaymentToCard() {
-//        log.info("Create payment card request: {}",);
-//        return ResponseEntity.ok().body(Map.of(
-//                MESSAGE, "카드 결제가 완료되었습니다."
-//        ));
-//    }
-//
-//    // 현금 결제 1건에 대한 요청
-//    @PostMapping("/cash")
-//    public ResponseEntity<Map<String, Object>> requestPaymentToCash() {
-//        log.info("Create payment cash request: {}",);
-//        return ResponseEntity.ok().body(Map.of(
-//                MESSAGE, "현금 결제가 완료되었습니다."
-//        ));
-//    }
-
 
 
     @GetMapping("/all/{storeId}")

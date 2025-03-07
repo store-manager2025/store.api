@@ -1,8 +1,7 @@
 package com.project.storemanager_api.domain.pay.dto.response;
 
+import com.project.storemanager_api.domain.pay.entity.Status;
 import lombok.*;
-
-import static com.project.storemanager_api.domain.pay.entity.Payment.Status;
 
 @Getter
 @ToString

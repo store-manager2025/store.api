@@ -26,9 +26,9 @@
             useGeneratedKeys="true"
             keyProperty="paymentId">
         INSERT INTO payments
-            (store_id, order_id, place_id, payment_amount, discount_amount)
+            (store_id, order_id, place_id, payment_amount, discount_amount, payment_type, status)
         VALUES
-            (#{storeId}, #{orderId}, #{placeId}, #{totalAmount}, #{discountAmount})
+            (#{storeId}, #{orderId}, #{placeId}, #{paidMoney}, #{discountAmount}, #{paymentType}, #{status})
     </insert>
 
     <!-- storeId로 전체 결제 목록 조회 -->

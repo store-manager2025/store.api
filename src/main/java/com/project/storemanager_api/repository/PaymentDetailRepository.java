@@ -1,10 +1,11 @@
 package com.project.storemanager_api.repository;
 
+import com.project.storemanager_api.domain.pay.entity.PaymentType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType;
+;
 
 @Mapper
 @Repository

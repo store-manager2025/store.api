@@ -20,11 +20,4 @@ public class PaymentDetail {
     private LocalDateTime createdAt;
 
 
-    public enum PaymentType {
-        CASH // 현금
-        , CARD // 카드
-        , DIVIDE // 분할결제
-        , MIX // 현금 + 카드
-    }
-
 }
