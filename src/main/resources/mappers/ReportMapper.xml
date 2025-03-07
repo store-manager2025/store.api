@@ -119,13 +119,12 @@
 
     <select id="findCardAndCash" resultType="com.project.storemanager_api.domain.report.dto.response.SalesByPaymentType">
         SELECT
-            PD.payment_type AS type,
-            SUM(PD.paid_money) AS amount
+            P.payment_type AS type,
+            SUM(P.payment_amount) AS amount
         FROM stores S
         INNER JOIN payments P ON S.store_id = P.store_id
-        INNER JOIN payment_detail PD ON P.payment_id = PD.payment_id
         WHERE S.store_id = #{storeId}
-        GROUP BY PD.payment_type
+        GROUP BY P.payment_type
     </select>
 
 
