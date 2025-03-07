@@ -59,7 +59,7 @@ public class PaymentController {
         log.info("Cancel payment request: {}", paymentId);
         Integer refundAmount = paymentService.cancelAndUpdateStatus(paymentId);
         return ResponseEntity.ok().body(Map.of(
-                MESSAGE, "" + refundAmount + "원이 환불 되었습니다."
+                MESSAGE,   refundAmount + "원이 환불 되었습니다."
         ));
     }
 

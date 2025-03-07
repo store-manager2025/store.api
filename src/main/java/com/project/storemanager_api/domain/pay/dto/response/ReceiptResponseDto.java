@@ -61,7 +61,7 @@ public class ReceiptResponseDto {
                             .inputMethod("")
                             .approveDate("")
                             .approveNumber("")
-                            .paidMoney(info.getPaidMoney())
+                            .paidMoney(info.getPaymentAmount())
                             .installmentPeriod("")
                             .build());
                 } else {
@@ -72,7 +72,7 @@ public class ReceiptResponseDto {
                             .inputMethod("SWIPE")
                             .approveDate(makeRandomValue(12))
                             .approveNumber(makeRandomValue(8))
-                            .paidMoney(info.getPaidMoney())
+                            .paidMoney(info.getPaymentAmount())
                             .installmentPeriod("일시불")
                             .build());
                 }

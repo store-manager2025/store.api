@@ -88,11 +88,14 @@ public class PaymentService {
         }
 
         // 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
-//        payTransactionService.saveTransaction(dto.getPaymentId(), dto.getTotalAmount());
         paymentRepository.changeStatus(Status.SUCCESS, dto.getPaymentId());
 
-        // 4. 영수증 발행 -> receipts 생성
-        receiptService.saveAndResponseReceipt(dto);
+        // 4. 해당 주문의 첫 결제 시에만 영수증 생성
+        boolean isFirst = receiptService.findExistByOrderId(dto.getOrderId());
+
+        if (isFirst) {
+            receiptService.saveAndResponseReceipt(dto);
+        }
     }
 
     // 총액이 다 채워졌는지 검증하는 로직

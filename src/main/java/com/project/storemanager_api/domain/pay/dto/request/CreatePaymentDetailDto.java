@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class CreatePaymentDetailDto {
 
-    private Integer paidMoney;
+    private Integer paymentAmount;
     private PaymentType paymentType;
     private String cardCompany;
     private String cardNumber;

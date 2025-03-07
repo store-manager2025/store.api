@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -36,16 +37,18 @@ public class ReceiptService {
     }
 
     // 영수증 발급하는 로직
-    public ReceiptResponseDto printReceipt(Long paymentId) {
-        ReceiptResponseDto receiptResponseDto = receiptRepository.findByPaymentId(paymentId)
-                .orElseThrow(() -> new PaymentException(ErrorCode.INVALID_ID, "결제 정보를 찾지 못하였습니다."));
+    public ReceiptResponseDto printReceipt(Long orderId) {
+        ReceiptResponseDto receiptResponseDto = receiptRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new PaymentException(ErrorCode.INVALID_ID, "주문 정보를 찾지 못하였습니다."));
+
+        log.info("1. receiptResponseDto {}", receiptResponseDto);
 
 
         receiptResponseDto.setMenuList(menuRepository.findMenuInOrderDtoById(receiptResponseDto.getOrderId()));
 
-        log.info("receiptResponseDto : {}", receiptResponseDto);
+        log.info("2. receiptResponseDto : {}", receiptResponseDto);
 
-        List<CreatePaymentDetailDto> payList = receiptRepository.getCardInfosByPaymentId(paymentId);
+        List<CreatePaymentDetailDto> payList = receiptRepository.getCardInfosByOrderId(orderId);
 
         log.info("payList size: {}", payList == null ? "null" : payList.size());
 
@@ -90,4 +93,11 @@ public class ReceiptService {
     }
 
 
+    public boolean findExistByOrderId(Long orderId) {
+        Optional<ReceiptResponseDto> flag = receiptRepository.findByOrderId(orderId);
+        if (flag.isPresent()) {
+            return false;
+        }
+        return true;
+    }
 }
