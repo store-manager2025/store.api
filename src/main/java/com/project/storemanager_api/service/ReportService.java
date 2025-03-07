@@ -47,6 +47,7 @@ public class ReportService {
     public List<OrderDetailResponseDto> getDailyOrderList(Long storeId, LocalDate date, String status) {
         validateStoreId(storeId);
         List<OrderDetailResponseDto> result = reportRepository.findDailyListByStoreId(storeId, date, status);
+        log.info("result : {}", result);
         for (OrderDetailResponseDto dto : result) {
             dto.setMenuDetail(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
         }
