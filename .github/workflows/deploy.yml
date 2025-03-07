@@ -1,74 +1,74 @@
-name: Deploy Spring Application to AWS EC2
-
-on:
-  push:
-    branches:
-      - feature
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          path: store-manager.api  # 리포지토리 루트로 체크아웃
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
-
-      - name: Build with Gradle
-        working-directory: store-manager.api
-        run: gradle clean build
-
-      - name: Make directory for deliver
-        working-directory: store-manager.api
-        run: mkdir deploy
-
-      - name: Write the application.yml
-        working-directory: store-manager.api
-        run: |
-          mkdir -p src/main/resources  # 디렉토리가 없으면 생성
-          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
-
-      - name: Create Dockerfile
-        working-directory: store-manager.api
-        run: |
-          echo "${{ secrets.DOCKERFILE_CONTENT }}" > Dockerfile
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container  # 멀티플랫폼 빌드를 위한 드라이버 설정
-
-      - name: Build and Push Docker Image
-        working-directory: store-manager.api
-        run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker buildx build --platform linux/amd64,linux/arm64 -t hankibeom/store-manager-api:latest . --push
-
-      - name: Deploy to Dev
-        uses: appleboy/ssh-action@master
-        with:
-          username: ec2-user
-          host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo "Docker login..."
-            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-            
-            echo "Write the docker-compose.yml"
-            echo "${{ secrets.DOCKER_COMPOSE_YML }}" > ./docker-compose.yml
-            
-            echo "Stopping existing container..."
-            docker-compose down || true
-            
-            echo "Remove Existing Docker image..."
-            docker rmi hankibeom/store-manager-api:latest || true
-            
-            echo "Pulling Docker image..."
-            docker pull hankibeom/store-manager-api:latest
-            
-            echo "Starting new container..."
-            docker-compose up -d
+#name: Deploy Spring Application to AWS EC2
+#
+#on:
+#  push:
+#    branches:
+#      - feature
+#
+#jobs:
+#  build-and-deploy:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          path: store-manager.api  # 리포지토리 루트로 체크아웃
+#
+#      - name: Setup Gradle
+#        uses: gradle/gradle-build-action@v3
+#
+#      - name: Build with Gradle
+#        working-directory: store-manager.api
+#        run: gradle clean build
+#
+#      - name: Make directory for deliver
+#        working-directory: store-manager.api
+#        run: mkdir deploy
+#
+#      - name: Write the application.yml
+#        working-directory: store-manager.api
+#        run: |
+#          mkdir -p src/main/resources  # 디렉토리가 없으면 생성
+#          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+#
+#      - name: Create Dockerfile
+#        working-directory: store-manager.api
+#        run: |
+#          echo "${{ secrets.DOCKERFILE_CONTENT }}" > Dockerfile
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#        with:
+#          driver: docker-container  # 멀티플랫폼 빌드를 위한 드라이버 설정
+#
+#      - name: Build and Push Docker Image
+#        working-directory: store-manager.api
+#        run: |
+#          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+#          docker buildx build --platform linux/amd64,linux/arm64 -t hankibeom/store-manager-api:latest . --push
+#
+#      - name: Deploy to Dev
+#        uses: appleboy/ssh-action@master
+#        with:
+#          username: ec2-user
+#          host: ${{ secrets.EC2_HOST }}
+#          key: ${{ secrets.EC2_SSH_KEY }}
+#          script: |
+#            echo "Docker login..."
+#            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+#
+#            echo "Write the docker-compose.yml"
+#            echo "${{ secrets.DOCKER_COMPOSE_YML }}" > ./docker-compose.yml
+#
+#            echo "Stopping existing container..."
+#            docker-compose down || true
+#
+#            echo "Remove Existing Docker image..."
+#            docker rmi hankibeom/store-manager-api:latest || true
+#
+#            echo "Pulling Docker image..."
+#            docker pull hankibeom/store-manager-api:latest
+#
+#            echo "Starting new container..."
+#            docker-compose up -d
