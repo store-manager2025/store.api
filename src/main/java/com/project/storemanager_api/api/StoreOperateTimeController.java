@@ -36,6 +36,7 @@ public class StoreOperateTimeController {
     @StoreAuthCheck
     public ResponseEntity<Map<String, Object>> closeStore(@AuthenticationPrincipal CustomUserPrincipal info,
                                                           @PathVariable Long storeId) {
+
         log.info("close store : {}, {}", storeId, LocalDateTime.now());
         Map<String, Object> result = timeService.closeStore(storeId);
         return ResponseEntity.ok().body(result);

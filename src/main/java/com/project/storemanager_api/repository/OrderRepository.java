@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -32,6 +33,9 @@ public interface OrderRepository {
     Optional<OrderDetailResponseDto> findDetailByPlaceId(Long placeId);
 
     Integer findTotalAmount(Long orderId);
+
+    List<Long> getUnpaidOrders(@Param("storeId") Long storeId,
+                                 @Param("currentTime") String currentTime);
 }
 
 
