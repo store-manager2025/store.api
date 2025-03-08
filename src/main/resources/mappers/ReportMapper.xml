@@ -66,15 +66,14 @@
             M.menu_id,
             PAY.payment_id,
             CASE
-                WHEN COUNT(DISTINCT PD.payment_type) = 2 THEN 'MIX'
-                WHEN MAX(PD.payment_type) = 'CARD' THEN 'CARD'
+                WHEN COUNT(DISTINCT PAY.payment_type) = 2 THEN 'MIX'
+                WHEN MAX(PAY.payment_type) = 'CARD' THEN 'CARD'
                 ELSE 'CASH'
                 END AS paymentType
         FROM orders O
             INNER JOIN order_menus OM ON O.order_id = OM.order_id
             INNER JOIN places P ON O.place_id = P.place_id
             INNER JOIN payments PAY ON PAY.order_id = O.order_id
-            INNER JOIN payment_detail PD ON PD.payment_id = PAY.payment_id
             INNER JOIN menus M ON OM.menu_id = M.menu_id
         WHERE O.store_id = #{storeId}
             AND O.order_status IN ('SUCCESS', #{status})
@@ -120,13 +119,12 @@
 
     <select id="findCardAndCash" resultType="com.project.storemanager_api.domain.report.dto.response.SalesByPaymentType">
         SELECT
-            PD.payment_type AS type,
-            SUM(PD.paid_money) AS amount
+            P.payment_type AS type,
+            SUM(P.payment_amount) AS amount
         FROM stores S
         INNER JOIN payments P ON S.store_id = P.store_id
-        INNER JOIN payment_detail PD ON P.payment_id = PD.payment_id
         WHERE S.store_id = #{storeId}
-        GROUP BY PD.payment_type
+        GROUP BY P.payment_type
     </select>
 
 

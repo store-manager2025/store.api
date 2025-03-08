@@ -1,6 +1,5 @@
 package com.project.storemanager_api.domain.pay.dto.request;
 
-import com.project.storemanager_api.domain.pay.entity.PaymentType;
 import lombok.*;
 
 @Getter
@@ -9,10 +8,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreatePaymentDetailDto {
+public class CardPayRequestDto {
 
-    private Integer paymentAmount;
-    private PaymentType paymentType;
+    private Long orderId;
+    private Long placeId;
+    private Integer paidMoney;
+    private String paymentType;
     private String cardCompany;
     private String cardNumber;
     private String expiryDate;

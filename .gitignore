@@ -10,6 +10,7 @@ application-dev.yml
 ddl.sql
 Dockerfile
 docker-compose.yml
+POS-requests.http
 
 ### STS ###
 .apt_generated

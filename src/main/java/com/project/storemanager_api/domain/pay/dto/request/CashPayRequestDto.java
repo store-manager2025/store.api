@@ -9,12 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreatePaymentDetailDto {
+public class CashPayRequestDto {
 
-    private Integer paymentAmount;
+    private Long orderId;
+    private Long placeId;
+    private Integer paidMoney;
     private PaymentType paymentType;
-    private String cardCompany;
-    private String cardNumber;
-    private String expiryDate;
 
 }

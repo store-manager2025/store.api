@@ -20,11 +20,6 @@ public class Payment {
     private Integer discountAmount; // 할인 결제인 경우
     private Status status;
     private LocalDateTime createdAt;
-
-    public enum Status {
-        PENDING,
-        SUCCESS,
-        CANCELLED,
-    }
+    private PaymentType paymentType;
 
 }

@@ -1,10 +1,10 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
-import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto;
+import com.project.storemanager_api.domain.pay.entity.Status;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.PaymentException;
 import com.project.storemanager_api.repository.OrderRepository;
@@ -19,7 +19,8 @@ import java.util.*;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.CANCELLED;
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
-import static com.project.storemanager_api.domain.pay.entity.Payment.Status;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.CARD;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.MIX;
 import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @Service
@@ -29,8 +30,6 @@ import static com.project.storemanager_api.util.Constants.MESSAGE;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository; // 페이와 1:1로 연결된 객체
-
-    private final PaymentDetailService paymentDetailService; // 페이와 1:n로 디테일 처리를 담당하는 객체
 
     private final OrderRepository orderRepository; // 주문과 연관된 데이터를 처리
 
@@ -53,36 +52,59 @@ public class PaymentService {
      * 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
      * 4. 영수증 발행 -> receipts 생성
      */
-    public void requestPayment(CreatePayRequestDto dto) {
+    public void processPayment(CreatePayRequestDto dto) {
 
         // 모든 입력값 검증
         payValidator.validateValues(dto);
 
         // 1. 결제 진행 -> payments 생성 (상태: pending)
+        dto.setStatus(Status.PENDING);
         paymentRepository.savePayment(dto);
 
         // 저장 후 생성된 id 받아와서 결제디테일 테이블에 저장
         Long generatedPaymentId = dto.getPaymentId();
 
-        // 주문 상세정보 저장
-        for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
-            // payDetail.getExpiryDate() 날짜 확인
-            paymentDetailService.savePayInfo(payDetail, generatedPaymentId);
+        // 총액이 다 채워졌는지 검증에 필요한 데이터
+        Integer totalAmount = orderRepository.findTotalAmount(dto.getOrderId());
+        log.info("Total amount: {}", totalAmount);
+        // 현재까지의 누적 금액
+        Integer currentAmount = paymentRepository.findCurrentMoney(dto.getOrderId());
+        log.info("Current amount: {}", currentAmount);
 
+        // 주문 상세정보 저장
+        if (isEnoughAmount(totalAmount, currentAmount)) {
             orderMenuService.updateOrderStatusWithoutMenu(dto.getOrderId(), String.valueOf(SUCCESS));
         }
+
         // 결제에 사용된 카드정보 저장
-        cardService.saveCard(generatedPaymentId, dto.getPayList());
+        if (dto.getPaymentType().equals(CARD)) {
+            cardService.saveCard(generatedPaymentId, dto);
+        }
 
         // order쪽에서의 orderStatus도 SUCCESS로 변경
-        orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
+        if (isEnoughAmount(totalAmount, currentAmount)) {
+            orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
+        }
 
         // 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
-        payTransactionService.saveTransaction(dto.getPaymentId(), dto.getTotalAmount());
         paymentRepository.changeStatus(Status.SUCCESS, dto.getPaymentId());
 
-        // 4. 영수증 발행 -> receipts 생성
-        receiptService.saveAndResponseReceipt(dto);
+        // 4. 해당 주문의 첫 결제 시에만 영수증 생성
+        boolean isFirst = receiptService.findExistByOrderId(dto.getOrderId());
+
+        if (isFirst) {
+            receiptService.saveAndResponseReceipt(dto);
+        }
+        // 첫번째 결제가 아니라면, 이전 결제의 paymentType 비교
+        boolean existSameType = paymentRepository.findExistSameType(dto.getOrderId(), dto.getPaymentType());
+        if (existSameType) { // 존재하지 않다면
+            paymentRepository.updatePaymentType(dto.getOrderId(), MIX);
+        }
+    }
+
+    // 총액이 다 채워졌는지 검증하는 로직
+    private boolean isEnoughAmount(Integer totalAmount, Integer currentAmount) {
+        return totalAmount <= currentAmount;
     }
 
 

@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CARD;
-import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CASH;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.CARD;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.CASH;
 import static com.project.storemanager_api.service.ReceiptService.makeRandomValue;
 
 @Getter
@@ -61,7 +61,7 @@ public class ReceiptResponseDto {
                             .inputMethod("")
                             .approveDate("")
                             .approveNumber("")
-                            .paidMoney(info.getPaidMoney())
+                            .paidMoney(info.getPaymentAmount())
                             .installmentPeriod("")
                             .build());
                 } else {
@@ -72,7 +72,7 @@ public class ReceiptResponseDto {
                             .inputMethod("SWIPE")
                             .approveDate(makeRandomValue(12))
                             .approveNumber(makeRandomValue(8))
-                            .paidMoney(info.getPaidMoney())
+                            .paidMoney(info.getPaymentAmount())
                             .installmentPeriod("일시불")
                             .build());
                 }

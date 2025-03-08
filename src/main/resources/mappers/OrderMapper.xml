@@ -84,5 +84,20 @@
         WHERE order_id = #{orderId}
     </update>
 
+    <select id="findTotalAmount" resultType="java.lang.Integer">
+        SELECT
+            price
+        FROM orders
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="getUnpaidOrders" resultType="java.lang.Long">
+        SELECT
+            order_id
+        FROM orders
+        WHERE store_id = #{storeId}
+        AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{currentTime}
+        AND order_status = 'UNPAID'
+    </select>
 
 </mapper>

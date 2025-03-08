@@ -4,7 +4,8 @@ import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto;
-import com.project.storemanager_api.domain.pay.entity.Payment;
+import com.project.storemanager_api.domain.pay.entity.PaymentType;
+import com.project.storemanager_api.domain.pay.entity.Status;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,7 @@ public interface PaymentRepository {
     Optional<PaymentDetailResponseDto> findPaymentDetail(Long paymentId);
 
     // 결제 성공시 상태값 변경
-    void changeStatus(@Param("status") Payment.Status status,
+    void changeStatus(@Param("status") Status status,
                       @Param("paymentId") Long paymentId);
 
     // paymentId 로 상태값 변경
@@ -36,4 +37,11 @@ public interface PaymentRepository {
     // 환불 요청이 들어왔을 때, id에 해당하는 정보를 가져올 메서드
     Optional<RefundInfoDto> findRefundOriginDataByPaymentId(Long paymentId);
 
+    Integer findCurrentMoney(Long orderId);
+
+    boolean findExistSameType(@Param("orderId") Long orderId,
+                              @Param("paymentType") PaymentType paymentType);
+
+    void updatePaymentType(@Param("orderId")Long orderId,
+                           @Param("paymentType")  PaymentType paymentType);
 }

@@ -2,7 +2,6 @@ package com.project.storemanager_api.validator;
 
 import com.project.storemanager_api.domain.order.entity.Order;
 import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
-import com.project.storemanager_api.domain.pay.dto.request.CreatePaymentDetailDto;
 import com.project.storemanager_api.exception.*;
 import com.project.storemanager_api.repository.OrderRepository;
 import com.project.storemanager_api.repository.PlaceRepository;
@@ -15,8 +14,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
-import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType;
-import static com.project.storemanager_api.domain.pay.entity.PaymentDetail.PaymentType.CASH;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.CARD;
 
 @Component
 @Slf4j
@@ -35,10 +33,11 @@ public class PayValidator {
         // place id가 유효한지 검증
         validatePlaceId(dto.getPlaceId());
 
-        for (CreatePaymentDetailDto payDetail : dto.getPayList()) {
-            // payDetail.getExpiryDate() 날짜 확인
-            checkExpiryDate(payDetail.getExpiryDate(), payDetail.getPaymentType());
+        // payDetail.getExpiryDate() 날짜 확인
+        if (dto.getPaymentType().equals(CARD)) {
+            checkExpiryDate(dto.getExpiryDate());
         }
+
     }
 
 
@@ -61,11 +60,8 @@ public class PayValidator {
         );
     }
 
-    private void checkExpiryDate(String expiryDate, PaymentType paymentType) {
-        // 현금 결제는 패스
-        if (paymentType.equals(CASH)) {
-            return;
-        }
+    private void checkExpiryDate(String expiryDate) {
+
         // 문자 형식 검증
         validateExpiryDate(expiryDate);
 

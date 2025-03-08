@@ -18,9 +18,9 @@ public class ReceiptController {
 
     private final ReceiptService receiptService;
 
-    @GetMapping("/{paymentId}")
-    public ResponseEntity<ReceiptResponseDto> getReceipt(@PathVariable Long paymentId) {
-        ReceiptResponseDto receiptResponseDto = receiptService.printReceipt(paymentId);
+    @GetMapping("/{orderId}")
+    public ResponseEntity<ReceiptResponseDto> getReceipt(@PathVariable Long orderId) {
+        ReceiptResponseDto receiptResponseDto = receiptService.printReceipt(orderId);
         return ResponseEntity.ok().body(receiptResponseDto);
     }
 

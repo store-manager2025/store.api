@@ -26,9 +26,9 @@
             useGeneratedKeys="true"
             keyProperty="paymentId">
         INSERT INTO payments
-            (store_id, order_id, place_id, payment_amount, discount_amount)
+            (store_id, order_id, place_id, payment_amount, discount_amount, payment_type, status)
         VALUES
-            (#{storeId}, #{orderId}, #{placeId}, #{totalAmount}, #{discountAmount})
+            (#{storeId}, #{orderId}, #{placeId}, #{paidMoney}, #{discountAmount}, #{paymentType}, #{status})
     </insert>
 
     <!-- storeId로 전체 결제 목록 조회 -->
@@ -45,11 +45,10 @@
 
         FROM (
             SELECT p.*,
-            GROUP_CONCAT(DISTINCT pd.payment_type
-            ORDER BY pd.payment_type SEPARATOR ',')
+            GROUP_CONCAT(DISTINCT p.payment_type
+            ORDER BY p.payment_type SEPARATOR ',')
             AS all_types
         FROM payments p
-        JOIN payment_detail pd ON p.payment_id = pd.payment_id
         WHERE p.store_id = #{storeId}
         GROUP BY p.payment_id
         ) pay
@@ -78,11 +77,10 @@
 
         FROM (
             SELECT p.*,
-            GROUP_CONCAT(DISTINCT pd.payment_type
-            ORDER BY pd.payment_type SEPARATOR ',')
+            GROUP_CONCAT(DISTINCT p.payment_type
+            ORDER BY p.payment_type SEPARATOR ',')
             AS all_types
             FROM payments p
-        JOIN payment_detail pd ON p.payment_id = pd.payment_id
         WHERE p.payment_id = #{paymentId}
         GROUP BY p.payment_id
         ) pay
@@ -119,5 +117,28 @@
         FROM payments
         WHERE payment_id = #{paymentId}
     </select>
+
+    <select id="findCurrentMoney" resultType="java.lang.Integer">
+        SELECT
+            SUM(payment_amount)
+        FROM payments
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="findExistSameType" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM payments
+            WHERE order_id = #{orderId}
+            AND payment_type = #{paymentType}
+            )
+    </select>
+
+    <update id="updatePaymentType">
+        UPDATE payments
+        SET payment_type = #{paymentType}
+        WHERE order_id = #{orderId}
+    </update>
+
 
 </mapper>

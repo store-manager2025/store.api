@@ -1,6 +1,6 @@
 package com.project.storemanager_api.domain.pay.dto.response;
 
-import com.project.storemanager_api.domain.pay.entity.PaymentDetail;
+import com.project.storemanager_api.domain.pay.entity.PaymentType;
 import lombok.*;
 
 @Getter
@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class CardInfoAboutPayDto {
 
-    private PaymentDetail.PaymentType paymentType;
+    private PaymentType paymentType;
     private String cardCompany; // cards
     private String cardNumber; // cards
     private String inputMethod; // 입력방법. 일단 Swiped 기본값

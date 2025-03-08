@@ -18,4 +18,8 @@ public class DateFormatUtil {
     public static String formatLocalDateTimeDefault(LocalDateTime dateTime) {
         return formatLocalDateTime(dateTime, "yyyy-MM-dd HH:mm:ss");
     }
+
+    public static String formatLocalDateDefault(LocalDateTime dateTime) {
+        return formatLocalDateTime(dateTime, "yyyy-MM-dd");
+    }
 }

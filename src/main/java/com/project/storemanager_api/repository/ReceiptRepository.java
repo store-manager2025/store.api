@@ -15,7 +15,7 @@ public interface ReceiptRepository {
 
     void saveReceipt(Receipt receipt);
 
-    Optional<ReceiptResponseDto> findByPaymentId(Long paymentId);
+    Optional<ReceiptResponseDto> findByOrderId(Long orderId);
 
-    List<CreatePaymentDetailDto> getCardInfosByPaymentId(Long paymentId);
+    List<CreatePaymentDetailDto> getCardInfosByOrderId(Long orderId);
 }

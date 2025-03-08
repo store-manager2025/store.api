@@ -10,10 +10,14 @@ import com.project.storemanager_api.exception.MenuException;
 import com.project.storemanager_api.exception.OrderException;
 import com.project.storemanager_api.repository.MenuRepository;
 import com.project.storemanager_api.repository.OrderRepository;
+import com.project.storemanager_api.util.DateFormatUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.UNPAID;
 
@@ -134,5 +138,10 @@ public class OrderService {
         orderRepository.updateOrderStatus(orderId, status);
         orderMenuService.updateOrderStatusWithoutMenu(orderId, status);
 
+    }
+
+    public List<Long> checkExistUnpaidOrder(Long storeId) {
+        String currentDate = DateFormatUtil.formatLocalDateDefault(LocalDateTime.now());
+        return orderRepository.getUnpaidOrders(storeId, currentDate);
     }
 }
