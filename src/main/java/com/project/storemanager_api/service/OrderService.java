@@ -137,7 +137,6 @@ public class OrderService {
 
         orderRepository.updateOrderStatus(orderId, status);
         orderMenuService.updateOrderStatusWithoutMenu(orderId, status);
-
     }
 
     public List<Long> checkExistUnpaidOrder(Long storeId) {
