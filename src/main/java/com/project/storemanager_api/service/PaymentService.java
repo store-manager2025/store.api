@@ -20,6 +20,7 @@ import java.util.*;
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.CANCELLED;
 import static com.project.storemanager_api.domain.order.entity.Order.OrderStatus.SUCCESS;
 import static com.project.storemanager_api.domain.pay.entity.PaymentType.CARD;
+import static com.project.storemanager_api.domain.pay.entity.PaymentType.MIX;
 import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @Service
@@ -95,6 +96,11 @@ public class PaymentService {
 
         if (isFirst) {
             receiptService.saveAndResponseReceipt(dto);
+        }
+        // 첫번째 결제가 아니라면, 이전 결제의 paymentType 비교
+        boolean existSameType = paymentRepository.findExistSameType(dto.getOrderId(), dto.getPaymentType());
+        if (existSameType) { // 존재하지 않다면
+            paymentRepository.updatePaymentType(dto.getOrderId(), MIX);
         }
     }
 

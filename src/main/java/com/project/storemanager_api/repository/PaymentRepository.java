@@ -4,6 +4,7 @@ import com.project.storemanager_api.domain.pay.dto.request.CreatePayRequestDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentDetailResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.PaymentResponseDto;
 import com.project.storemanager_api.domain.pay.dto.response.RefundInfoDto;
+import com.project.storemanager_api.domain.pay.entity.PaymentType;
 import com.project.storemanager_api.domain.pay.entity.Status;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -37,4 +38,10 @@ public interface PaymentRepository {
     Optional<RefundInfoDto> findRefundOriginDataByPaymentId(Long paymentId);
 
     Integer findCurrentMoney(Long orderId);
+
+    boolean findExistSameType(@Param("orderId") Long orderId,
+                              @Param("paymentType") PaymentType paymentType);
+
+    void updatePaymentType(@Param("orderId")Long orderId,
+                           @Param("paymentType")  PaymentType paymentType);
 }
