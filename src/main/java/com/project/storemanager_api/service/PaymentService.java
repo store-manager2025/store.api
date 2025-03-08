@@ -31,8 +31,6 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository; // 페이와 1:1로 연결된 객체
 
-    private final PaymentDetailService paymentDetailService; // 페이와 1:n로 디테일 처리를 담당하는 객체
-
     private final OrderRepository orderRepository; // 주문과 연관된 데이터를 처리
 
     private final CardService cardService; // 카드 정보 저장
