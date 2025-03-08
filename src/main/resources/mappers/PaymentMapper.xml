@@ -124,13 +124,11 @@
         WHERE order_id = #{orderId}
     </select>
 
-    <select id="findExistSameType" resultType="java.lang.Boolean">
-        SELECT EXISTS (
-            SELECT 1
-            FROM payments
-            WHERE order_id = #{orderId}
-            AND payment_type = #{paymentType}
-            )
+    <select id="findExistSameType" resultType="java.lang.String">
+        SELECT
+            payment_type
+        FROM payments
+        WHERE order_id = #{orderId}
     </select>
 
     <update id="updatePaymentType">

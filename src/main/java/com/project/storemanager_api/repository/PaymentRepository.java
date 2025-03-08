@@ -39,8 +39,7 @@ public interface PaymentRepository {
 
     Integer findCurrentMoney(Long orderId);
 
-    boolean findExistSameType(@Param("orderId") Long orderId,
-                              @Param("paymentType") PaymentType paymentType);
+    List<String> findExistSameType(@Param("orderId") Long orderId);
 
     void updatePaymentType(@Param("orderId")Long orderId,
                            @Param("paymentType")  PaymentType paymentType);

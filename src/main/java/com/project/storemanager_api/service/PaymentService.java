@@ -39,8 +39,6 @@ public class PaymentService {
 
     private final ReceiptService receiptService; // 영수증 발행용 클래스
 
-    private final PayTransactionService payTransactionService; // 결제 흐름과 관련한 transaction 처리
-
     private final OrderMenuService orderMenuService;
 
     private final OrderService orderService;
@@ -94,11 +92,16 @@ public class PaymentService {
 
         if (isFirst) {
             receiptService.saveAndResponseReceipt(dto);
-        }
-        // 첫번째 결제가 아니라면, 이전 결제의 paymentType 비교
-        boolean existSameType = paymentRepository.findExistSameType(dto.getOrderId(), dto.getPaymentType());
-        if (existSameType) { // 존재하지 않다면
-            paymentRepository.updatePaymentType(dto.getOrderId(), MIX);
+        } else {
+
+            // 첫번째 결제가 아니라면, 이전 결제의 paymentType 비교
+            List<String> existSameType = paymentRepository.findExistSameType(dto.getOrderId());
+
+            if ((existSameType.size() > 0 && existSameType.get(0).equals("MIX")) ||
+                    !existSameType.contains(dto.getPaymentType())) {
+                paymentRepository.updatePaymentType(dto.getOrderId(), MIX);
+            }
+
         }
     }
 

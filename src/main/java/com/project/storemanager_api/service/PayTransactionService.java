@@ -15,7 +15,6 @@ public class PayTransactionService {
 
     private final PayTransactionRepository payTransactionRepository;
 
-
     public void saveTransaction(Long paymentId, Integer totalAmount) {
         PayTransaction newTransaction = PayTransaction.builder()
                 .paymentId(paymentId)
