@@ -16,7 +16,6 @@
             THEN 'CARD'
             WHEN all_types = 'MIX'
             THEN 'MIX'
-            ELSE 'DIVIDE'
             END
     </sql>
 
