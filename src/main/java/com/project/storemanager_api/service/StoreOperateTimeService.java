@@ -1,5 +1,6 @@
 package com.project.storemanager_api.service;
 
+import com.project.storemanager_api.domain.report.dto.response.StoreTimeResponseDto;
 import com.project.storemanager_api.repository.StoreOperateTimeRepository;
 import com.project.storemanager_api.util.DateFormatUtil;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class StoreOperateTimeService {
         return DateFormatUtil.formatLocalDateTimeDefault(LocalDateTime.now());
     }
 
-    public String getOpenTime(Long storeId) {
-        return DateFormatUtil.formatLocalDateTimeDefault(storeTimeRepository.getOpenTimeByStoreId(storeId));
+    public List<StoreTimeResponseDto> getOpenTime(Long userId) {
+        return storeTimeRepository.getStoreOperateInfo(userId);
     }
 }
