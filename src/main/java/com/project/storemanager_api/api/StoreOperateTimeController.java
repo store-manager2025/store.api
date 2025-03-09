@@ -7,13 +7,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+
+import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,6 +39,16 @@ public class StoreOperateTimeController {
         log.info("close store : {}, {}", storeId, LocalDateTime.now());
         Map<String, Object> result = timeService.closeStore(storeId);
         return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/open-time/{storeId}")
+    @StoreAuthCheck
+    public ResponseEntity<?> getOpenTime(@AuthenticationPrincipal CustomUserPrincipal info,
+                                         @PathVariable Long storeId) {
+        String openTime = timeService.getOpenTime(storeId);
+        return ResponseEntity.ok().body(Map.of(
+            MESSAGE, "금일 매장 오픈 시간은 "+openTime + "입니다."
+        ));
     }
 
 }

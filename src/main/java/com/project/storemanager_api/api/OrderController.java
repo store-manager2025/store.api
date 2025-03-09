@@ -52,6 +52,13 @@ public class OrderController {
         return ResponseEntity.ok().body(result);
     }
 
+    @DeleteMapping("/all/{orderId}")
+    public ResponseEntity<Map<String, Object>> deleteOrder(@PathVariable Long orderId) {
+        log.info("deleteOrder: {}", orderId);
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.ok(Map.of(MESSAGE, "주문 삭제가 완료되었습니다."));
+    }
+
 
 
 }

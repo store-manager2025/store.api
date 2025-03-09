@@ -36,6 +36,8 @@ public interface OrderRepository {
 
     List<Long> getUnpaidOrders(@Param("storeId") Long storeId,
                                  @Param("currentTime") String currentTime);
+
+    void deleteOrderById(Long orderId);
 }
 
 

@@ -58,4 +58,7 @@ public class StoreOperateTimeService {
         return DateFormatUtil.formatLocalDateTimeDefault(LocalDateTime.now());
     }
 
+    public String getOpenTime(Long storeId) {
+        return DateFormatUtil.formatLocalDateTimeDefault(storeTimeRepository.getOpenTimeByStoreId(storeId));
+    }
 }
