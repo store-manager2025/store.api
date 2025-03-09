@@ -67,9 +67,11 @@ public class ReportController {
     public ResponseEntity<List<OrderDetailResponseDto>> getDailyOrderList(
             @AuthenticationPrincipal CustomUserPrincipal info,
             @RequestParam Long storeId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
             @RequestParam(value = "status", required = false, defaultValue = "SUCCESS") String status,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<OrderDetailResponseDto> result = reportService.getDailyOrderList(storeId, date, status);
+        List<OrderDetailResponseDto> result = reportService.getDailyOrderList(storeId, size, page, date, status);
         return ResponseEntity.ok().body(result);
     }
 

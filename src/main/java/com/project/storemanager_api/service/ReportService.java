@@ -44,13 +44,21 @@ public class ReportService {
     }
 
     @Transactional // 특정 하루에 대한 주문 목록 조회
-    public List<OrderDetailResponseDto> getDailyOrderList(Long storeId, LocalDate date, String status) {
+    public List<OrderDetailResponseDto> getDailyOrderList(Long storeId, Integer size, Integer page, LocalDate date, String status) {
         validateStoreId(storeId);
-        List<OrderDetailResponseDto> result = reportRepository.findDailyListByStoreId(storeId, date, status);
+
+        int currentPage = (page != null && page > 0) ? page : 1;
+        int pageSize = (size != null && size > 0) ? size : 10;
+        int offset = (currentPage - 1) * pageSize;
+
+        List<OrderDetailResponseDto> result = reportRepository.findDailyListByStoreId(storeId, date, status, pageSize, offset);
+
         log.info("result : {}", result);
+
         for (OrderDetailResponseDto dto : result) {
             dto.setMenuDetail(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
         }
+
         return result;
     }
 

@@ -30,9 +30,13 @@ public interface ReportRepository {
             @Param("status") String status);
 
     // 하루별 기록 상세 조회
-    List<OrderDetailResponseDto> findDailyListByStoreId(@Param("storeId") Long storeId,
-                                                        @Param("date") LocalDate date,
-                                                        @Param("status") String status);
+    List<OrderDetailResponseDto> findDailyListByStoreId(
+            @Param("storeId") Long storeId,
+            @Param("date") LocalDate date,
+            @Param("status") String status,
+            @Param("size") Integer size,
+            @Param("offset") Integer offset
+    );
 
 
     // 매장 전체 결제내역의 평균 객단가 분석
