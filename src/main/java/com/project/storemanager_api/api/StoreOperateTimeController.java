@@ -1,6 +1,7 @@
 package com.project.storemanager_api.api;
 
 import com.project.storemanager_api.annotation.StoreAuthCheck;
+import com.project.storemanager_api.domain.report.dto.response.StoreTimeResponseDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.StoreOperateTimeService;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
-
-import static com.project.storemanager_api.util.Constants.MESSAGE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,14 +41,11 @@ public class StoreOperateTimeController {
         return ResponseEntity.ok().body(result);
     }
 
-    @GetMapping("/open-time/{storeId}")
-    @StoreAuthCheck
-    public ResponseEntity<?> getOpenTime(@AuthenticationPrincipal CustomUserPrincipal info,
-                                         @PathVariable Long storeId) {
-        String openTime = timeService.getOpenTime(storeId);
-        return ResponseEntity.ok().body(Map.of(
-            MESSAGE, "금일 매장 오픈 시간은 "+openTime + "입니다."
-        ));
+    @GetMapping("/all-info")
+    public ResponseEntity<List<StoreTimeResponseDto>> getOpenTime(@AuthenticationPrincipal CustomUserPrincipal info) {
+        log.info("info.userId : {}", info.getUserId());
+        List<StoreTimeResponseDto> operateTimeList = timeService.getOpenTime(info.getUserId());
+        return ResponseEntity.ok().body(operateTimeList);
     }
 
 }

@@ -23,13 +23,21 @@
         AND DATE(date) = CURRENT_DATE()
     </update>
 
-    <select id="getOpenTimeByStoreId" resultType="java.time.LocalDateTime">
+    <select id="getStoreOperateInfo" resultType="com.project.storemanager_api.domain.report.dto.response.StoreTimeResponseDto">
         SELECT
-            opened_at
-        FROM store_operate_time
-        WHERE store_id = #{storeId}
-        ORDER BY opened_at DESC
-        LIMIT 1
+            T.store_op_time_id AS storeOpTimeId,
+            T.store_id,
+            T.opened_at,
+            T.closed_at
+        FROM store_operate_time T
+        INNER JOIN (
+            SELECT store_id, MAX(opened_at) AS max_opened_at
+            FROM store_operate_time
+            GROUP BY store_id
+        ) latest ON T.store_id = latest.store_id AND T.opened_at = latest.max_opened_at
+        INNER JOIN stores S ON S.store_id = T.store_id
+        INNER JOIN users U ON S.user_id = U.user_id
+        WHERE U.user_id = #{userId};
     </select>
 
 </mapper>
