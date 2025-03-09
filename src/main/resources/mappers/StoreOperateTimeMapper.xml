@@ -23,4 +23,13 @@
         AND DATE(date) = CURRENT_DATE()
     </update>
 
+    <select id="getOpenTimeByStoreId" resultType="java.time.LocalDateTime">
+        SELECT
+            opened_at
+        FROM store_operate_time
+        WHERE store_id = #{storeId}
+        ORDER BY opened_at DESC
+        LIMIT 1
+    </select>
+
 </mapper>
