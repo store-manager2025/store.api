@@ -41,7 +41,7 @@ public class StoreOperateTimeController {
         return ResponseEntity.ok().body(result);
     }
 
-    @GetMapping("/time/{storeId}")
+    @GetMapping("/open-time/{storeId}")
     @StoreAuthCheck
     public ResponseEntity<?> getOpenTime(@AuthenticationPrincipal CustomUserPrincipal info,
                                          @PathVariable Long storeId) {
