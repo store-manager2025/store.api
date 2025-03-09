@@ -143,4 +143,9 @@ public class OrderService {
         String currentDate = DateFormatUtil.formatLocalDateDefault(LocalDateTime.now());
         return orderRepository.getUnpaidOrders(storeId, currentDate);
     }
+
+    // 주문 전체 삭제
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteOrderById(orderId);
+    }
 }
