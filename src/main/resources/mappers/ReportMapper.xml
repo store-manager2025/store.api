@@ -79,6 +79,8 @@
             AND O.order_status IN ('SUCCESS', #{status})
             AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
         GROUP BY O.order_id
+        ORDER BY O.order_id DESC
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="findAverageValueById" resultType="com.project.storemanager_api.domain.report.dto.response.AverageValueDto">
