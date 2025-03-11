@@ -11,4 +11,14 @@
             (#{storeId}, #{password}, #{name}, #{profileImg})
     </insert>
 
+    <select id="findEmpListByStoreId" resultType="com.project.storemanager_api.domain.user.dto.response.EmpResponseDto">
+        SELECT
+            emp_id
+        ,   password
+        ,   profile_img
+        ,   name
+        FROM employees
+        WHERE store_id = #{storeId}
+    </select>
+
 </mapper>

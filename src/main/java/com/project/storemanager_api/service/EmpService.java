@@ -1,12 +1,15 @@
 package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.user.dto.request.SignUpEmpRequest;
+import com.project.storemanager_api.domain.user.dto.response.EmpResponseDto;
 import com.project.storemanager_api.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -39,4 +42,7 @@ public class EmpService {
     }
 
 
+    public List<EmpResponseDto> getEmpList(Long storeId) {
+        return employeeRepository.findEmpListByStoreId(storeId);
+    }
 }
