@@ -194,5 +194,26 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+
+    // 결제(payment)관련
+    @ExceptionHandler(EmpException.class)
+    public ResponseEntity<ErrorResponse> handleEmpException(
+            EmpException e, HttpServletRequest request) {
+
+        log.error("EmpException occurred: {}", e.getMessage(), e);
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(e.getErrorCode().getStatus().value())
+                .error(e.getErrorCode().name())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(response);
+    }
+
 }
 

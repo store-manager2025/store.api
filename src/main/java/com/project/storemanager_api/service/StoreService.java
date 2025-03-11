@@ -163,4 +163,10 @@ public class StoreService {
         // 삭제 실행
         storeRepository.deleteStore(dto.getStoreId());
     }
+
+    public void checkExistStore(Long storeId) {
+        storeRepository.findPasswordById(storeId).orElseThrow(
+                () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
+        );
+    }
 }

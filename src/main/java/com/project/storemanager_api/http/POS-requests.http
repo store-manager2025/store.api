@@ -40,9 +40,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzd
 
 {
   "password": "1234",
-  "storeName": "빽다방",
-  "storePlace": "서북구 한들2로 236",
-  "phoneNumber": "01043214543"
+  "storeName": "롯데슈퍼",
+  "storePlace": "서북구 한들2로 123",
+  "phoneNumber": "01012342345"
 }
 
 ###
@@ -473,4 +473,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzd
 ###
 # @no-cookie-jar
 GET http://localhost:8383/api/emp/all/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsM10sInVzZXJJZCI6MSwiaXNzIjoic3RvcmUiLCJpYXQiOjE3NDE2NjgwMzAsImV4cCI6MTc0MTY3NTIzMCwic3ViIjoiMSJ9.GJM_EibGnauH_knL2Bv0zlj3eTKZeCmTtFc4gNFeWg0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsMyw0XSwidXNlcklkIjoxLCJpc3MiOiJzdG9yZSIsImlhdCI6MTc0MTY2OTY3NCwiZXhwIjoxNzQxNjc2ODc0LCJzdWIiOiIxIn0.T9DOuAtBW_2ypglrQSl5LNreCi5od0-eDRhDU4Ntyes

@@ -64,7 +64,10 @@ public enum ErrorCode {
     NOT_CORRECT_EXPIRATION(HttpStatus.BAD_REQUEST, "카드만료일은 YYYY/MM의 형식이여야 합니다."),
     NOT_CORRECT_MONTH(HttpStatus.BAD_REQUEST, "카드 만료 월은 12월 이하여야 합니다."),
     ALREADY_PAYMENT(HttpStatus.BAD_REQUEST, "이미 결제 완료되었습니다."),
-    CANT_REFUND(HttpStatus.BAD_REQUEST, "아직 결제가 되지 않아 환불이 불가능합니다.")
+    CANT_REFUND(HttpStatus.BAD_REQUEST, "아직 결제가 되지 않아 환불이 불가능합니다."),
+
+    // 직원 관련 에러
+    EMPTY_EMP(HttpStatus.NO_CONTENT, "직원이 아직 존재하지 않습니다.")
 
     ;
 
