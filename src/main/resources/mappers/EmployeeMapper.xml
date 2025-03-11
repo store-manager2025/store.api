@@ -6,16 +6,9 @@
 
     <insert id="saveEmp">
         INSERT INTO employees
-            (store_id, user_id)
+            (store_id, password, name, profile_img)
         VALUES
-            (#{storeId}, #{userId})
+            (#{storeId}, #{password}, #{name}, #{profileImg})
     </insert>
-
-    <select id="findStoreIdByUserId" resultType="java.lang.Long">
-        SELECT
-            store_id
-        FROM employees
-        WHERE user_id = #{userId}
-    </select>
 
 </mapper>

@@ -2,7 +2,6 @@ package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto;
-import com.project.storemanager_api.domain.user.dto.request.SignUpEmpRequest;
 import com.project.storemanager_api.domain.user.dto.request.SignUpUserRequestDto;
 import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
@@ -177,18 +176,5 @@ public class UserService {
             throw new UserException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage());
         }
         return true;
-    }
-
-    public void signUpEmp(SignUpEmpRequest signUpRequest, Long storeId) {
-        // 순수 비밀번호
-        String rawPassword = signUpRequest.getPassword();
-        // 암호화 작업
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-
-        signUpRequest.setPassword(encodedPassword);
-
-        signUpRequest.setStoreId(storeId);
-
-        userRepository.signUpEmp(signUpRequest);
     }
 }

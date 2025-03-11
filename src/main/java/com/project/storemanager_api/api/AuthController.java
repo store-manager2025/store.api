@@ -1,12 +1,14 @@
 package com.project.storemanager_api.api;
 
-import com.project.storemanager_api.domain.user.dto.request.*;
+import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
+import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto;
+import com.project.storemanager_api.domain.user.dto.request.RefreshTokenRequestDto;
+import com.project.storemanager_api.domain.user.dto.request.SignUpUserRequestDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,20 +34,6 @@ public class AuthController {
 
         return ResponseEntity.ok().body(Map.of(
                 MESSAGE, "회원가입 완료.",
-                USERNAME, signUpRequest.getName()
-        ));
-    }
-
-    // 사장이 직원의 아이디를 만들어준다.
-    @PostMapping("/api/join-emp/{storeId}")
-    @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Map<String, Object>> joinEmployee(@RequestBody @Valid SignUpEmpRequest signUpRequest
-                                                            , @PathVariable("storeId") Long storeId) {
-        log.info("request for signup: {}", signUpRequest.getName());
-        userService.signUpEmp(signUpRequest, storeId);
-
-        return ResponseEntity.ok().body(Map.of(
-                MESSAGE, "가입이 완료되었습니다.",
                 USERNAME, signUpRequest.getName()
         ));
     }

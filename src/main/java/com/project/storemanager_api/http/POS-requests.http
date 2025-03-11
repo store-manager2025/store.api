@@ -10,18 +10,6 @@ Content-Type: application/json
   "name": "점주1"
 }
 
-### 알바생 계정 생성
-# @no-cookie-jar
-POST http://localhost:8383/api/join-emp/1
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzFdLCJ1c2VySWQiOjEsImlzcyI6InN0b3JlIiwiaWF0IjoxNzQxNDg0MTQ3LCJleHAiOjE3NDE0OTEzNDcsInN1YiI6IjEifQ.lm4aIoGH4qUND0u4QRGioUbBmJZ9CTXSjIzW6X2XA4U
-
-{
-  "email": "emp1@naver.com",
-  "password": "gksrlqja1!",
-  "name": "매장1알바생1"
-}
-
 ###                        -------------           로그인 처리 (토큰 발급)            --------------
 # @no-cookie-jar
 POST http://localhost:8383/auth/login
@@ -48,7 +36,7 @@ POST http://localhost:8383/auth/logout
 # @no-cookie-jar
 POST http://localhost:8383/api/stores
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsM10sInVzZXJJZCI6MSwiaXNzIjoic3RvcmUiLCJpYXQiOjE3NDE1MTg1ODMsImV4cCI6MTc0MTUyNTc4Mywic3ViIjoiMSJ9.SvuznV6aToEk1SAuQlSMdavlNGWBShTNDas3fABmNXs
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsM10sInVzZXJJZCI6MSwiaXNzIjoic3RvcmUiLCJpYXQiOjE3NDE2NjgwMzAsImV4cCI6MTc0MTY3NTIzMCwic3ViIjoiMSJ9.GJM_EibGnauH_knL2Bv0zlj3eTKZeCmTtFc4gNFeWg0
 
 {
   "password": "1234",
@@ -468,3 +456,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzd
 # @no-cookie-jar
 GET http://localhost:8383/api/times/all-info
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsM10sInVzZXJJZCI6MSwiaXNzIjoic3RvcmUiLCJpYXQiOjE3NDE1MTg1ODMsImV4cCI6MTc0MTUyNTc4Mywic3ViIjoiMSJ9.SvuznV6aToEk1SAuQlSMdavlNGWBShTNDas3fABmNXs
+
+###
+# @no-cookie-jar
+POST http://localhost:8383/api/emp/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsM10sInVzZXJJZCI6MSwiaXNzIjoic3RvcmUiLCJpYXQiOjE3NDE2NjgwMzAsImV4cCI6MTc0MTY3NTIzMCwic3ViIjoiMSJ9.GJM_EibGnauH_knL2Bv0zlj3eTKZeCmTtFc4gNFeWg0
+
+{
+  "password": "gksrlqja1!",
+  "name": "한기범",
+  "profileImg": ""
+}
