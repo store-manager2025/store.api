@@ -1,6 +1,7 @@
 package com.project.storemanager_api.domain.user.dto.request;
 
 import com.project.storemanager_api.domain.user.entity.User;
+import com.project.storemanager_api.domain.user.entity.User.Role;
 import lombok.*;
 
 import javax.validation.constraints.Pattern;
@@ -11,7 +12,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SignUpRequestDto {
+public class SignUpUserRequestDto {
 
     private String email;
 
@@ -24,7 +25,7 @@ public class SignUpRequestDto {
     private String name;
 
 
-    public User toEntity(User.Role role) {
+    public User toEntity(Role role) {
         return User.builder()
                 .email(email)
                 .name(this.name)
@@ -32,4 +33,6 @@ public class SignUpRequestDto {
                 .password(this.password)
                 .build();
     }
+
+
 }

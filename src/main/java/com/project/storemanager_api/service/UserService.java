@@ -2,7 +2,8 @@ package com.project.storemanager_api.service;
 
 import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
 import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto;
-import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
+import com.project.storemanager_api.domain.user.dto.request.SignUpEmpRequest;
+import com.project.storemanager_api.domain.user.dto.request.SignUpUserRequestDto;
 import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.exception.ErrorCode;
 import com.project.storemanager_api.exception.UserException;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.project.storemanager_api.domain.user.entity.User.*;
+import static com.project.storemanager_api.domain.user.entity.User.Role;
 import static com.project.storemanager_api.util.Constants.*;
 
 @Service
@@ -32,9 +33,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final StoreRepository storeRepository;
-    private final EmployeeService employeeService;
 
-    public void signUp(SignUpRequestDto signUpRequest, Role role, Long storeId) {
+    public void signUp(SignUpUserRequestDto signUpRequest, Role role) {
 
 
         userRepository.findByEmail(signUpRequest.getEmail())
@@ -49,10 +49,6 @@ public class UserService {
         newUser.setPassword(encodedPassword);
         userRepository.saveUser(newUser);
 
-        if (role.equals(Role.EMPLOYEE)) {
-            Long userId = newUser.getUserId();
-            employeeService.saveEmp(userId, storeId);
-        }
     }
 
     // 로그인 처리 (인증 처리)
@@ -84,12 +80,7 @@ public class UserService {
         }
 
         // 로그인이 성공했을 때, 해당 유저가 가진 store의 Id list를 조회, token생성시 포함
-        List<Long> storeIdList;
-        if (foundUser.getRole().equals(Role.OWNER)) { // 점주라면
-            storeIdList = storeRepository.findStoreIdListByUserId(foundUser.getUserId());
-        } else { // 알바생이라면
-            storeIdList = employeeService.findStoreIdByUserId(foundUser.getUserId());
-        }
+        List <Long> storeIdList = storeRepository.findStoreIdListByUserId(foundUser.getUserId());
         log.info("found store id: {}", storeIdList);
 
         // 액세스/리프레시 토큰을 전송
@@ -186,5 +177,18 @@ public class UserService {
             throw new UserException(ErrorCode.USER_NOT_FOUND, ErrorCode.USER_NOT_FOUND.getMessage());
         }
         return true;
+    }
+
+    public void signUpEmp(SignUpEmpRequest signUpRequest, Long storeId) {
+        // 순수 비밀번호
+        String rawPassword = signUpRequest.getPassword();
+        // 암호화 작업
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+
+        signUpRequest.setPassword(encodedPassword);
+
+        signUpRequest.setStoreId(storeId);
+
+        userRepository.signUpEmp(signUpRequest);
     }
 }

@@ -1,5 +1,6 @@
 package com.project.storemanager_api.repository;
 
+import com.project.storemanager_api.domain.user.dto.request.SignUpEmpRequest;
 import com.project.storemanager_api.domain.user.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,4 +33,5 @@ public interface UserRepository {
     // 권한을 return하는 메서드
     String findRoleById(Long userId);
 
+    void signUpEmp(SignUpEmpRequest signUpRequest);
 }

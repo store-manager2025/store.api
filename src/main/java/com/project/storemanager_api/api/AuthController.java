@@ -1,11 +1,7 @@
 package com.project.storemanager_api.api;
 
-import com.project.storemanager_api.domain.user.dto.request.LoginRequestDto;
-import com.project.storemanager_api.domain.user.dto.request.ModifyUserRequestDto;
-import com.project.storemanager_api.domain.user.dto.request.RefreshTokenRequestDto;
-import com.project.storemanager_api.domain.user.dto.request.SignUpRequestDto;
+import com.project.storemanager_api.domain.user.dto.request.*;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
-import com.project.storemanager_api.domain.user.entity.User;
 import com.project.storemanager_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Map;
 
+import static com.project.storemanager_api.domain.user.entity.User.Role.OWNER;
 import static com.project.storemanager_api.util.Constants.*;
 
 @RestController
@@ -30,8 +27,8 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpRequestDto signUpRequest) {
-        userService.signUp(signUpRequest, User.Role.OWNER, null);
+    public ResponseEntity<Map<String, Object>> signUp(@RequestBody @Valid SignUpUserRequestDto signUpRequest) {
+        userService.signUp(signUpRequest, OWNER);
 
         return ResponseEntity.ok().body(Map.of(
                 MESSAGE, "회원가입 완료.",
@@ -42,10 +39,10 @@ public class AuthController {
     // 사장이 직원의 아이디를 만들어준다.
     @PostMapping("/api/join-emp/{storeId}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Map<String, Object>> joinEmployee(@RequestBody @Valid SignUpRequestDto signUpRequest
+    public ResponseEntity<Map<String, Object>> joinEmployee(@RequestBody @Valid SignUpEmpRequest signUpRequest
                                                             , @PathVariable("storeId") Long storeId) {
         log.info("request for signup: {}", signUpRequest.getName());
-        userService.signUp(signUpRequest, User.Role.EMPLOYEE, storeId);
+        userService.signUpEmp(signUpRequest, storeId);
 
         return ResponseEntity.ok().body(Map.of(
                 MESSAGE, "가입이 완료되었습니다.",
