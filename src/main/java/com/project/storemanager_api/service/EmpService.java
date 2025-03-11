@@ -19,18 +19,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmpService {
 
-    private final EmployeeRepository employeeRepository;
+    private final EmployeeRepository empRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     private final StoreService storeService;
 
-    private final String DEFAULT_IMAGE = "https://search.pstatic.net/sunny/?src=https%3A%2F%2Fus.123rf.com%2F450wm%2Fyupiramos%2Fyupiramos1611%2Fyupiramos161101987%2F65283464-user-avatar-silhouette-icon-vector-illustration-design.jpg%3Fver%3D6&type=a340";
-
-
 
     public void signUpEmp(SignUpEmpRequest signUpRequest, Long storeId) {
 
+        String DEFAULT_IMAGE = "https://search.pstatic.net/sunny/?src=https%3A%2F%2Fus.123rf.com%2F450wm%2Fyupiramos%2Fyupiramos1611%2Fyupiramos161101987%2F65283464-user-avatar-silhouette-icon-vector-illustration-design.jpg%3Fver%3D6&type=a340";
         if (signUpRequest.getProfileImg().isEmpty()) signUpRequest.setProfileImg(DEFAULT_IMAGE);
 
         // 순수 비밀번호
@@ -42,17 +40,35 @@ public class EmpService {
 
         signUpRequest.setStoreId(storeId);
 
-        employeeRepository.saveEmp(signUpRequest);
+        empRepository.saveEmp(signUpRequest);
+
     }
 
 
     public List<EmpResponseDto> getEmpList(Long storeId) {
         storeService.checkExistStore(storeId);
 
-        List<EmpResponseDto> empList = employeeRepository.findEmpListByStoreId(storeId);
+        List<EmpResponseDto> empList = empRepository.findEmpListByStoreId(storeId);
         if (empList.isEmpty()) {
             throw new EmpException(ErrorCode.EMPTY_EMP, ErrorCode.EMPTY_EMP.getMessage());
         }
         return empList;
+    }
+
+    public void startWork(Long empId) {
+        checkExistEmpId(empId);
+        empRepository.startWork(empId);
+    }
+
+    public void endWork(Long empId) {
+        checkExistEmpId(empId);
+        empRepository.endWork(empId);
+    }
+
+
+    private void checkExistEmpId(Long empId) {
+        empRepository.checkExist(empId).orElseThrow(
+                () -> new EmpException(ErrorCode.EMPTY_EMP, "직원 정보가 없습니다.")
+        );
     }
 }

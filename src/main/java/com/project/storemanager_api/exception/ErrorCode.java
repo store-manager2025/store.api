@@ -67,7 +67,9 @@ public enum ErrorCode {
     CANT_REFUND(HttpStatus.BAD_REQUEST, "아직 결제가 되지 않아 환불이 불가능합니다."),
 
     // 직원 관련 에러
-    EMPTY_EMP(HttpStatus.NO_CONTENT, "직원이 아직 존재하지 않습니다.")
+    EMPTY_EMP(HttpStatus.NO_CONTENT, "직원이 아직 존재하지 않습니다."),
+    CANT_NOT_LEAVE(HttpStatus.BAD_REQUEST, "출근 기록이 없어 퇴근할 수 없습니다."),
+    ALREADY_LEAVE(HttpStatus.BAD_REQUEST,"이미 퇴근한 상태입니다.")
 
     ;
 

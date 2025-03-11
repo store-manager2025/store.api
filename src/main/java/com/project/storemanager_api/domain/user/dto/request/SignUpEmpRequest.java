@@ -13,6 +13,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 public class SignUpEmpRequest {
 
+    private Long empId;
     private Long storeId;
 
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",

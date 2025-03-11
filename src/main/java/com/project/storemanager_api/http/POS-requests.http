@@ -459,13 +459,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzd
 
 ###
 # @no-cookie-jar
-POST http://localhost:8383/api/emp/3
+POST http://localhost:8383/api/emp/1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsM10sInVzZXJJZCI6MSwiaXNzIjoic3RvcmUiLCJpYXQiOjE3NDE2NjgwMzAsImV4cCI6MTc0MTY3NTIzMCwic3ViIjoiMSJ9.GJM_EibGnauH_knL2Bv0zlj3eTKZeCmTtFc4gNFeWg0
 
 {
   "password": "gksrlqja1!",
-  "name": "매장3직원1",
+  "name": "매장1직원2",
   "profileImg": ""
 }
 
@@ -473,4 +473,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzd
 ###
 # @no-cookie-jar
 GET http://localhost:8383/api/emp/all/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsMyw0XSwidXNlcklkIjoxLCJpc3MiOiJzdG9yZSIsImlhdCI6MTc0MTY2OTY3NCwiZXhwIjoxNzQxNjc2ODc0LCJzdWIiOiIxIn0.T9DOuAtBW_2ypglrQSl5LNreCi5od0-eDRhDU4Ntyes
+
+###
+# @no-cookie-jar
+POST http://localhost:8383/api/emp/start/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsMyw0XSwidXNlcklkIjoxLCJpc3MiOiJzdG9yZSIsImlhdCI6MTc0MTY2OTY3NCwiZXhwIjoxNzQxNjc2ODc0LCJzdWIiOiIxIn0.T9DOuAtBW_2ypglrQSl5LNreCi5od0-eDRhDU4Ntyes
+
+
+###
+# @no-cookie-jar
+POST http://localhost:8383/api/emp/leave/4
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsMyw0XSwidXNlcklkIjoxLCJpc3MiOiJzdG9yZSIsImlhdCI6MTc0MTY2OTY3NCwiZXhwIjoxNzQxNjc2ODc0LCJzdWIiOiIxIn0.T9DOuAtBW_2ypglrQSl5LNreCi5od0-eDRhDU4Ntyes
