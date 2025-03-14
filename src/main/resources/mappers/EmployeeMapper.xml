@@ -4,18 +4,43 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.project.storemanager_api.repository.EmployeeRepository">
 
-    <insert id="saveEmp">
+    <insert id="saveEmp" useGeneratedKeys="true" keyProperty="empId" keyColumn="emp_id">
         INSERT INTO employees
-            (store_id, user_id)
+            (store_id, password, name, profile_img)
         VALUES
-            (#{storeId}, #{userId})
+            (#{storeId}, #{password}, #{name}, #{profileImg})
     </insert>
 
-    <select id="findStoreIdByUserId" resultType="java.lang.Long">
+    <select id="findEmpListByStoreId" resultType="com.project.storemanager_api.domain.user.dto.response.EmpResponseDto">
         SELECT
-            store_id
+            emp_id
+        ,   password
+        ,   profile_img
+        ,   name
         FROM employees
-        WHERE user_id = #{userId}
+        WHERE store_id = #{storeId}
     </select>
+
+    <select id="checkExist" resultType="com.project.storemanager_api.domain.user.entity.Employees">
+        SELECT
+            *
+        FROM employees
+        WHERE emp_id = #{empId}
+    </select>
+
+    <insert id="startWork">
+        INSERT INTO emp_log (emp_id, worked_at)
+        SELECT #{empId}, NOW()
+        FROM dual
+        WHERE NOT EXISTS (
+        SELECT 1 FROM emp_log WHERE emp_id = #{empId}
+        )
+    </insert>
+
+    <insert id="endWork">
+        UPDATE emp_log
+        SET leaved_at = NOW()
+        WHERE emp_id = #{empId}
+    </insert>
 
 </mapper>

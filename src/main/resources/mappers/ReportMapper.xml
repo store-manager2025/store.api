@@ -16,6 +16,14 @@
         </if>
     </sql>
 
+    <sql id="statusCondition">
+        <choose>
+            <when test="status == null or status == 'all'"> ('SUCCESS', 'CANCELLED') </when>
+            <when test="status == 'success'"> ('SUCCESS') </when>
+            <when test="status == 'cancelled'"> ('CANCELLED') </when>
+        </choose>
+    </sql>
+
     <resultMap id="orderDetailResultMap" type="com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto">
         <!-- 주문 기본 정보 매핑 -->
         <id property="orderId" column="order_id"/>
@@ -39,7 +47,8 @@
             , SUM(price) AS totalPrice
         FROM orders
         WHERE store_id = #{storeId}
-        AND order_status IN ('SUCCESS', #{status})
+        AND order_status IN
+        <include refid="statusCondition"/>
         GROUP BY  DATE_FORMAT(ordered_at, '%Y%m%d')
     </select>
 
@@ -49,7 +58,8 @@
             , SUM(price) AS totalPrice
         FROM orders
         WHERE store_id = #{storeId}
-        AND order_status IN ('SUCCESS', #{status})
+        AND order_status IN
+        <include refid="statusCondition"/>
         AND DATE_FORMAT(ordered_at, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
         GROUP BY DATE_FORMAT(ordered_at, '%Y-%m-%d');
     </select>
@@ -76,7 +86,8 @@
             INNER JOIN payments PAY ON PAY.order_id = O.order_id
             INNER JOIN menus M ON OM.menu_id = M.menu_id
         WHERE O.store_id = #{storeId}
-            AND O.order_status IN ('SUCCESS', #{status})
+            AND O.order_status IN
+            <include refid="statusCondition"/>
             AND DATE_FORMAT(ordered_at, '%Y-%m-%d') = #{date}
         GROUP BY O.order_id
         ORDER BY O.order_id DESC
