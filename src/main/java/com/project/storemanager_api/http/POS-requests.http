@@ -36,7 +36,7 @@ POST http://localhost:8383/auth/logout
 # @no-cookie-jar
 POST http://localhost:8383/api/stores
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsM10sInVzZXJJZCI6MSwiaXNzIjoic3RvcmUiLCJpYXQiOjE3NDE2NjgwMzAsImV4cCI6MTc0MTY3NTIzMCwic3ViIjoiMSJ9.GJM_EibGnauH_knL2Bv0zlj3eTKZeCmTtFc4gNFeWg0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsMyw0XSwidXNlcklkIjoxLCJpc3MiOiJzdG9yZSIsImlhdCI6MTc0MTkyNzEzNywiZXhwIjoxNzQxOTM0MzM3LCJzdWIiOiIxIn0.v9sL_h_5kqO2gvjvbZ_xd3e2eZA7wSHxP69tBKMHYGs
 
 {
   "password": "1234",
@@ -485,3 +485,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzd
 # @no-cookie-jar
 POST http://localhost:8383/api/emp/leave/4
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsMyw0XSwidXNlcklkIjoxLCJpc3MiOiJzdG9yZSIsImlhdCI6MTc0MTY2OTY3NCwiZXhwIjoxNzQxNjc2ODc0LCJzdWIiOiIxIn0.T9DOuAtBW_2ypglrQSl5LNreCi5od0-eDRhDU4Ntyes
+
+###
+# @no-cookie-jar
+GET http://localhost:8383/api/reports/all/1?status=success
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiT1dORVIiLCJzdG9yZUlkTGlzdCI6WzEsMyw0XSwidXNlcklkIjoxLCJpc3MiOiJzdG9yZSIsImlhdCI6MTc0MTkyNzEzNywiZXhwIjoxNzQxOTM0MzM3LCJzdWIiOiIxIn0.v9sL_h_5kqO2gvjvbZ_xd3e2eZA7wSHxP69tBKMHYGs
