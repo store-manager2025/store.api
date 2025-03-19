@@ -76,7 +76,7 @@
             M.menu_id,
             PAY.payment_id,
             CASE
-                WHEN COUNT(DISTINCT PAY.payment_type) = 2 THEN 'MIX'
+                WHEN PAY.payment_type = 'MIX' THEN 'MIX'
                 WHEN MAX(PAY.payment_type) = 'CARD' THEN 'CARD'
                 ELSE 'CASH'
                 END AS paymentType
@@ -138,6 +138,14 @@
         INNER JOIN payments P ON S.store_id = P.store_id
         WHERE S.store_id = #{storeId}
         GROUP BY P.payment_type
+    </select>
+
+    <select id="findCardPayAmount" resultType="java.lang.Integer">
+        SELECT
+            SUM(C.paid_money) AS cardPrice
+        FROM payments P
+        INNER JOIN cards C ON P.payment_id = C.payment_id
+        WHERE P.order_id = #{orderId}
     </select>
 
 
