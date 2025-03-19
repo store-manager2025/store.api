@@ -1,3 +1,5 @@
+!src/main/java/com/project/storemanager_api/http/POS-requests.http
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -10,7 +12,6 @@ application-dev.yml
 ddl.sql
 Dockerfile
 docker-compose.yml
-!src/main/java/com/project/storemanager_api/http/POS-requests.http
 
 ### STS ###
 .apt_generated

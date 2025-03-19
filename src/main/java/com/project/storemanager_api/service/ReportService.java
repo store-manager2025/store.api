@@ -53,9 +53,15 @@ public class ReportService {
 
         List<OrderDetailResponseDto> result = reportRepository.findDailyListByStoreId(storeId, date, status, pageSize, offset);
 
-        log.info("result : {}", result);
-
         for (OrderDetailResponseDto dto : result) {
+
+            if (dto.getPaymentType().equals("MIX")) {
+                Integer cardPayAmount = reportRepository.findCardPayAmount(dto.getOrderId());
+                dto.setCardPrice(cardPayAmount);
+                dto.setCashPrice(dto.getPrice() - cardPayAmount);
+            }
+
+
             dto.setMenuDetail(menuRepository.findMenuInOrderDtoById(dto.getOrderId()));
         }
 
@@ -90,7 +96,7 @@ public class ReportService {
         // 날짜별로 그룹핑
         Map<LocalDate, List<PeakTimeDetailDto>> groupedData = peakTimeList.stream()
                 .collect(Collectors.groupingBy(
-                        PeakTimeRawDto::getDate,  // ✅ 올바른 date 필드 사용
+                        PeakTimeRawDto::getDate,  // 올바른 date 필드 사용
                         Collectors.mapping(dto -> new PeakTimeDetailDto(dto.getTimeRange(), dto.getAmount()), Collectors.toList())
                 ));
 

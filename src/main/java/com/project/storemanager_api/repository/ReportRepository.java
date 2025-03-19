@@ -53,4 +53,7 @@ public interface ReportRepository {
     // 결제방식(카드,현금)에 따른 수입 분석
     List<SalesByPaymentType> findCardAndCash(Long storeId);
 
+    // MIX결제 시 카드결제에 쓰인 금액 조회
+    Integer findCardPayAmount(Long orderId);
+
 }
