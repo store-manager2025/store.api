@@ -32,7 +32,12 @@ jobs:
       - name: Build with Gradle
         run: |
           ./gradlew clean build
-          ls -l build/libs/  
+          ls -l build/libs/
+
+      - name: Debug Secrets
+        run: |
+          echo "EC2_HOST length: $(echo -n '${{ secrets.EC2_HOST }}' | wc -c)"
+          echo "EC2_USER length: $(echo -n '${{ secrets.EC2_USER }}' | wc -c)"
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
@@ -45,7 +50,7 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
           echo "Stopping existing server..."
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "pkill -9 -f 'java -jar /home/$EC2_USER/store-manager_api-0.0.1-SNAPSHOT.jar' || true"
+          ssh -v -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "pkill -9 -f 'java -jar /home/$EC2_USER/store-manager_api-0.0.1-SNAPSHOT.jar' || true"
           echo "Uploading JAR file..."
           scp -o StrictHostKeyChecking=no build/libs/store-manager_api-0.0.1-SNAPSHOT.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/
           echo "Starting new server..."
