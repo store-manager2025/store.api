@@ -10,6 +10,7 @@ public class CrossOriginConfig implements WebMvcConfigurer {
 
     private String[] urls = {
             "http://localhost:3000",
+            "https://pos-system-xi-rouge.vercel.app/"
     };
 
     @Override

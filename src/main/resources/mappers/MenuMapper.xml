@@ -78,7 +78,7 @@
         M.menu_id,
         M.menu_name,
         M.discount_rate,
-        M.price * om.order_item_quantity AS totalPrice,
+        M.price * OM.order_item_quantity AS totalPrice,
         OM.order_item_quantity AS totalCount
         FROM menus M
         JOIN order_menus OM on M.menu_id = OM.menu_id
