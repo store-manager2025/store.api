@@ -142,7 +142,7 @@
 
     <select id="findCardPayAmount" resultType="java.lang.Integer">
         SELECT
-            SUM(C.paid_money) AS cardPrice
+            NVL(SUM(C.paid_money), 0) AS cardPrice
         FROM payments P
         INNER JOIN cards C ON P.payment_id = C.payment_id
         WHERE P.order_id = #{orderId}
