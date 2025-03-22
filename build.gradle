@@ -18,6 +18,12 @@ repositories {
     mavenCentral()
 }
 
+processResources {
+    filesMatching('application.yml') {
+        expand(project.properties)
+    }
+}
+
 dependencies {
     // 스프링 종합 선물 세트
     implementation 'org.springframework.boot:spring-boot-starter-web'
