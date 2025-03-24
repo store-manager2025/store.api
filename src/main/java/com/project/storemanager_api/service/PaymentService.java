@@ -69,21 +69,17 @@ public class PaymentService {
         Integer currentAmount = paymentRepository.findCurrentMoney(dto.getOrderId());
         log.info("Current amount: {}", currentAmount);
 
-        // 주문 상세정보 저장
         if (isEnoughAmount(totalAmount, currentAmount)) {
+            // 주문 상세정보 저장
             orderMenuService.updateOrderStatusWithoutMenu(dto.getOrderId(), String.valueOf(SUCCESS));
+            // order쪽에서의 orderStatus도 SUCCESS로 변경
+            orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
         }
 
         // 결제에 사용된 카드정보 저장
         if (dto.getPaymentType().equals(CARD)) {
             cardService.saveCard(generatedPaymentId, dto);
         }
-
-        // order쪽에서의 orderStatus도 SUCCESS로 변경
-        if (isEnoughAmount(totalAmount, currentAmount)) {
-            orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
-        }
-
         // 3. 결제 승인 -> payment_transactions 저장 & payments 상태 success로 변경
         paymentRepository.changeStatus(Status.SUCCESS, dto.getPaymentId());
 
