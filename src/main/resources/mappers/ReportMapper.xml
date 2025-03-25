@@ -127,7 +127,7 @@
         <include refid="selectDate"/>
         AND store_id = #{storeId}
         GROUP BY DATE(ordered_at), DATE_FORMAT(ordered_at, '%H')  <!-- DATE(ordered_at)로 그룹화 -->
-        ORDER BY date, timeRange
+        ORDER BY date DESC, timeRange
     </select>
 
     <select id="findCardAndCash" resultType="com.project.storemanager_api.domain.report.dto.response.SalesByPaymentType">
