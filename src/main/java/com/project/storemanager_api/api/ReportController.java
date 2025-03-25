@@ -3,9 +3,13 @@ package com.project.storemanager_api.api;
 import com.project.storemanager_api.annotation.StoreAuthCheck;
 import com.project.storemanager_api.domain.order.dto.response.OrderAllResponseDto;
 import com.project.storemanager_api.domain.order.dto.response.OrderDetailResponseDto;
-import com.project.storemanager_api.domain.report.dto.response.*;
+import com.project.storemanager_api.domain.report.dto.response.AverageValueDto;
+import com.project.storemanager_api.domain.report.dto.response.PeakTimeGroupedResponseDto;
+import com.project.storemanager_api.domain.report.dto.response.SalesByCategoryDto;
+import com.project.storemanager_api.domain.report.dto.response.SalesByPaymentTypeResponseDto;
 import com.project.storemanager_api.domain.user.dto.response.CustomUserPrincipal;
 import com.project.storemanager_api.service.ReportService;
+import com.project.storemanager_api.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,6 +29,7 @@ import java.util.List;
 public class ReportController {
 
     private final ReportService reportService;
+    private final StoreService storeService;
 
     // 모든 오더 기록을 조회하는 API
     @GetMapping("/all/{storeId}") // 한 매장에 등록된 매출 전체 조회
@@ -112,8 +117,11 @@ public class ReportController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         LocalDate today = LocalDate.now();
-        startDate = (startDate == null) ? today : startDate;
+        log.info("startDate: {}, endDate: {}", startDate, endDate);
+        startDate = (startDate == null) ? storeService.getStoreCreatedAt(storeId) : startDate;
         endDate = (endDate == null) ? today : endDate;
+        log.info("startDate: {}, endDate: {}", startDate, endDate);
+        // 일단 잘 가져온다. 파라미터 넣고 테스트해봐야
 
         List<PeakTimeGroupedResponseDto> peakTimes = reportService.getPeakTime(storeId, startDate, endDate);
         return ResponseEntity.ok(peakTimes);

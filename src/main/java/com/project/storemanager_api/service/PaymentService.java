@@ -74,6 +74,7 @@ public class PaymentService {
             orderMenuService.updateOrderStatusWithoutMenu(dto.getOrderId(), String.valueOf(SUCCESS));
             // order쪽에서의 orderStatus도 SUCCESS로 변경
             orderRepository.updateOrderStatus(dto.getOrderId(), String.valueOf(SUCCESS));
+            log.info("order status updated - {}", String.valueOf(SUCCESS));
         }
 
         // 결제에 사용된 카드정보 저장

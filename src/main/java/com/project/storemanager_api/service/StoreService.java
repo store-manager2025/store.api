@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -166,6 +167,12 @@ public class StoreService {
 
     public void checkExistStore(Long storeId) {
         storeRepository.findPasswordById(storeId).orElseThrow(
+                () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
+        );
+    }
+
+    public LocalDate getStoreCreatedAt(Long storeId) {
+        return storeRepository.findCreatedAtByStoreId(storeId).orElseThrow(
                 () -> new StoreException(ErrorCode.STORE_NOT_FOUND, ErrorCode.STORE_NOT_FOUND.getMessage())
         );
     }

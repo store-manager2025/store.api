@@ -7,6 +7,7 @@ import com.project.storemanager_api.domain.store.dto.response.StoreResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +33,7 @@ public interface StoreRepository {
 
     // 매장 로그인 성공시, JWT claims에 담을 storeId 정보
     List<Long> findStoreIdListByUserId(Long userId);
+
+    Optional<LocalDate> findCreatedAtByStoreId(Long storeId);
 }
+
